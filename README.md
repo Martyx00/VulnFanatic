@@ -28,7 +28,3 @@ This plugin requires the following minimum version of Binary Ninja:
 ## License
 
 This plugin is released under an Apache license.
-
-## Metadata Version
-
-1
