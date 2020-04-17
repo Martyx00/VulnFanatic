@@ -5,7 +5,11 @@ from .query import Sources, _or_, _and_
 
 class Scanner(BackgroundTaskThread):
     def __init__(self,rules_path,bv,scan_depth):
-        self.progress_banner = f"[VulnFanatic] Running the scanner (Depth: {scan_depth-1})"
+        if scan_depth == sys.maxsize * 2 + 2:
+            scan_depth_label = "Unlimited"
+        else:
+            scan_depth_label = scan_depth-1
+        self.progress_banner = f"[VulnFanatic] Running the scanner (Depth: {scan_depth_label})"
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.bv = bv
         self.scan_depth = scan_depth
