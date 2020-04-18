@@ -1,8 +1,15 @@
 from binaryninja import *
 from .scanner.scanner import Scanner
 from .highlighter.highlighter import Highlighter
+from .trackers.function_tracer2 import FunctionTracer
 import os 
 import sys
+
+
+def test(bv,selection_addr):
+	current_function = bv.get_functions_containing(selection_addr)[0]
+	fun_trace = FunctionTracer(bv)
+	fun_trace.selected_function_tracer(current_function,selection_addr)
 
 def highlight(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]
@@ -47,6 +54,7 @@ def scan(bv,selection_addr):
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight)
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan)
+PluginCommand.register_for_address("[VulnFanatic] Test", "Test", test)
 
 
 #PluginCommand.register_for_address("TraceFanatic: Comment parameters", "Adds comments to variables that influence parameters of highlighted call", start_comment)
