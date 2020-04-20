@@ -2,14 +2,25 @@ from binaryninja import *
 from .scanner.scanner import Scanner
 from .highlighter.highlighter import Highlighter
 from .trackers.function_tracer2 import FunctionTracer
+from .utils.utils import extract_hlil_operations
 import os 
 import sys
 
 
 def test(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]
+	function_calls_at_address = []
+	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
+	if len(function_calls_at_address) == 0:
+		show_message_box("Highlighter Error", "Highlighted instruction is not a function call!", buttons=0, icon=2)
+		return
+	elif len(function_calls_at_address) == 1:
+		call_instruction = function_calls_at_address[0]
+	else:
+		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
+		call_instruction = function_calls_at_address[choice]
 	fun_trace = FunctionTracer(bv)
-	fun_trace.selected_function_tracer(current_function,selection_addr)
+	fun_trace.selected_function_tracer(call_instruction,current_function)
 
 def highlight(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]
