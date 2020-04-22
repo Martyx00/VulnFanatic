@@ -83,3 +83,19 @@ def extract_hlil_operations(current_hlil,operations,instruction_address=-1,instr
     else:
         log_warn("Neither address, specific instruction nor index were provided!")
     return extracted_operations
+
+
+def get_vars_read(current_hlil,instruction_index):
+    # TODO adjust for ADDRESS_OF
+    vars_read = []
+    for operand in list(current_hlil.instructions)[instruction_index].operands[1:]:
+        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=operand))
+    return vars_read
+
+def get_constants_read(current_hlil,instruction_index):
+    vars_read = []
+    for operand in list(current_hlil.instructions)[instruction_index].operands[1:]:
+        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
+    return vars_read

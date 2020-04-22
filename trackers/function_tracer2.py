@@ -1,5 +1,5 @@
 from binaryninja import *
-from ..utils.utils import extract_hlil_operations
+from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_read
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -104,15 +104,11 @@ class FunctionTracer:
                 for def_instruction in def_instructions:
                     # Get all varaibles and constants at definition
                     if str(current_variable["variable"]) in str(def_instruction):
-                        def_instruction_variables = extract_hlil_operations(current_function,[HighLevelILOperation.HLIL_VAR,HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],instruction_address=def_instruction.address)
-                        #log_info(str(def_instruction_variables))
-                        # TODO differentiate betwee var + const and const only
-                        '''
-                        >>> add.operands[0]
-                        <HLIL_VAR: arg2>
-                        >>> add.operands[0].parent
-                        <HLIL_ADD: arg2 + 8>
-                        '''
+                        
+                        def_instruction_variables = get_vars_read(current_function,def_instruction.instr_index)
+                        if len(def_instruction_variables) == 0:
+                            def_instruction_variables = get_constants_read(current_function,def_instruction.instr_index)
+                        # Remove current variable
                         for def_var in def_instruction_variables:
                             if def_var.operation == HighLevelILOperation.HLIL_VAR:
                                 # Ensure that there are no duplicates and that we are moving up in the function trace
@@ -123,7 +119,8 @@ class FunctionTracer:
                                         "function_calls": [],
                                         "function_call_stack": current_variable["function_call_stack"].copy()
                                     })
-                            elif def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                            # TODO adjust for address of later on :)
+                            elif (def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR):
                                 
                                 value = hex(def_var.constant)
                                 const_type = "constant"
@@ -263,9 +260,9 @@ class FunctionTracer:
                                     "function_calls": [],
                                     "function_call_stack": function_call_stack
                                 })
-            log_info(xref.name)
-            log_info(str(xrefs_vars))
-            log_info("\n\n\n")
+            #log_info(xref.name)
+            #log_info(str(xrefs_vars))
+            #log_info("\n\n\n")
         return xrefs_vars
         
 
