@@ -1,5 +1,10 @@
 from binaryninja import *
 from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_read
+# TODO xrefs
+# TODO same branch
+# TODO get_function_calls
+# TODO address_of everywhere
+# TODO function level anti-recursion
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -78,8 +83,7 @@ class FunctionTracer:
         vars_mag = [{
             "variable":variable,
             "call_basic_block_start": call_basic_block_start, #This will be changed to XREFs wherever we will change function neccessary
-            "function_calls": [],
-            "function_call_stack": []
+            "function_calls": []
         }]
 
         
@@ -116,8 +120,7 @@ class FunctionTracer:
                                     vars_mag.append({
                                         "variable":def_var,
                                         "call_basic_block_start": current_variable["call_basic_block_start"],
-                                        "function_calls": [],
-                                        "function_call_stack": current_variable["function_call_stack"].copy()
+                                        "function_calls": []
                                     })
                             # TODO adjust for address of later on :)
                             elif (def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR):
@@ -144,8 +147,7 @@ class FunctionTracer:
                                     "function_name":current_function.source_function.name,
                                     "exported": False,
                                     "var": current_variable["variable"].var,
-                                    "function":current_function,
-                                    "function_call_stack": current_variable["function_call_stack"].copy()
+                                    "function":current_function
                                 })
             # Parameter          
             elif current_variable["variable"].var in current_function.source_function.parameter_vars:
@@ -176,8 +178,7 @@ class FunctionTracer:
                         "function_name":current_function.source_function.name,
                         "exported": exported,
                         "var": current_variable["variable"].var,
-                        "function":current_function,
-                        "function_call_stack": current_variable["function_call_stack"].copy()
+                        "function":current_function
                     })
                 
                 vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable["function_call_stack"].copy()))
@@ -257,15 +258,6 @@ class FunctionTracer:
                                 xrefs_vars.append({
                                     "variable":var,
                                     "call_basic_block_start": var.il_basic_block.start, 
-                                    "function_calls": [],
-                                    "function_call_stack": function_call_stack
+                                    "function_calls": []
                                 })
-            #log_info(xref.name)
-            #log_info(str(xrefs_vars))
-            #log_info("\n\n\n")
         return xrefs_vars
-        
-
-
-
-
