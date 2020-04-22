@@ -4,7 +4,6 @@ from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_
 # TODO same branch
 # TODO get_function_calls
 # TODO address_of everywhere
-# TODO function level anti-recursion
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -83,7 +82,8 @@ class FunctionTracer:
         vars_mag = [{
             "variable":variable,
             "call_basic_block_start": call_basic_block_start, #This will be changed to XREFs wherever we will change function neccessary
-            "function_calls": []
+            "function_calls": [],
+            "current_call_index": variable.instr_index
         }]
 
         
@@ -103,7 +103,7 @@ class FunctionTracer:
             
             # Get uses like fun calls etc...
             # TODO
-            #current_variable["function_calls"].extend(self.get_var_function_calls(current_variable["variable"],current_function))
+            current_variable["function_calls"].extend(self.get_var_function_calls(current_variable,current_function))
             # get def instruction
             
             def_instructions = current_function.get_var_definitions(current_variable["variable"].var)
@@ -123,7 +123,8 @@ class FunctionTracer:
                                     vars_mag.append({
                                         "variable":def_var,
                                         "call_basic_block_start": current_variable["call_basic_block_start"],
-                                        "function_calls": []
+                                        "function_calls": current_variable["function_calls"].copy(),
+                                        "current_call_index": current_variable["current_call_index"]
                                     })
                             # TODO adjust for address of later on :)
                             elif (def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR):
@@ -184,7 +185,7 @@ class FunctionTracer:
                         "function":current_function
                     })
                 
-                vars_mag.extend(self.get_xrefs_to(current_function,param_index))
+                vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable["function_calls"].copy()))
                     #log_info(str(operand))
                     # Add vars to vars_mag
             else:
@@ -207,43 +208,25 @@ class FunctionTracer:
         # TODO have a look what the "lines" do
         # TODO add defitions and possible SSA vars to avoid missing stuff
         function_calls = []
-        current_instructions = list(current_function.instructions)
-        for use in current_function.get_var_uses(variable.var):
-            line = current_instructions[use.instr_index]
-            if line.operation == HighLevelILOperation.HLIL_CALL:
-                function_calls.append(
-                        {
-                            "instruction": line,
-                            "call_address": line.address,
-                            "function_name": str(line.dest),
-                            "function_call_basic_block_start": line.il_basic_block.start 
-                        }
-                    )
-            operands_mag = []
-            operands_mag.extend(line.operands)
-            while operands_mag:
-                op = operands_mag.pop()
-                if type(op) == HighLevelILInstruction and op.operation == HighLevelILOperation.HLIL_CALL:
-                    #log_info("FOUND CALL: "+ str(op))
-                    # Append to function call structure here 
+        hlil_instructions = list(current_function.instructions)
+        for use in current_function.get_var_uses(variable["variable"].var):
+            line = hlil_instructions[use.instr_index]
+            calls = extract_hlil_operations(current_function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=line)
+            for call in calls:
+                if str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"]:
                     function_calls.append(
                         {
-                            "instruction": op,
-                            "call_address": op.address,
-                            "function_name": str(op.dest),
-                            "function_call_basic_block_start": op.il_basic_block.start 
+                            "instruction": call,
+                            "call_address": call.address,
+                            "call_index": call.instr_index,
+                            "at_function": current_function.source_function.name,
+                            "function_name": str(call.dest),
+                            "function_call_basic_block_start": call.il_basic_block.start 
                         }
                     )
-                    # TODO experimental
-                    operands_mag.extend(op.operands)
-                elif type(op) == HighLevelILInstruction:
-                    operands_mag.extend(op.operands)
-                elif type(op) is list:
-                    for oper in op:
-                        operands_mag.append(oper)
         return function_calls
 
-    def get_xrefs_to(self,current_function,par_index):
+    def get_xrefs_to(self,current_function,par_index,function_calls):
         xrefs_vars = []
         current_function_name = current_function.source_function.name
         function_refs = [
@@ -265,6 +248,7 @@ class FunctionTracer:
                                 xrefs_vars.append({
                                     "variable":var,
                                     "call_basic_block_start": var.il_basic_block.start, 
-                                    "function_calls": []
+                                    "function_calls": function_calls,
+                                    "current_call_index": var.instr_index
                                 })
         return xrefs_vars
