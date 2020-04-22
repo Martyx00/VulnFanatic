@@ -79,7 +79,7 @@ class FunctionTracer:
         source_index = 0
         param_sources = []
         const_sources = []
-        
+        function_passes = []
         vars_mag = [{
             "variable":variable,
             "call_basic_block_start": call_basic_block_start, #This will be changed to XREFs wherever we will change function neccessary
@@ -90,13 +90,16 @@ class FunctionTracer:
         # HLIL_VAR_INIT with value vs HLIL_VAR_DECLARE without value
         # HLIL_ASSIGN assign value to already declared variable
         while vars_mag:
+            mag_size = len(vars_mag)
             current_variable = vars_mag.pop()
             current_function = current_variable["variable"].function
             # Add to function call stack
             # TODO maybe used only for debugging
+            if str(current_variable["variable"])+"@"+current_function.source_function.name not in function_passes:
+                function_passes.append(str(current_variable["variable"])+"@"+current_function.source_function.name)
+            else:
+                continue
             
-            if current_function.source_function.name not in current_variable["function_call_stack"]:
-                current_variable["function_call_stack"].append(current_function.source_function.name)
             
             # Get uses like fun calls etc...
             # TODO
@@ -181,7 +184,7 @@ class FunctionTracer:
                         "function":current_function
                     })
                 
-                vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable["function_call_stack"].copy()))
+                vars_mag.extend(self.get_xrefs_to(current_function,param_index))
                     #log_info(str(operand))
                     # Add vars to vars_mag
             else:
@@ -189,6 +192,10 @@ class FunctionTracer:
                 # No def instructions so somehow stack var???
                 # Big TODO
                 pass
+            if mag_size > len(vars_mag):
+                # found source
+                # TODO hope this works :D
+                function_passes = []
         sources.extend(param_sources)
         sources.extend(const_sources)
         return sources
@@ -236,7 +243,7 @@ class FunctionTracer:
                         operands_mag.append(oper)
         return function_calls
 
-    def get_xrefs_to(self,current_function,par_index,function_call_stack):
+    def get_xrefs_to(self,current_function,par_index):
         xrefs_vars = []
         current_function_name = current_function.source_function.name
         function_refs = [

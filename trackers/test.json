@@ -14,10 +14,7 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21cdda6d0>,
-            "function_call_stack": [
-                "_printit_format_var"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x22341c5b0>
         },
         {
             "param": 0,
@@ -31,11 +28,7 @@
             "function_name": "_printit_proxy",
             "exported": True,
             "var": <var void* arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21ccbbfd0>,
-            "function_call_stack": [
-                "_printit_format_var",
-                "_printit_proxy"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2232e6040>
         },
         {
             "param": 0,
@@ -49,12 +42,7 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21ccbb250>,
-            "function_call_stack": [
-                "_printit_format_var",
-                "_printit_proxy",
-                "_main"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2232f9c10>
         },
         {
             "param": 0,
@@ -68,12 +56,7 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21cca7640>,
-            "function_call_stack": [
-                "_printit_format_var",
-                "_printit_proxy",
-                "_main"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2232e69a0>
         },
         {
             "param": 0,
@@ -87,10 +70,7 @@
             "function_name": "_printit_format_var",
             "exported": False,
             "var": <var void* const var_90>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21cdda6d0>,
-            "function_call_stack": [
-                "_printit_format_var"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x22341c5b0>
         },
         {
             "param": 1,
@@ -104,10 +84,7 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var int64_t arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21cdda6d0>,
-            "function_call_stack": [
-                "_printit_format_var"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x22341c5b0>
         },
         {
             "param": 1,
@@ -121,12 +98,7 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21ccd3730>,
-            "function_call_stack": [
-                "_printit_format_var",
-                "_printit_proxy",
-                "_main"
-            ]
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x223316790>
         }
     ]
 }
