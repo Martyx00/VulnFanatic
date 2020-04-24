@@ -1,8 +1,8 @@
 from binaryninja import *
-from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_read
+from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_read, get_address_of_uses, get_address_of_init
 # TODO xrefs
 # TODO same branch - Should be done, just validate
-# TODO address_of everywhere
+# TODO address_of vars read
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -77,6 +77,7 @@ class FunctionTracer:
         source_index = 0
         param_sources = []
         const_sources = []
+        stack_var_sources = []
         function_passes = []
         vars_mag = [{
             "variable":variable,
@@ -103,10 +104,8 @@ class FunctionTracer:
                 current_variable["same_branch"] = False
             
             # Get uses like fun calls etc...
-            # TODO
-            current_variable["function_calls"].extend(self.get_var_function_calls(current_variable,current_function))
+            current_variable["function_calls"] = current_variable["function_calls"] + [x for x in self.get_var_function_calls(current_variable,current_function) if x not in current_variable["function_calls"]]
             # get def instruction
-            
             def_instructions = current_function.get_var_definitions(current_variable["variable"].var)
             if def_instructions:
                 for def_instruction in def_instructions:
@@ -119,7 +118,6 @@ class FunctionTracer:
                         for def_var in def_instruction_variables:
                             if def_var.operation == HighLevelILOperation.HLIL_VAR:
                                 # Ensure that there are no duplicates and that we are moving up in the function trace
-                                log_info(str(current_variable))
                                 if def_var.var != current_variable["variable"].var and def_var.instr_index < current_variable["current_call_index"]:
                                     vars_mag.append({
                                         "variable":def_var,
@@ -128,9 +126,8 @@ class FunctionTracer:
                                         "current_call_index": current_variable["current_call_index"],
                                         "same_branch": current_variable["same_branch"]
                                     })
-                            # TODO adjust for address of later on :)
-                            elif (def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR):
-                                
+                            elif ((def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR)) and def_var.parent.operation != HighLevelILOperation.HLIL_CALL:
+                                # Constants but not not function calls 
                                 value = hex(def_var.constant)
                                 const_type = "constant"
                                 # Const ptr
@@ -155,6 +152,25 @@ class FunctionTracer:
                                     "var": current_variable["variable"].var,
                                     "function":current_function
                                 })
+                            elif def_var.parent.operation == HighLevelILOperation.HLIL_CALL:
+                                log_info(str(def_var.parent.operation))
+                                #log_info(str(current_variable))
+                                # Only function calls without parameters
+                                stack_var_sources.append({
+                                    "param": None,
+                                    "function_calls": current_variable["function_calls"],
+                                    "call_basic_block_start": current_variable["call_basic_block_start"],
+                                    "source_basic_block_start": def_var.il_basic_block.start,
+                                    "same_branch": current_variable["same_branch"],
+                                    "value": None,
+                                    "def_instruction_address": def_var.address, 
+                                    "var_type": "stack_variable",
+                                    "function_name":current_function.source_function.name,
+                                    "exported": False,
+                                    "var": current_variable["variable"].var,
+                                    "function":current_function
+                                })
+
             # Parameter          
             elif current_variable["variable"].var in current_function.source_function.parameter_vars:
                 #log_info(str(current_variable["variable"].il_basic_block) + " vs " + str(current_variable["call_basic_block_start"]))
@@ -176,7 +192,7 @@ class FunctionTracer:
                         "param": None,
                         "function_calls": current_variable["function_calls"],
                         "call_basic_block_start": current_variable["call_basic_block_start"],
-                        "source_basic_block_start": current_function.root, # TODO fix
+                        "source_basic_block_start": current_function.root,
                         "same_branch": current_variable["same_branch"],
                         "value": None,
                         "def_instruction_address": None,
@@ -191,9 +207,35 @@ class FunctionTracer:
                     #log_info(str(operand))
                     # Add vars to vars_mag
             else:
-                
-                # No def instructions so somehow stack var???
-                # Big TODO
+                #log_info(str(current_variable))
+                # TODO get vars read
+                init_instr = get_address_of_init(current_function,current_variable["variable"])
+                vars_read = get_vars_read(current_function,init_instr.instr_index)
+                for var_read in vars_read:
+                    if var_read.operation == HighLevelILOperation.HLIL_VAR:
+                        # Ensure that there are no duplicates and that we are moving up in the function trace
+                        if var_read.var != current_variable["variable"].var and var_read.instr_index < current_variable["current_call_index"]:
+                            vars_mag.append({
+                                "variable":def_var,
+                                "call_basic_block_start": current_variable["call_basic_block_start"],
+                                "function_calls": current_variable["function_calls"].copy(),
+                                "current_call_index": current_variable["current_call_index"],
+                                "same_branch": current_variable["same_branch"]
+                            })
+                stack_var_sources.append({
+                    "param": None,
+                    "function_calls": current_variable["function_calls"],
+                    "call_basic_block_start": current_variable["call_basic_block_start"],
+                    "source_basic_block_start": init_instr.il_basic_block.start,
+                    "same_branch": current_variable["same_branch"],
+                    "value": None,
+                    "def_instruction_address": init_instr.address, 
+                    "var_type": "stack_variable",
+                    "function_name":current_function.source_function.name,
+                    "exported": False,
+                    "var": current_variable["variable"].var,
+                    "function":current_function
+                })
                 pass
             if mag_size > len(vars_mag):
                 # found source
@@ -201,6 +243,7 @@ class FunctionTracer:
                 function_passes = []
         sources.extend(param_sources)
         sources.extend(const_sources)
+        sources.extend(stack_var_sources)
         return sources
             
         
@@ -213,11 +256,16 @@ class FunctionTracer:
         function_calls = []
         hlil_instructions = list(current_function.instructions)
         variable_appearances = current_function.get_var_uses(variable["variable"].var)
+        variable_appearances.extend(current_function.get_var_definitions(variable["variable"].var))
+        if variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
+            variable_appearances.extend(get_address_of_uses(current_function,variable["variable"].parent))
+            #log_info(str(variable_appearances))
         for use in variable_appearances:
             line = hlil_instructions[use.instr_index]
             calls = extract_hlil_operations(current_function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=line)
             for call in calls:
-                if str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"]:
+                if ((str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"])
+                    or (str(variable["variable"]) in str(use).split("=")[0] and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"])):
                     same_branch = False
                     if call.il_basic_block.start == variable["call_basic_block_start"]:
                         same_branch = True
