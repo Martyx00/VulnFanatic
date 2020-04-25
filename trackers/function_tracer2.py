@@ -3,13 +3,13 @@ from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_
 # TODO xrefs
 # TODO same branch - Should be done, just validate
 # TODO address_of vars read
+# MIPS seems like not working at all
 
 class FunctionTracer:
     def __init__(self,current_view):
         self.current_view = current_view
 
     def selected_function_tracer(self,call_instruction,current_function):
-        # TODO when param is function call!
         function_trace_struct = {
             "function":current_function,
             "call_address": hex(call_instruction.address),
@@ -57,15 +57,25 @@ class FunctionTracer:
                 })
                 continue
             # Not constant handlers below
-            # First this needs to ensure that we work with HLIL_VARS and theoretically addresses only
-            # TODO add HighLevelILOperation.HLIL_ADDRESS_OF
+            # First this needs to ensure that we work with HLIL_VARS
             param_vars = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+            param_calls = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
             for param_var in param_vars:
                 function_trace_struct["sources"].extend(self.trace_var(param_var,call_instruction.il_basic_block.start))
             # Update param index
             for src in function_trace_struct["sources"]:
                 if src["param"] == None:
                     src["param"] = call_instruction.params.index(param)
+                    for call in param_calls:
+                        src["function_calls"].append({
+                            "instruction": call,
+                            "call_address": call.address,
+                            "call_index": call.instr_index,
+                            "at_function": call.function.source_function.name,
+                            "function_name": str(call.dest),
+                            "same_branch": True,
+                            "function_call_basic_block_start": call.il_basic_block.start 
+                        })
         log_info(str(function_trace_struct))
         return function_trace_struct
 
@@ -84,7 +94,8 @@ class FunctionTracer:
             "call_basic_block_start": call_basic_block_start, #This will be changed to XREFs wherever we will change function neccessary
             "function_calls": [],
             "current_call_index": variable.instr_index,
-            "same_branch": True
+            "same_branch": True,
+            "var_defintion_max_index": -1
         }]
 
         
@@ -105,6 +116,39 @@ class FunctionTracer:
             
             # Get uses like fun calls etc...
             current_variable["function_calls"] = current_variable["function_calls"] + [x for x in self.get_var_function_calls(current_variable,current_function) if x not in current_variable["function_calls"]]
+            # Stack var
+            if current_variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
+                init_instr = get_address_of_init(current_function,current_variable["variable"])
+                vars_read = get_vars_read(current_function,init_instr.instr_index)
+                if len(vars_read) != 0:
+                    for var_read in vars_read:
+                        if var_read.operation == HighLevelILOperation.HLIL_VAR:
+                            # Ensure that there are no duplicates and that we are moving up in the function trace
+                            if var_read.var != current_variable["variable"].var and var_read.instr_index < current_variable["current_call_index"]:
+                                vars_mag.append({
+                                    "variable":var_read,
+                                    "call_basic_block_start": current_variable["call_basic_block_start"],
+                                    "function_calls": current_variable["function_calls"].copy(),
+                                    "current_call_index": current_variable["current_call_index"],
+                                    "same_branch": current_variable["same_branch"]
+                                })
+                else:
+                    stack_var_sources.append({
+                        "param": None,
+                        "function_calls": current_variable["function_calls"],
+                        "call_basic_block_start": current_variable["call_basic_block_start"],
+                        "source_basic_block_start": init_instr.il_basic_block.start,
+                        "same_branch": current_variable["same_branch"],
+                        "value": None,
+                        "def_instruction_address": init_instr.address, 
+                        "var_type": "stack_variable",
+                        "function_name":current_function.source_function.name,
+                        "exported": False,
+                        "var": current_variable["variable"].var,
+                        "function":current_function
+                    })
+                continue
+            
             # get def instruction
             def_instructions = current_function.get_var_definitions(current_variable["variable"].var)
             if def_instructions:
@@ -206,40 +250,8 @@ class FunctionTracer:
                 vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
                     #log_info(str(operand))
                     # Add vars to vars_mag
-            else:
-                #log_info(str(current_variable))
-                # TODO get vars read
-                init_instr = get_address_of_init(current_function,current_variable["variable"])
-                vars_read = get_vars_read(current_function,init_instr.instr_index)
-                for var_read in vars_read:
-                    if var_read.operation == HighLevelILOperation.HLIL_VAR:
-                        # Ensure that there are no duplicates and that we are moving up in the function trace
-                        if var_read.var != current_variable["variable"].var and var_read.instr_index < current_variable["current_call_index"]:
-                            vars_mag.append({
-                                "variable":def_var,
-                                "call_basic_block_start": current_variable["call_basic_block_start"],
-                                "function_calls": current_variable["function_calls"].copy(),
-                                "current_call_index": current_variable["current_call_index"],
-                                "same_branch": current_variable["same_branch"]
-                            })
-                stack_var_sources.append({
-                    "param": None,
-                    "function_calls": current_variable["function_calls"],
-                    "call_basic_block_start": current_variable["call_basic_block_start"],
-                    "source_basic_block_start": init_instr.il_basic_block.start,
-                    "same_branch": current_variable["same_branch"],
-                    "value": None,
-                    "def_instruction_address": init_instr.address, 
-                    "var_type": "stack_variable",
-                    "function_name":current_function.source_function.name,
-                    "exported": False,
-                    "var": current_variable["variable"].var,
-                    "function":current_function
-                })
-                pass
             if mag_size > len(vars_mag):
                 # found source
-                # TODO hope this works :D
                 function_passes = []
         sources.extend(param_sources)
         sources.extend(const_sources)
@@ -250,9 +262,6 @@ class FunctionTracer:
 
     def get_var_function_calls(self,variable,current_function):
         # This should get all function calls that the variable is part of, including places where it is assigned a return value!
-        # TODO add defitions and possible SSA vars to avoid missing stuff
-        # >> current_hlil.get_ssa_var_definition(var.ssa_form.var)
-        # <HLIL_VAR_INIT: int64_t rax_1 = _malloc(_strlen(arg2))>
         function_calls = []
         hlil_instructions = list(current_function.instructions)
         variable_appearances = current_function.get_var_uses(variable["variable"].var)
@@ -308,3 +317,4 @@ class FunctionTracer:
                                     "same_branch": current_var["same_branch"]
                                 })
         return xrefs_vars
+
