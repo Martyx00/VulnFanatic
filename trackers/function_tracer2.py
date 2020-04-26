@@ -3,7 +3,7 @@ from ..utils.utils import extract_hlil_operations, get_constants_read, get_vars_
 # TODO xrefs
 # TODO same branch - Should be done, just validate
 # TODO address_of vars read
-# MIPS seems like not working at all
+# TODO MIPS seems to be fucked up
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -95,7 +95,7 @@ class FunctionTracer:
             "function_calls": [],
             "current_call_index": variable.instr_index,
             "same_branch": True,
-            "var_defintion_max_index": -1
+            "call_boundary": variable.instr_index
         }]
 
         
@@ -130,7 +130,8 @@ class FunctionTracer:
                                     "call_basic_block_start": current_variable["call_basic_block_start"],
                                     "function_calls": current_variable["function_calls"].copy(),
                                     "current_call_index": current_variable["current_call_index"],
-                                    "same_branch": current_variable["same_branch"]
+                                    "same_branch": current_variable["same_branch"],
+                                    "call_boundary": var_read.instr_index # TODO
                                 })
                 else:
                     stack_var_sources.append({
@@ -168,7 +169,8 @@ class FunctionTracer:
                                         "call_basic_block_start": current_variable["call_basic_block_start"],
                                         "function_calls": current_variable["function_calls"].copy(),
                                         "current_call_index": current_variable["current_call_index"],
-                                        "same_branch": current_variable["same_branch"]
+                                        "same_branch": current_variable["same_branch"],
+                                        "call_boundary": def_var.instr_index # TODO
                                     })
                             elif ((def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR)) and def_var.parent.operation != HighLevelILOperation.HLIL_CALL:
                                 # Constants but not not function calls 
@@ -262,6 +264,7 @@ class FunctionTracer:
 
     def get_var_function_calls(self,variable,current_function):
         # This should get all function calls that the variable is part of, including places where it is assigned a return value!
+        log_info(str(variable))
         function_calls = []
         hlil_instructions = list(current_function.instructions)
         variable_appearances = current_function.get_var_uses(variable["variable"].var)
@@ -273,8 +276,8 @@ class FunctionTracer:
             line = hlil_instructions[use.instr_index]
             calls = extract_hlil_operations(current_function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=line)
             for call in calls:
-                if ((str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"])
-                    or (str(variable["variable"]) in str(use).split("=")[0] and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"])):
+                if ((str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"] and call.instr_index < variable["call_boundary"])
+                    or (str(variable["variable"]) in str(use).split("=")[0] and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"] and call.instr_index < variable["call_boundary"])):
                     same_branch = False
                     if call.il_basic_block.start == variable["call_basic_block_start"]:
                         same_branch = True
@@ -314,7 +317,8 @@ class FunctionTracer:
                                     "call_basic_block_start": var.il_basic_block.start, 
                                     "function_calls": current_var["function_calls"].copy(),
                                     "current_call_index": var.instr_index,
-                                    "same_branch": current_var["same_branch"]
+                                    "same_branch": current_var["same_branch"],
+                                    "call_boundary": var.instr_index # TODO
                                 })
         return xrefs_vars
 

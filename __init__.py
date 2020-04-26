@@ -5,10 +5,27 @@ from .trackers.function_tracer2 import FunctionTracer
 from .utils.utils import extract_hlil_operations
 import os 
 import sys
-
+import time
 
 def test(bv,selection_addr):
-	current_function = bv.get_functions_containing(selection_addr)[0]
+	# With this it takes roughly 0.5 second to trace one XREF
+	xrefs = []
+	xref_counter = 0
+	start_time = time.time()
+	for symbol in bv.symbols["strcpy"] if type(bv.symbols["strcpy"]) is list else [bv.symbols["strcpy"]]:
+		for ref in bv.get_code_refs(symbol.address):
+			hlil_instructions = list(ref.function.hlil.instructions)
+			for block in ref.function.hlil.basic_blocks:
+				if "strcpy" in str(hlil_instructions[block.start:block.end]):
+					for instruction in hlil_instructions[block.start:block.end]:
+						if "strcpy" in str(instruction) and instruction.address not in xrefs:
+							xrefs.append(instruction.address)
+							xref_calls = extract_hlil_operations(ref.function.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
+							xref_counter += 1
+	log_info("XREFS UNIQUE:"+ str(len(xrefs)))
+	log_info("XREFS COUNT:"+ str(xref_counter))
+	log_info(str(time.time() - start_time))
+	'''current_function = bv.get_functions_containing(selection_addr)[0]
 	function_calls_at_address = []
 	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
 	if len(function_calls_at_address) == 0:
@@ -20,7 +37,7 @@ def test(bv,selection_addr):
 		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
 		call_instruction = function_calls_at_address[choice]
 	fun_trace = FunctionTracer(bv)
-	fun_trace.selected_function_tracer(call_instruction,current_function)
+	fun_trace.selected_function_tracer(call_instruction,current_function)'''
 
 def highlight(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]

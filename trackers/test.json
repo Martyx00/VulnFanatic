@@ -1,6 +1,6 @@
 {
-    "function": <func: x86_64@0x100000ac0>,
-    "call_address": "0x100000b3b",
+    "function": <func: x86_64@0x100000aa0>,
+    "call_address": "0x100000b1b",
     "sources": [
         {
             "param": 0,
@@ -8,7 +8,7 @@
                 {
                     "instruction": <HLIL_CALL: ___strcpy_chk(&var_78, var_90,
                     0x64)>,
-                    "call_address": 4294970146,
+                    "call_address": 4294970114,
                     "call_index": 6,
                     "at_function": "_printit_format_var",
                     "function_name": "___strcpy_chk",
@@ -17,7 +17,7 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(arg2)>,
-                    "call_address": 4294970085,
+                    "call_address": 4294970053,
                     "call_index": 2,
                     "at_function": "_printit_format_var",
                     "function_name": "_strlen",
@@ -34,7 +34,7 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x226302b50>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221d27730>
         },
         {
             "param": 0,
@@ -42,7 +42,7 @@
                 {
                     "instruction": <HLIL_CALL: ___strcpy_chk(&var_78, var_90,
                     0x64)>,
-                    "call_address": 4294970146,
+                    "call_address": 4294970114,
                     "call_index": 6,
                     "at_function": "_printit_format_var",
                     "function_name": "___strcpy_chk",
@@ -51,7 +51,7 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(arg2)>,
-                    "call_address": 4294970085,
+                    "call_address": 4294970053,
                     "call_index": 2,
                     "at_function": "_printit_format_var",
                     "function_name": "_strlen",
@@ -68,7 +68,7 @@
             "function_name": "_printit_proxy",
             "exported": True,
             "var": <var void* arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x226111c10>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221ef7280>
         },
         {
             "param": 0,
@@ -76,7 +76,7 @@
                 {
                     "instruction": <HLIL_CALL: ___strcpy_chk(&var_78, var_90,
                     0x64)>,
-                    "call_address": 4294970146,
+                    "call_address": 4294970114,
                     "call_index": 6,
                     "at_function": "_printit_format_var",
                     "function_name": "___strcpy_chk",
@@ -85,7 +85,7 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(arg2)>,
-                    "call_address": 4294970085,
+                    "call_address": 4294970053,
                     "call_index": 2,
                     "at_function": "_printit_format_var",
                     "function_name": "_strlen",
@@ -94,7 +94,7 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _test_strcpy(rsi_1)>,
-                    "call_address": 4294970967,
+                    "call_address": 4294970983,
                     "call_index": 5,
                     "at_function": "_main",
                     "function_name": "_test_strcpy",
@@ -103,19 +103,10 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(rsi_1, _printir_const)>,
-                    "call_address": 4294970948,
+                    "call_address": 4294970964,
                     "call_index": 4,
                     "at_function": "_main",
                     "function_name": "_strlen",
-                    "same_branch": False,
-                    "function_call_basic_block_start": 0
-                },
-                {
-                    "instruction": <HLIL_CALL: _atoi(*(arg2 + 0x18), arg2)>,
-                    "call_address": 4294970902,
-                    "call_index": 2,
-                    "at_function": "_main",
-                    "function_name": "_atoi",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
                 }
@@ -129,7 +120,7 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x226111eb0>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221ef7c40>
         },
         {
             "param": 0,
@@ -137,7 +128,7 @@
                 {
                     "instruction": <HLIL_CALL: ___strcpy_chk(&var_78, var_90,
                     0x64)>,
-                    "call_address": 4294970146,
+                    "call_address": 4294970114,
                     "call_index": 6,
                     "at_function": "_printit_format_var",
                     "function_name": "___strcpy_chk",
@@ -146,7 +137,7 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(arg2)>,
-                    "call_address": 4294970085,
+                    "call_address": 4294970053,
                     "call_index": 2,
                     "at_function": "_printit_format_var",
                     "function_name": "_strlen",
@@ -155,21 +146,12 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _printir_const(rsi_3)>,
-                    "call_address": 4294970980,
+                    "call_address": 4294970996,
                     "call_index": 6,
                     "at_function": "_main",
                     "function_name": "_printir_const",
                     "same_branch": False,
                     "function_call_basic_block_start": 6
-                },
-                {
-                    "instruction": <HLIL_CALL: _atoi(*(arg2 + 0x18), arg2)>,
-                    "call_address": 4294970902,
-                    "call_index": 2,
-                    "at_function": "_main",
-                    "function_name": "_atoi",
-                    "same_branch": False,
-                    "function_call_basic_block_start": 0
                 }
             ],
             "call_basic_block_start": 6,
@@ -181,7 +163,7 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2260e15b0>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221ef71c0>
         },
         {
             "param": 0,
@@ -189,7 +171,7 @@
                 {
                     "instruction": <HLIL_CALL: ___strcpy_chk(&var_78, var_90,
                     0x64)>,
-                    "call_address": 4294970146,
+                    "call_address": 4294970114,
                     "call_index": 6,
                     "at_function": "_printit_format_var",
                     "function_name": "___strcpy_chk",
@@ -200,13 +182,13 @@
             "call_basic_block_start": 12,
             "source_basic_block_start": 4,
             "same_branch": False,
-            "value": "0x100000f6f",
-            "def_instruction_address": 4294970107,
+            "value": "0x100000f7f",
+            "def_instruction_address": 4294970075,
             "var_type": "constant_ptr",
             "function_name": "_printit_format_var",
             "exported": False,
             "var": <var void* const var_90>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x226302b50>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221d27730>
         },
         {
             "param": 1,
@@ -220,14 +202,14 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var int64_t arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x226302b50>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221d27730>
         },
         {
             "param": 1,
             "function_calls": [
                 {
                     "instruction": <HLIL_CALL: _test_strcpy(rsi_1)>,
-                    "call_address": 4294970967,
+                    "call_address": 4294970983,
                     "call_index": 5,
                     "at_function": "_main",
                     "function_name": "_test_strcpy",
@@ -236,8 +218,8 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _printit_proxy(rsi_1,
-                    0x100000fa7)>,
-                    "call_address": 4294970990,
+                    0x100000fa8)>,
+                    "call_address": 4294971006,
                     "call_index": 7,
                     "at_function": "_main",
                     "function_name": "_printit_proxy",
@@ -246,19 +228,10 @@
                 },
                 {
                     "instruction": <HLIL_CALL: _strlen(rsi_1, _printir_const)>,
-                    "call_address": 4294970948,
+                    "call_address": 4294970964,
                     "call_index": 4,
                     "at_function": "_main",
                     "function_name": "_strlen",
-                    "same_branch": False,
-                    "function_call_basic_block_start": 0
-                },
-                {
-                    "instruction": <HLIL_CALL: _atoi(*(arg2 + 0x18), arg2)>,
-                    "call_address": 4294970902,
-                    "call_index": 2,
-                    "at_function": "_main",
-                    "function_name": "_atoi",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
                 }
@@ -272,14 +245,14 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2260fd220>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221bb53a0>
         },
         {
             "param": 1,
             "function_calls": [
                 {
                     "instruction": <HLIL_CALL: _gets(&var_78)>,
-                    "call_address": 4294970298,
+                    "call_address": 4294970266,
                     "call_index": 8,
                     "at_function": "_printit_proxy",
                     "function_name": "_gets",
@@ -291,12 +264,12 @@
             "source_basic_block_start": 0,
             "same_branch": True,
             "value": None,
-            "def_instruction_address": 4294970298,
+            "def_instruction_address": 4294970266,
             "var_type": "stack_variable",
             "function_name": "_printit_proxy",
             "exported": False,
             "var": <var void var_78>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x2260fd370>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x221bb3640>
         }
     ]
 }
