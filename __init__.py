@@ -2,28 +2,16 @@ from binaryninja import *
 from .scanner.scanner import Scanner
 from .highlighter.highlighter import Highlighter
 from .trackers.function_tracer2 import FunctionTracer
-from .utils.utils import extract_hlil_operations
+from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
 import sys
 import time
 
 def test(bv,selection_addr):
 	# With this it takes roughly 0.5 second to trace one XREF
-	xrefs = []
-	xref_counter = 0
 	start_time = time.time()
-	for symbol in bv.symbols["strcpy"] if type(bv.symbols["strcpy"]) is list else [bv.symbols["strcpy"]]:
-		for ref in bv.get_code_refs(symbol.address):
-			hlil_instructions = list(ref.function.hlil.instructions)
-			for block in ref.function.hlil.basic_blocks:
-				if "strcpy" in str(hlil_instructions[block.start:block.end]):
-					for instruction in hlil_instructions[block.start:block.end]:
-						if "strcpy" in str(instruction) and instruction.address not in xrefs:
-							xrefs.append(instruction.address)
-							xref_calls = extract_hlil_operations(ref.function.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
-							xref_counter += 1
+	xrefs = get_xrefs_of_symbol(bv,"strcpy")
 	log_info("XREFS UNIQUE:"+ str(len(xrefs)))
-	log_info("XREFS COUNT:"+ str(xref_counter))
 	log_info(str(time.time() - start_time))
 	'''current_function = bv.get_functions_containing(selection_addr)[0]
 	function_calls_at_address = []
