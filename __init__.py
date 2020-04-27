@@ -1,5 +1,6 @@
 from binaryninja import *
 from .scanner.scanner import Scanner
+from .scanner.scanner2 import Scanner2
 from .highlighter.highlighter import Highlighter
 from .trackers.function_tracer2 import FunctionTracer
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
@@ -7,10 +8,29 @@ import os
 import sys
 import time
 
+
+def scan2(bv,selection_addr):
+	# Add tags
+	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
+		bv.create_tag_type("[VulnFanatic] High","🔴")
+		bv.create_tag_type("[VulnFanatic] Medium","🟠")
+		bv.create_tag_type("[VulnFanatic] Low","🟡")
+		bv.create_tag_type("[VulnFanatic] Info","🔵")
+	rules_path = os.path.dirname(os.path.realpath(__file__)) + "/scanner/rules.json"
+	if rules_path:
+		scanner = Scanner2(rules_path,bv)
+		scanner.start()
+
+def highlight2(bv,selection_addr):
+	pass
+
+def clear_highlight2(bv,selection_addr):
+	pass
+
 def test(bv,selection_addr):
 	# With this it takes roughly 0.5 second to trace one XREF
 	start_time = time.time()
-	xrefs = get_xrefs_of_symbol(bv,"strcpy")
+	xrefs = get_xrefs_of_symbol(bv,"_memcpy")
 	log_info("XREFS UNIQUE:"+ str(len(xrefs)))
 	log_info(str(time.time() - start_time))
 	'''current_function = bv.get_functions_containing(selection_addr)[0]
@@ -70,6 +90,9 @@ def scan(bv,selection_addr):
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight)
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan)
+PluginCommand.register_for_address("[VulnFanatic] Start Scan 2", "Start Scan2", scan2)
+PluginCommand.register_for_address("[VulnFanatic] Highlight parameters2", "Highlights parameters with color highlights", highlight2)
+PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters2", "Removes highlights of parameters", clear_highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Test", "Test", test)
 
 

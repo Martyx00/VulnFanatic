@@ -76,7 +76,7 @@ class FunctionTracer:
                             "same_branch": True,
                             "function_call_basic_block_start": call.il_basic_block.start 
                         })
-        log_info(str(function_trace_struct))
+        #log_info(str(function_trace_struct))
         return function_trace_struct
 
     def trace_var(self,variable,call_basic_block_start):
@@ -199,7 +199,7 @@ class FunctionTracer:
                                     "function":current_function
                                 })
                             elif def_var.parent.operation == HighLevelILOperation.HLIL_CALL:
-                                log_info(str(def_var.parent.operation))
+                                #log_info(str(def_var.parent.operation))
                                 #log_info(str(current_variable))
                                 # Only function calls without parameters
                                 stack_var_sources.append({
@@ -264,7 +264,7 @@ class FunctionTracer:
 
     def get_var_function_calls(self,variable,current_function):
         # This should get all function calls that the variable is part of, including places where it is assigned a return value!
-        log_info(str(variable))
+        #log_info(str(variable))
         function_calls = []
         hlil_instructions = list(current_function.instructions)
         variable_appearances = current_function.get_var_uses(variable["variable"].var)
