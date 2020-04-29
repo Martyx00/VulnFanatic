@@ -87,9 +87,13 @@ def extract_hlil_operations(current_hlil,operations,instruction_address=-1,instr
 
 def get_ssa_vars_read(current_hlil,current_hlil_ssa_instructions,instruction_index):
     vars_read = []
-    for operand in current_hlil_ssa_instructions[instruction_index].src if type(current_hlil_ssa_instructions[instruction_index].src) is list else [current_hlil_ssa_instructions[instruction_index].src]:
-        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
-            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR_SSA],specific_instruction=operand))
+    try:
+        source = current_hlil_ssa_instructions[instruction_index].src
+        for operand in source if type(source) is list else [source]:
+            if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+                vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR_SSA],specific_instruction=operand))
+    except:
+        pass
     return vars_read
 
 def get_vars_read(current_hlil,current_hlil_instructions,instruction_index):
@@ -109,9 +113,13 @@ def get_hlil_ssa_phi_sources(current_hlil,phi_instruction):
 
 def get_constants_read_ssa(current_hlil,current_hlil_ssa_instructions,instruction_index):
     vars_read = []
-    for operand in current_hlil_ssa_instructions[instruction_index].src if type(current_hlil_ssa_instructions[instruction_index].src) is list else [current_hlil_ssa_instructions[instruction_index].src]:
-        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
-            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
+    try:
+        source = current_hlil_ssa_instructions[instruction_index].src
+        for operand in source if type(source) is list else [source]:
+            if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+                vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
+    except:
+        pass
     return vars_read
 
 def get_constants_read(current_hlil,current_hlil_instructions,instruction_index):

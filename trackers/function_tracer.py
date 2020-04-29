@@ -26,7 +26,7 @@ class FunctionTracer:
         #clicked_function_name = self.bv.get_function_at(function.get_low_level_il_at(call_addr).mlil.ssa_form.dest.operands[0]).name
         #master_object[clicked_function_name + "@" + function.name] = self.trace_function_call(function,call_addr)
         master_object = self.trace_function_call(function,call_addr)
-        #log_info(str(master_object))
+        #log_info(str(master_object["sources"]))
         return master_object
         
     def trace_function_call(self,current_function,call_addr):
