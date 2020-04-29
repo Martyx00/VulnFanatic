@@ -2,6 +2,7 @@ from binaryninja import *
 from .scanner.scanner import Scanner
 from .scanner.scanner2 import Scanner2
 from .highlighter.highlighter import Highlighter
+from .highlighter.highlighter2 import Highlighter2
 from .trackers.function_tracer2 import FunctionTracer
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
@@ -22,18 +23,29 @@ def scan2(bv,selection_addr):
 		scanner.start()
 
 def highlight2(bv,selection_addr):
-	pass
+	start_time = time.time()	
+	current_function = bv.get_functions_containing(selection_addr)[0]
+	function_calls_at_address = []
+	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
+	if len(function_calls_at_address) == 0:
+		show_message_box("Highlighter Error", "Highlighted instruction is not a function call!", buttons=0, icon=2)
+		return
+	elif len(function_calls_at_address) == 1:
+		call_instruction = function_calls_at_address[0]
+	else:
+		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
+		call_instruction = function_calls_at_address[choice]
+	high = Highlighter2(bv,call_instruction,current_function)
+	high.start()
+	log_info("WHOLE JOB TIME: " + str(time.time() - start_time))
 
 def clear_highlight2(bv,selection_addr):
 	pass
 
 def test(bv,selection_addr):
 	# With this it takes roughly 0.5 second to trace one XREF
-	start_time = time.time()
-	xrefs = get_xrefs_of_symbol(bv,"_memcpy")
-	log_info("XREFS UNIQUE:"+ str(len(xrefs)))
-	log_info(str(time.time() - start_time))
-	'''current_function = bv.get_functions_containing(selection_addr)[0]
+	start_time = time.time()	
+	current_function = bv.get_functions_containing(selection_addr)[0]
 	function_calls_at_address = []
 	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
 	if len(function_calls_at_address) == 0:
@@ -45,7 +57,8 @@ def test(bv,selection_addr):
 		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
 		call_instruction = function_calls_at_address[choice]
 	fun_trace = FunctionTracer(bv)
-	fun_trace.selected_function_tracer(call_instruction,current_function)'''
+	fun_trace.selected_function_tracer(call_instruction,current_function)
+	log_info(str(time.time() - start_time))
 
 def highlight(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]

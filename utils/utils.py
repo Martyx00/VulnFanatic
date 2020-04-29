@@ -85,24 +85,45 @@ def extract_hlil_operations(current_hlil,operations,instruction_address=-1,instr
     return extracted_operations
 
 
-def get_vars_read(current_hlil,instruction_index):
+def get_ssa_vars_read(current_hlil,current_hlil_ssa_instructions,instruction_index):
     vars_read = []
-    for operand in list(current_hlil.instructions)[instruction_index].operands[1:]:
+    for operand in current_hlil_ssa_instructions[instruction_index].src if type(current_hlil_ssa_instructions[instruction_index].src) is list else [current_hlil_ssa_instructions[instruction_index].src]:
+        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR_SSA],specific_instruction=operand))
+    return vars_read
+
+def get_vars_read(current_hlil,current_hlil_instructions,instruction_index):
+    # Problems with vars that are ADDRESS_OF
+    vars_read = []
+    for operand in current_hlil_instructions[instruction_index].src.operands:
         if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
             vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=operand))
     return vars_read
 
-def get_constants_read(current_hlil,instruction_index):
+def get_hlil_ssa_phi_sources(current_hlil,phi_instruction):
+    phi_sources = []
+    for var in phi_instruction.src if type(phi_instruction.src) is list else [phi_instruction.src]:
+        phi_sources.append(current_hlil.ssa_form.get_ssa_var_definition(var))
+    return phi_sources
+
+
+def get_constants_read_ssa(current_hlil,current_hlil_ssa_instructions,instruction_index):
     vars_read = []
-    for operand in list(current_hlil.instructions)[instruction_index].operands[1:]:
+    for operand in current_hlil_ssa_instructions[instruction_index].src if type(current_hlil_ssa_instructions[instruction_index].src) is list else [current_hlil_ssa_instructions[instruction_index].src]:
         if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
             vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
     return vars_read
 
-def get_address_of_uses(current_hlil,addr_of_object):
+def get_constants_read(current_hlil,current_hlil_instructions,instruction_index):
+    vars_read = []
+    for operand in current_hlil_instructions[instruction_index].src if type(current_hlil_instructions[instruction_index].src) is list else [current_hlil_instructions[instruction_index].src]:
+        if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
+            vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
+    return vars_read
+
+def get_address_of_uses(current_hlil,current_hlil_instructions,addr_of_object):
     uses = []
     # Might require to return HLIL_VAR
-    current_hlil_instructions = list(current_hlil.instructions)
     for index in range(addr_of_object.instr_index-1,0,-1):
         if str(addr_of_object) in str(current_hlil_instructions[index]):
             use = extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_ADDRESS_OF],specific_instruction=current_hlil_instructions[index])
@@ -116,8 +137,7 @@ def get_address_of_uses(current_hlil,addr_of_object):
     return uses
 
 # Returns single instruction which is either INIT or DECLARE
-def get_address_of_init(current_hlil,addr_of_object):
-    current_hlil_instructions = list(current_hlil.instructions)
+def get_address_of_init(current_hlil,current_hlil_instructions,addr_of_object):
     for index in range(addr_of_object.instr_index-1,0,-1):
         # Return when we reach declaration
         if str(addr_of_object) in str(current_hlil_instructions[index]) and (current_hlil_instructions[index].operation == HighLevelILOperation.HLIL_VAR_INIT or current_hlil_instructions[index].operation == HighLevelILOperation.HLIL_VAR_DECLARE):
