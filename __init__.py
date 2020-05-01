@@ -23,7 +23,6 @@ def scan2(bv,selection_addr):
 		scanner.start()
 
 def highlight2(bv,selection_addr):
-	start_time = time.time()	
 	current_function = bv.get_functions_containing(selection_addr)[0]
 	function_calls_at_address = []
 	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
@@ -37,7 +36,7 @@ def highlight2(bv,selection_addr):
 		call_instruction = function_calls_at_address[choice]
 	high = Highlighter2(bv,call_instruction,current_function)
 	high.start()
-	log_info("WHOLE JOB TIME: " + str(time.time() - start_time))
+	
 
 def clear_highlight2(bv,selection_addr):
 	pass

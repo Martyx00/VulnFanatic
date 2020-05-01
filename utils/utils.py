@@ -2,9 +2,10 @@ from binaryninja import *
 
 def extract_hlil_operations(current_hlil,operations,instruction_address=-1,instruction_index=-1,specific_instruction=None):
     extracted_operations = []
-    hlil_instructions = list(current_hlil.instructions)
+    
     # Instruction index was specified, not need to stress just go through all levels of HLIL objects
     if instruction_index != -1:
+        hlil_instructions = list(current_hlil.instructions)
         # If the instruction itself is what we are looking for
         if hlil_instructions[instruction_index].operation in operations:
                 extracted_operations.append(hlil_instructions[instruction_index])
@@ -22,6 +23,7 @@ def extract_hlil_operations(current_hlil,operations,instruction_address=-1,instr
                 for o in op:
                     operands_mag.append(o)
     elif instruction_address != -1:
+        hlil_instructions = list(current_hlil.instructions)
         # Looking for address
         # Build list with all addresses in function
         address_list = []
