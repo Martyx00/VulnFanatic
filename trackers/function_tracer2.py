@@ -81,8 +81,8 @@ class FunctionTracer:
                             "same_branch": True,
                             "function_call_basic_block_start": call.il_basic_block.start 
                         })
-        log_info(str(function_trace_struct))
-        log_info("WHOLE JOB TIME: " + str(time.time() - start_time))
+        #log_info(str(function_trace_struct))
+        #log_info("WHOLE JOB TIME: " + str(time.time() - start_time))
         return function_trace_struct
 
     def trace_var(self,variable,call_basic_block_start):
@@ -98,7 +98,7 @@ class FunctionTracer:
         start_time = time.time()
         current_hlil_instructions = list(variable.function.instructions)
         current_hlil_ssa_instructions = list(variable.function.ssa_form.instructions)
-        log_info(f"GETTING LISTS TOOK: {time.time() - start_time}")
+        #log_info(f"GETTING LISTS TOOK: {time.time() - start_time}")
         vars_mag = [{
             "variable":variable,
             "call_basic_block_start": call_basic_block_start, #This will be changed to XREFs wherever we will change function neccessary
@@ -118,16 +118,16 @@ class FunctionTracer:
             current_function = current_variable["variable"].function
             if current_function.source_function.name != previous_function.source_function.name:
                 previous_function = current_function
-                start_time = time.time()
+                #start_time = time.time()
                 current_hlil_instructions = list(current_function.instructions)
                 current_hlil_ssa_instructions = list(current_function.ssa_form.instructions)
-                log_info(f"GETTING LISTS TOOK: {time.time() - start_time}")
+                #log_info(f"GETTING LISTS TOOK: {time.time() - start_time}")
 
             # Add to function call stack
             # TODO maybe used only for debugging
             #log_info("Tracing VAR: " + str(variable) + " ... " + str(current_variable["variable"]) + " type: " + str(type(current_variable["variable"])))
             #if str(current_variable["variable"]) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name in current_variable["function_passes"]:
-            if str(current_variable["variable"]) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name in function_passes:
+            if str(current_variable["variable"]) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name in function_passes or time.time() - start_time > 600:
                 #log_info("PASSED WITH:")
                 #log_info(str(current_variable["variable"]) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name)
                 continue
@@ -138,9 +138,9 @@ class FunctionTracer:
                 current_variable["same_branch"] = False
             
             # Get uses like fun calls etc...
-            start_time = time.time()
+            #start_time = time.time()
             current_variable["function_calls"] = current_variable["function_calls"] + [x for x in self.get_var_function_calls(current_variable,current_function,current_hlil_instructions,current_hlil_ssa_instructions) if x not in current_variable["function_calls"]]
-            log_info(f"FUNCTION CALLS TOOK: {time.time() - start_time}")
+            #log_info(f"FUNCTION CALLS TOOK: {time.time() - start_time}")
             # Stack var
             if current_variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
                 init_instr = get_address_of_init(current_function,current_hlil_instructions,current_variable["variable"])
@@ -177,128 +177,128 @@ class FunctionTracer:
                             "function":current_function
                         })
                 continue
-            
+            def_instructions = []
             # get def instruction
-            if current_variable["variable"].operation == HighLevelILOperation.HLIL_VAR:
-                log_info(str([current_variable["variable"].ssa_form.var]))
-                def_instruction = current_function.ssa_form.get_ssa_var_definition(current_variable["variable"].ssa_form.var)
+            if type(current_variable["variable"].ssa_form.var) == binaryninja.mediumlevelil.SSAVariable:
+                #log_info(str([current_variable["variable"].ssa_form.var]))
+                def_instructions.append(current_function.ssa_form.get_ssa_var_definition(current_variable["variable"].ssa_form.var))
             else:
-                log_info(str([current_variable["variable"]]))
-                def_instruction = current_function.ssa_form.get_ssa_var_definition(current_variable["variable"].var)
-            if def_instruction:
-                #for def_instruction in def_instructions:
-                # Get all varaibles and constants at definition
-                #if str(current_variable["variable"]) in str(def_instruction):
-                def_instruction_variables = []
-                if def_instruction.operation == HighLevelILOperation.HLIL_VAR_PHI:
-                    phis = get_hlil_ssa_phi_sources(current_function,def_instruction)
-                    for phi in phis:
-                        if phi != None:
-                            ssa_vars = get_ssa_vars_read(current_function,current_hlil_ssa_instructions,phi.ssa_form.instr_index)
-                            for ssa_var in ssa_vars:
-                                def_instruction_variables.append(ssa_var.non_ssa_form)
-                            def_instruction_variables.extend(get_constants_read_ssa(current_function,current_hlil_ssa_instructions,phi.instr_index))
-                    # HLIL var PHI
-                elif def_instruction.operation != HighLevelILOperation.HLIL_VAR_DECLARE:
-                    # TODO fix exception AttributeError: 'HighLevelILInstruction' object has no attribute 'src'
-                    def_instruction_variables = get_ssa_vars_read(current_function,current_hlil_ssa_instructions,def_instruction.instr_index)
-                if len(def_instruction_variables) == 0 and def_instruction.operation != HighLevelILOperation.HLIL_VAR_DECLARE:
-                    def_instruction_variables = get_constants_read_ssa(current_function,current_hlil_ssa_instructions,def_instruction.instr_index)
-                # Remove current variable
-                for def_var in def_instruction_variables:
-                    if def_var.operation == HighLevelILOperation.HLIL_VAR_SSA or def_var.operation == HighLevelILOperation.HLIL_VAR:
-                        # Ensure that there are no duplicates and that we are moving up in the function trace
-                        if def_var.var != current_variable["variable"].var and def_var.instr_index < current_variable["current_call_index"]:
-                            vars_mag.append({
-                                "variable":def_var.non_ssa_form,
+                #log_info(str([current_variable["variable"]]))
+                def_instructions.extend(current_function.ssa_form.get_var_definitions(current_variable["variable"].var))
+            
+            for def_instruction in def_instructions:
+                if def_instruction:
+                    #for def_instruction in def_instructions:
+                    # Get all varaibles and constants at definition
+                    #if str(current_variable["variable"]) in str(def_instruction):
+                    def_instruction_variables = []
+                    if def_instruction.operation == HighLevelILOperation.HLIL_VAR_PHI:
+                        phis = get_hlil_ssa_phi_sources(current_function,def_instruction)
+                        for phi in phis:
+                            if phi != None:
+                                ssa_vars = get_ssa_vars_read(current_function,current_hlil_ssa_instructions,phi.ssa_form.instr_index)
+                                for ssa_var in ssa_vars:
+                                    def_instruction_variables.append(ssa_var.non_ssa_form)
+                                def_instruction_variables.extend(get_constants_read_ssa(current_function,current_hlil_ssa_instructions,phi.instr_index))
+                    elif def_instruction.operation != HighLevelILOperation.HLIL_VAR_DECLARE:
+                        def_instruction_variables = get_ssa_vars_read(current_function,current_hlil_ssa_instructions,def_instruction.instr_index)
+                    if len(def_instruction_variables) == 0 and def_instruction.operation != HighLevelILOperation.HLIL_VAR_DECLARE:
+                        def_instruction_variables = get_constants_read_ssa(current_function,current_hlil_ssa_instructions,def_instruction.instr_index)
+                    # Remove current variable
+                    for def_var in def_instruction_variables:
+                        if def_var.operation == HighLevelILOperation.HLIL_VAR_SSA or def_var.operation == HighLevelILOperation.HLIL_VAR:
+                            # Ensure that there are no duplicates and that we are moving up in the function trace
+                            if def_var.var != current_variable["variable"].var and def_var.instr_index < current_variable["current_call_index"]:
+                                vars_mag.append({
+                                    "variable":def_var.non_ssa_form,
+                                    "call_basic_block_start": current_variable["call_basic_block_start"],
+                                    "function_calls": current_variable["function_calls"].copy(),
+                                    "current_call_index": current_variable["current_call_index"],
+                                    "same_branch": current_variable["same_branch"],
+                                    "call_boundary": def_var.instr_index,
+                                    "function_passes": current_variable["function_passes"].copy()
+                                })
+                        elif ((def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR)) and (def_var.parent.operation != HighLevelILOperation.HLIL_CALL and def_var.parent.operation != HighLevelILOperation.HLIL_CALL_SSA):
+                            # Constants but not not function calls 
+                            value = hex(def_var.constant)
+                            const_type = "constant"
+                            # Const ptr
+                            if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                const_type = "constant_ptr"
+                                try:
+                                    value = self.current_view.get_string_at(def_var.constant).value
+                                except:
+                                    value = hex(def_var.constant)
+                            
+                            const_sources.append({
+                                "param": None,
+                                "function_calls": current_variable["function_calls"],
                                 "call_basic_block_start": current_variable["call_basic_block_start"],
-                                "function_calls": current_variable["function_calls"].copy(),
-                                "current_call_index": current_variable["current_call_index"],
-                                "same_branch": current_variable["same_branch"],
-                                "call_boundary": def_var.instr_index,
-                                "function_passes": current_variable["function_passes"].copy()
+                                "source_basic_block_start": def_instruction.il_basic_block.start,
+                                "same_branch": def_instruction.il_basic_block.start == current_variable["call_basic_block_start"],
+                                "value": value,
+                                "def_instruction_address": def_instruction.address,
+                                "var_type": const_type,
+                                "function_name":current_function.source_function.name,
+                                "exported": False,
+                                "var": current_variable["variable"].var,
+                                "function":current_function
                             })
-                    elif ((def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR)) and (def_var.parent.operation != HighLevelILOperation.HLIL_CALL and def_var.parent.operation != HighLevelILOperation.HLIL_CALL_SSA):
-                        # Constants but not not function calls 
-                        value = hex(def_var.constant)
-                        const_type = "constant"
-                        # Const ptr
-                        if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                            const_type = "constant_ptr"
-                            try:
-                                value = self.current_view.get_string_at(def_var.constant).value
-                            except:
-                                value = hex(def_var.constant)
-                        
-                        const_sources.append({
-                            "param": None,
-                            "function_calls": current_variable["function_calls"],
-                            "call_basic_block_start": current_variable["call_basic_block_start"],
-                            "source_basic_block_start": def_instruction.il_basic_block.start,
-                            "same_branch": def_instruction.il_basic_block.start == current_variable["call_basic_block_start"],
-                            "value": value,
-                            "def_instruction_address": def_instruction.address,
-                            "var_type": const_type,
-                            "function_name":current_function.source_function.name,
-                            "exported": False,
-                            "var": current_variable["variable"].var,
-                            "function":current_function
-                        })
-                    elif def_var.parent.operation == HighLevelILOperation.HLIL_CALL or def_var.parent.operation == HighLevelILOperation.HLIL_CALL_SSA:
-                        #log_info(str(def_var.parent.operation))
-                        #log_info(str(current_variable))
-                        # Only function calls without parameters
-                        stack_var_sources.append({
-                            "param": None,
-                            "function_calls": current_variable["function_calls"],
-                            "call_basic_block_start": current_variable["call_basic_block_start"],
-                            "source_basic_block_start": def_var.il_basic_block.start,
-                            "same_branch": current_variable["same_branch"],
-                            "value": None,
-                            "def_instruction_address": def_var.address, 
-                            "var_type": "stack_variable",
-                            "function_name":current_function.source_function.name,
-                            "exported": False,
-                            "var": current_variable["variable"].var,
-                            "function":current_function
-                        })
+                        elif def_var.parent.operation == HighLevelILOperation.HLIL_CALL or def_var.parent.operation == HighLevelILOperation.HLIL_CALL_SSA:
+                            #log_info(str(def_var.parent.operation))
+                            #log_info(str(current_variable))
+                            # Only function calls without parameters
+                            stack_var_sources.append({
+                                "param": None,
+                                "function_calls": current_variable["function_calls"],
+                                "call_basic_block_start": current_variable["call_basic_block_start"],
+                                "source_basic_block_start": def_var.il_basic_block.start,
+                                "same_branch": current_variable["same_branch"],
+                                "value": None,
+                                "def_instruction_address": def_var.address, 
+                                "var_type": "stack_variable",
+                                "function_name":current_function.source_function.name,
+                                "exported": False,
+                                "var": current_variable["variable"].var,
+                                "function":current_function
+                            })
 
-            # Parameter          
-            else:
-                if type(current_variable["variable"]) == binaryninja.Variable:
-                    var = current_variable["variable"]
-                elif current_variable["variable"].operation == HighLevelILOperation.HLIL_VAR:
-                    var = current_variable["variable"].var
+                # Parameter          
                 else:
-                    var = current_variable["variable"].var.varc
-                if var in current_function.source_function.parameter_vars:
-                    # First check if function is exported
-                    exported = False
-                    for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
-                        if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_function.source_function.name:
-                            # Exported function
-                            exported = True
-                    param_index = list(current_function.source_function.parameter_vars).index(var)
-                    # If exported add source
-                    if exported:
-                        param_sources.append({
-                            "param": None,
-                            "function_calls": current_variable["function_calls"],
-                            "call_basic_block_start": current_variable["call_basic_block_start"],
-                            "source_basic_block_start": current_function.root,
-                            "same_branch": current_variable["same_branch"],
-                            "value": None,
-                            "def_instruction_address": None,
-                            "var_type": "parameter:"+str(param_index),
-                            "function_name":current_function.source_function.name,
-                            "exported": exported,
-                            "var": var,
-                            "function":current_function
-                        })
-                    
-                    vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
-                    #log_info(str(operand))
-                    # Add vars to vars_mag
+                    if type(current_variable["variable"]) == binaryninja.Variable:
+                        var = current_variable["variable"]
+                    elif current_variable["variable"].operation == HighLevelILOperation.HLIL_VAR:
+                        var = current_variable["variable"].var
+                    else:
+                        var = current_variable["variable"].var.varc
+                    if var in current_function.source_function.parameter_vars:
+                        # First check if function is exported
+                        exported = False
+                        for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
+                            if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_function.source_function.name:
+                                # Exported function
+                                exported = True
+                        param_index = list(current_function.source_function.parameter_vars).index(var)
+                        # If exported add source
+                        if exported:
+                            param_sources.append({
+                                "param": None,
+                                "function_calls": current_variable["function_calls"],
+                                "call_basic_block_start": current_variable["call_basic_block_start"],
+                                "source_basic_block_start": current_function.root,
+                                "same_branch": current_variable["same_branch"],
+                                "value": None,
+                                "def_instruction_address": None,
+                                "var_type": "parameter:"+str(param_index),
+                                "function_name":current_function.source_function.name,
+                                "exported": exported,
+                                "var": var,
+                                "function":current_function
+                            })
+                        
+                        vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
+                        #log_info(str(operand))
+                        # Add vars to vars_mag
 
             if mag_size > len(vars_mag):
                 # found source
@@ -320,11 +320,11 @@ class FunctionTracer:
         if variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
             start_time = time.time()
             variable_appearances.extend(get_address_of_uses(current_function,current_hlil_instructions,variable["variable"].parent))
-            log_info(f"ADDRESS OF TRACING TOOK: {time.time() - start_time}")
+            #log_info(f"ADDRESS OF TRACING TOOK: {time.time() - start_time}")
             #log_i nfo(str(variable_appearances))
         elif variable["variable"].operation == HighLevelILOperation.HLIL_VAR or variable["variable"].operation == HighLevelILOperation.HLIL_VAR_SSA:
             #log_info(str(variable))
-            log_info(str(variable["variable"]) +" " + str(current_function.source_function.name) +" line: " +  str(variable["variable"].instr_index))
+            #log_info(str(variable["variable"]) +" " + str(current_function.source_function.name) +" line: " +  str(variable["variable"].instr_index))
             if variable["variable"].ssa_form.operation != HighLevelILOperation.HLIL_VAR:
                 variable_appearances = current_function.get_ssa_var_uses(variable["variable"].ssa_form.var)
                 def_inst = current_function.get_ssa_var_definition(variable["variable"].ssa_form.var)
@@ -343,9 +343,9 @@ class FunctionTracer:
                 except:
                     dest = ""
                 line = current_hlil_instructions[use.instr_index]
-                start_time = time.time()
+                #start_time = time.time()
                 calls = extract_hlil_operations(current_function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=line)
-                log_info(f"GETTING CALL INSTRUCTIONS TOOK: {time.time() - start_time}")
+                #log_info(f"GETTING CALL INSTRUCTIONS TOOK: {time.time() - start_time}")
                 start_time = time.time()
                 for call in calls:
                     if ((str(variable["variable"]) in str(call) and not any(x["call_address"] == call.address for x in function_calls) and call.instr_index < variable["current_call_index"] and call.instr_index < variable["call_boundary"])
@@ -364,7 +364,7 @@ class FunctionTracer:
                                 "function_call_basic_block_start": call.il_basic_block.start 
                             }
                         )
-                log_info(f"GETTING CALL INSTRUCTIONS LOOP TOOK: {time.time() - start_time}")
+                #log_info(f"GETTING CALL INSTRUCTIONS LOOP TOOK: {time.time() - start_time}")
         return function_calls
 
     def get_xrefs_to(self,current_function,par_index,current_var):
