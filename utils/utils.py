@@ -119,7 +119,7 @@ def get_constants_read_ssa(current_hlil,current_hlil_ssa_instructions,instructio
         source = current_hlil_ssa_instructions[instruction_index].src
         for operand in source if type(source) is list else [source]:
             if type(operand) == binaryninja.highlevelil.HighLevelILInstruction:
-                vars_read.extend(extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
+                vars_read.extend(extract_hlil_operations(current_hlil.ssa_form,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST],specific_instruction=operand))
     except:
         pass
     return vars_read
@@ -155,7 +155,6 @@ def get_address_of_init(current_hlil,current_hlil_instructions,addr_of_object):
             return current_hlil_instructions[index]
 
 
-# TODO this is incorrect - sprintf is found when looking for printf!!!
 def get_xrefs_of_symbol(bv,symbol_name):
     xrefs = []
     xref_addr = []
@@ -197,6 +196,51 @@ def get_xrefs_of_symbol(bv,symbol_name):
                                     elif type(op) is list:
                                         for o in op:
                                             operands_mag.append(o)
+    except KeyError:
+        pass
+    return xrefs
+
+
+def get_xrefs_of_addr(bv,address,symbol_name):
+    xrefs = []
+    xref_addr = []
+    try:
+        for ref in bv.get_code_refs(address):
+            hlil_instructions = list(ref.function.hlil.instructions)
+            for block in ref.function.hlil.basic_blocks:
+                if symbol_name in str(hlil_instructions[block.start:block.end]):
+                    for instruction in hlil_instructions[block.start:block.end]:
+                        instr_string = str(instruction)
+                        try:
+                            str_op = str(instruction.dest)
+                        except:
+                            str_op = ""
+                        xref_count = instr_string.count(symbol_name)
+                        if symbol_name in instr_string:
+                            if symbol_name == str_op and instruction.operation in [HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL] and not instruction.address in xref_addr:
+                                xrefs.append(instruction)
+                                xref_addr.append(instruction.address)
+                                xref_count -= 1
+                            operands_mag = []
+                            operands_mag.extend(instruction.operands)
+                            while operands_mag:
+                                op = operands_mag.pop()
+                                try:
+                                    str_op = str(op.dest)
+                                except:
+                                    str_op = ""
+                                if symbol_name == str_op and type(op) == HighLevelILInstruction and op.operation in [HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL] and not op.address in xref_addr:
+                                    xrefs.append(op)
+                                    xref_addr.append(op.address)
+                                    operands_mag.extend(op.operands)
+                                    xref_count -= 1
+                                    if xref_count == 0:
+                                        break
+                                elif type(op) == HighLevelILInstruction:
+                                    operands_mag.extend(op.operands)
+                                elif type(op) is list:
+                                    for o in op:
+                                        operands_mag.append(o)
     except KeyError:
         pass
     return xrefs

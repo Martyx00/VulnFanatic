@@ -605,7 +605,7 @@
             ],
             "variants":[
                 {
-                    "confidence": "High",
+                    "confidence": "Medium",
                     "where":"_or_(sources.get().params_from(2).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
                 },
                 {
