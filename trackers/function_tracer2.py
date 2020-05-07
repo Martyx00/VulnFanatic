@@ -3,7 +3,6 @@ from ..utils.utils import extract_hlil_operations, get_constants_read, get_addre
 import time
 # TODO xrefs
 # TODO same branch - Should be done, just validate
-# TODO check that memcpy in in libnetwork for sources (if any of them are relevant) -> turn on tracking of unexported params
 # TODO xmlAutomataNewOnceTrans2 - memcpy -> strlen affecting param(2) and xmlStrndup
 # TODO sprintf should be medium only not high?
 
@@ -70,12 +69,14 @@ class FunctionTracer:
             for src in function_trace_struct["sources"]:
                 if src["param"] == None:
                     src["param"] = call_instruction.params.index(param)
+                    src["param_var"] = str(param.non_ssa_form)
                     for call in param_calls:
                         src["function_calls"].append({
                             "instruction": call,
                             "call_address": call.address,
                             "call_index": call.instr_index,
-                            "at_function": call.function.source_function.name,
+                            "at_function_name": call.function.source_function.name,
+                            "at_function": call.function.source_function,
                             "function_name": str(call.dest),
                             "same_branch": True,
                             "function_call_basic_block_start": call.il_basic_block.start 
@@ -340,7 +341,8 @@ class FunctionTracer:
                                 "instruction": call,
                                 "call_address": call.address,
                                 "call_index": call.instr_index,
-                                "at_function": current_function.source_function.name,
+                                "at_function_name": current_function.source_function.name,
+                                "at_function": current_function.source_function,
                                 "function_name": str(call.dest),
                                 "same_branch": same_branch and variable["same_branch"],
                                 "function_call_basic_block_start": call.il_basic_block.start 
