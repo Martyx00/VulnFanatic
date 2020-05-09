@@ -10,7 +10,8 @@
                     0x64) @ mem#1 -> mem#2>,
                     "call_address": 4294970114,
                     "call_index": 7,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "___strcpy_chk",
                     "same_branch": True,
                     "function_call_basic_block_start": 5
@@ -19,7 +20,8 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(arg2#0) @ mem#0 -> mem#1>,
                     "call_address": 4294970053,
                     "call_index": 2,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
@@ -34,7 +36,8 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118b40910>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a737910>,
+            "param_var": "var_90"
         },
         {
             "param": 0,
@@ -44,7 +47,8 @@
                     0x64) @ mem#1 -> mem#2>,
                     "call_address": 4294970114,
                     "call_index": 7,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "___strcpy_chk",
                     "same_branch": True,
                     "function_call_basic_block_start": 5
@@ -53,14 +57,15 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(arg2#0) @ mem#0 -> mem#1>,
                     "call_address": 4294970053,
                     "call_index": 2,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
                 }
             ],
             "call_basic_block_start": 0,
-            "source_basic_block_start": <HLIL_BLOCK: int64_t var_10 = *___stack_chk_guard...>,
+            "source_basic_block_start": <HLIL_BLOCK: int64_t var_10#1 = *___stack_chk_guard @ mem#0...>,
             "same_branch": False,
             "value": None,
             "def_instruction_address": None,
@@ -68,7 +73,8 @@
             "function_name": "_printit_proxy",
             "exported": True,
             "var": <var void* arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118b5a6d0>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a76c9d0>,
+            "param_var": "var_90"
         },
         {
             "param": 0,
@@ -78,7 +84,8 @@
                     0x64) @ mem#1 -> mem#2>,
                     "call_address": 4294970114,
                     "call_index": 7,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "___strcpy_chk",
                     "same_branch": True,
                     "function_call_basic_block_start": 5
@@ -87,7 +94,8 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(arg2#0) @ mem#0 -> mem#1>,
                     "call_address": 4294970053,
                     "call_index": 2,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
@@ -96,7 +104,8 @@
                     "instruction": <HLIL_CALL_SSA: _test_strcpy(rsi_1#1) @ mem#2 -> mem#3>,
                     "call_address": 4294970983,
                     "call_index": 5,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_test_strcpy",
                     "same_branch": False,
                     "function_call_basic_block_start": 5
@@ -105,7 +114,8 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(rsi_1#1, _printir_const) @ mem#1 -> mem#2>,
                     "call_address": 4294970964,
                     "call_index": 4,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
@@ -120,7 +130,8 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118b5ab20>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a216fd0>,
+            "param_var": "var_90"
         },
         {
             "param": 0,
@@ -130,7 +141,8 @@
                     0x64) @ mem#1 -> mem#2>,
                     "call_address": 4294970114,
                     "call_index": 7,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "___strcpy_chk",
                     "same_branch": True,
                     "function_call_basic_block_start": 5
@@ -139,7 +151,8 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(arg2#0) @ mem#0 -> mem#1>,
                     "call_address": 4294970053,
                     "call_index": 2,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
@@ -148,7 +161,8 @@
                     "instruction": <HLIL_CALL_SSA: _printir_const(rsi_3#1) @ mem#4 -> mem#5>,
                     "call_address": 4294970996,
                     "call_index": 7,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_printir_const",
                     "same_branch": False,
                     "function_call_basic_block_start": 6
@@ -163,7 +177,8 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118b5ab20>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a216fd0>,
+            "param_var": "var_90"
         },
         {
             "param": 0,
@@ -173,7 +188,8 @@
                     0x64) @ mem#1 -> mem#2>,
                     "call_address": 4294970114,
                     "call_index": 7,
-                    "at_function": "_printit_format_var",
+                    "at_function_name": "_printit_format_var",
+                    "at_function": <func: x86_64@0x100000aa0>,
                     "function_name": "___strcpy_chk",
                     "same_branch": True,
                     "function_call_basic_block_start": 5
@@ -187,8 +203,9 @@
             "var_type": "constant_ptr",
             "function_name": "_printit_format_var",
             "exported": False,
-            "var": <ssa <var void* const var_90> version 2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118b54b80>
+            "var": <ssa <var void* var_90> version 2>,
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a765ac0>,
+            "param_var": "var_90"
         },
         {
             "param": 1,
@@ -202,7 +219,8 @@
             "function_name": "_printit_format_var",
             "exported": True,
             "var": <var int64_t arg1>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118de2130>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a62a100>,
+            "param_var": "arg1"
         },
         {
             "param": 1,
@@ -211,7 +229,8 @@
                     "instruction": <HLIL_CALL_SSA: _test_strcpy(rsi_1#1) @ mem#2 -> mem#3>,
                     "call_address": 4294970983,
                     "call_index": 5,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_test_strcpy",
                     "same_branch": False,
                     "function_call_basic_block_start": 5
@@ -220,7 +239,8 @@
                     "instruction": <HLIL_CALL_SSA: _strlen(rsi_1#1, _printir_const) @ mem#1 -> mem#2>,
                     "call_address": 4294970964,
                     "call_index": 4,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_strlen",
                     "same_branch": False,
                     "function_call_basic_block_start": 0
@@ -230,7 +250,8 @@
                     0x100000fa8) @ mem#5 -> mem#6>,
                     "call_address": 4294971006,
                     "call_index": 8,
-                    "at_function": "_main",
+                    "at_function_name": "_main",
+                    "at_function": <func: x86_64@0x100000df0>,
                     "function_name": "_printit_proxy",
                     "same_branch": True,
                     "function_call_basic_block_start": 6
@@ -245,7 +266,8 @@
             "function_name": "_main",
             "exported": True,
             "var": <var void* arg2>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118d572e0>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a217910>,
+            "param_var": "arg1"
         },
         {
             "param": 1,
@@ -254,7 +276,8 @@
                     "instruction": <HLIL_CALL_SSA: _gets(&var_78) @ mem#2 -> mem#3>,
                     "call_address": 4294970266,
                     "call_index": 8,
-                    "at_function": "_printit_proxy",
+                    "at_function_name": "_printit_proxy",
+                    "at_function": <func: x86_64@0x100000b50>,
                     "function_name": "_gets",
                     "same_branch": True,
                     "function_call_basic_block_start": 0
@@ -269,7 +292,8 @@
             "function_name": "_printit_proxy",
             "exported": False,
             "var": <var void var_78>,
-            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x118d57a30>
+            "function": <binaryninja.highlevelil.HighLevelILFunction object at 0x21a2179d0>,
+            "param_var": "arg1"
         }
     ]
 }

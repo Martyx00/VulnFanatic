@@ -9,7 +9,6 @@ class Highlighter2(BackgroundTaskThread):
         self.current_function = current_function
 
     def append_comment(self,addr,text):
-        log_info(str(addr))
         current_comment = self.bv.get_comment_at(addr)
         if text in current_comment:
             return

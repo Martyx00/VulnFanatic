@@ -1,17 +1,13 @@
 from binaryninja import *
-from ..utils.utils import extract_hlil_operations, get_constants_read, get_address_of_uses, get_address_of_init, get_hlil_ssa_phi_sources, get_vars_read, get_ssa_vars_read,get_constants_read_ssa
+from ..utils.utils import extract_hlil_operations, get_constants_read, get_address_of_uses, get_address_of_init, get_hlil_ssa_phi_sources, get_vars_read, get_ssa_vars_read,get_constants_read_ssa,get_xrefs_of_addr
 import time
-# TODO xrefs
-# TODO same branch - Should be done, just validate
 # TODO xmlAutomataNewOnceTrans2 - memcpy -> strlen affecting param(2) and xmlStrndup
-# TODO sprintf should be medium only not high?
 
 class FunctionTracer:
     def __init__(self,current_view):
         self.current_view = current_view
 
     def selected_function_tracer(self,call_instruction,current_function):
-        start_time = time.time()
         function_trace_struct = {
             "function":current_function,
             "call_address": hex(call_instruction.address),
@@ -358,24 +354,23 @@ class FunctionTracer:
                 #for ref in self.current_view.get_code_refs(self.current_view.symbols["_strlen"][0].address)
                 for ref in self.current_view.get_code_refs(current_function.source_function.lowest_address)
             ]
-        for xref,addr in function_refs:
-            # TODO try to get exact instruction index
+        '''for xref,addr in function_refs:
             xref_hlil_instructions = list(xref.hlil.instructions)
             for instruction in xref_hlil_instructions:
                 if current_function_name in str(instruction):
-                    xref_calls = extract_hlil_operations(xref.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
-                    for xref_call in xref_calls:
-                        if str(xref_call.dest) == current_function_name and par_index < len(xref_call.params):
-                            variables = extract_hlil_operations(xref.hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=xref_call.params[par_index])
-                            for var in variables:
-                                xrefs_vars.append({
-                                    "variable":var,
-                                    "call_basic_block_start": var.il_basic_block.start, 
-                                    "function_calls": current_var["function_calls"].copy(),
-                                    "current_call_index": var.ssa_form.instr_index,
-                                    "same_branch": current_var["same_branch"],
-                                    "call_boundary": var.ssa_form.instr_index,
-                                    "function_passes": current_var["function_passes"].copy()
-                                })
+                    xref_calls = extract_hlil_operations(xref.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)'''
+        xref_calls = get_xrefs_of_addr(self.current_view,current_function.source_function.lowest_address,current_function_name)
+        for xref_call in xref_calls:
+            if str(xref_call.dest) == current_function_name and par_index < len(xref_call.params):
+                variables = extract_hlil_operations(xref_call.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=xref_call.params[par_index])
+                for var in variables:
+                    xrefs_vars.append({
+                        "variable":var.ssa_form,
+                        "call_basic_block_start": var.il_basic_block.start, 
+                        "function_calls": current_var["function_calls"].copy(),
+                        "current_call_index": var.ssa_form.instr_index,
+                        "same_branch": current_var["same_branch"],
+                        "call_boundary": var.ssa_form.instr_index,
+                        "function_passes": current_var["function_passes"].copy()
+                    })
         return xrefs_vars
-
