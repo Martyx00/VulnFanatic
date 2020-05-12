@@ -34,12 +34,24 @@ def highlight2(bv,selection_addr):
 	else:
 		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
 		call_instruction = function_calls_at_address[choice]
-	high = Highlighter2(bv,call_instruction,current_function)
+	high = Highlighter2(bv,call_instruction,current_function,True)
 	high.start()
 	
 
 def clear_highlight2(bv,selection_addr):
-	pass
+	current_function = bv.get_functions_containing(selection_addr)[0]
+	function_calls_at_address = []
+	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
+	if len(function_calls_at_address) == 0:
+		show_message_box("Highlighter Error", "Highlighted instruction is not a function call!", buttons=0, icon=2)
+		return
+	elif len(function_calls_at_address) == 1:
+		call_instruction = function_calls_at_address[0]
+	else:
+		choice = get_choice_input("Functions","Select function call",[str(i)+"@"+hex(i.address)+"  " for i in function_calls_at_address])
+		call_instruction = function_calls_at_address[choice]
+	high = Highlighter2(bv,call_instruction,current_function,False)
+	high.start()
 
 def test(bv,selection_addr):
 	# With this it takes roughly 0.5 second to trace one XREF

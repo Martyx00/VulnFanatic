@@ -2,11 +2,12 @@ from binaryninja import *
 from ..trackers.function_tracer2 import FunctionTracer
 
 class Highlighter2(BackgroundTaskThread):
-    def __init__(self,bv,call_instruction,current_function):
+    def __init__(self,bv,call_instruction,current_function,highlight):
         BackgroundTaskThread.__init__(self, "[VulnFanatic] Testing tracing ... ", True)
         self.call_instruction = call_instruction
         self.bv = bv
         self.current_function = current_function
+        self.high = highlight
 
     def append_comment(self,addr,text):
         current_comment = self.bv.get_comment_at(addr)
@@ -17,8 +18,29 @@ class Highlighter2(BackgroundTaskThread):
             self.bv.set_comment_at(addr,current_comment)
             return
         self.bv.set_comment_at(addr,current_comment + "\n" + text)
-
+    
     def run(self):
+        if self.high:
+            self.highlight()
+        else:
+            self.clear()
+
+    def clear(self):
+        fun_trace = FunctionTracer(self.bv)
+        results = fun_trace.selected_function_tracer(self.call_instruction,self.current_function)
+        self.progress = "[VulnFanatic] Completed tracing. Clearing highlights ..."
+        for src in results["sources"]:
+            # Highlight source if any
+            if src["def_instruction_address"] != None:
+                self.bv.set_comment_at(src["def_instruction_address"],"")
+                src["function"].source_function.set_user_instr_highlight(src["def_instruction_address"],binaryninja.enums.HighlightStandardColor.NoHighlightColor)
+            # Highlight function calls
+            for fun_call in src["function_calls"]:
+                self.bv.set_comment_at(fun_call["call_address"],"")
+                fun_call["at_function"].set_user_instr_highlight(fun_call["call_address"],binaryninja.enums.HighlightStandardColor.NoHighlightColor)
+
+
+    def highlight(self):
         fun_trace = FunctionTracer(self.bv)
         results = fun_trace.selected_function_tracer(self.call_instruction,self.current_function)
         self.progress = "[VulnFanatic] Completed tracing. Highlighting important points ..."
