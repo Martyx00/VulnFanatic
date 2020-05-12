@@ -349,12 +349,12 @@ class FunctionTracer:
     def get_xrefs_to(self,current_function,par_index,current_var):
         xrefs_vars = []
         current_function_name = current_function.source_function.name
-        function_refs = [
+        '''function_refs = [
                 (ref.function,ref.address)
                 #for ref in self.current_view.get_code_refs(self.current_view.symbols["_strlen"][0].address)
                 for ref in self.current_view.get_code_refs(current_function.source_function.lowest_address)
             ]
-        '''for xref,addr in function_refs:
+        for xref,addr in function_refs:
             xref_hlil_instructions = list(xref.hlil.instructions)
             for instruction in xref_hlil_instructions:
                 if current_function_name in str(instruction):
