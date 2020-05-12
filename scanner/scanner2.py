@@ -15,7 +15,6 @@ class Scanner2(BackgroundTaskThread):
     def run(self):
         # For each rule in self.rules
         function_counter = 0
-        finding_counter = 0
         for function in self.rules["functions"]:
             function_counter += 1
             function_refs = get_xrefs_of_symbol(self.bv,function)
@@ -39,32 +38,20 @@ class Scanner2(BackgroundTaskThread):
                                     tag = xref.function.source_function.create_tag(self.bv.tag_types["[VulnFanatic] "+variant["confidence"]], f'{test_case["name"]}: {test_case["details"]}\n{details}', True)
                                     xref.function.source_function.add_user_address_tag(xref.address, tag)
                                     log_info(variant["confidence"] + " " +f'{test_case["name"]}')
-                                    finding_counter += 1
                                     break
     
-                
-
     def create_description(self,sources):
         desc = ""
-        src_counter = 0
-        '''for src in sources:
-            src_counter +=1 
-            if "constant" in src["var_type"]:
-                continue
-            desc += f"\nSource #{src_counter}:\n"
-            if src["def_instruction_address"]:
-                desc += f"  - Source of param[{src['param']}] at {hex(src['def_instruction_address'])}@{src['function_name']}\n"
-            elif "param" in src["var_type"]:
-                if f"{src['function'].parameter_vars[int(src['var_type'].split(':')[1])]} source of param[{src['param']}]" not in src["function"].comment:
-                    desc += f"  - {src['function'].parameter_vars[int(src['var_type'].split(':')[1])]} of {src['function_name']} source of param[{src['param']}]\n"
-            # Highlight/comment function calls
-            for fun_call in src["function_calls"]:
-                desc += f"  - Function call of {fun_call['function_name']} at {hex(fun_call['call_address'])} affecting param[{src['param']}]\n"
-            # Highlight/comment ifs
-            for if_dep in src["if_dependencies"]:
-                # Highlight the if instruction
-                desc += f"  - Source affected by IF instruction at {hex(if_dep['if_instruction_address'])} with condition '{str(if_dep['if_instruction'])}'\n"
-                for origin in if_dep["var_origins"]:
-                    for fun_call in origin["function_calls"]:
-                        desc += f"    - IF instruction affected by call to function {fun_call['function_name']} at {hex(fun_call['call_address'])}\n"'''
+        src_counter = 1
+        for src in sources:
+            desc += f"Source #{src_counter}:\n"
+            if "param" in src["var_type"]:
+                desc += f"Parameter {str(src['var'])} of function {src['function_name']} source of parameter #{src['param']} ({src['param_var']})\n"
+            elif "stack" in src["var_type"]:
+                desc += f"Stack variable {str(src['var'])} defined at {hex(src['def_instruction_address'])} source of parameter #{src['param']} ({src['param_var']})\n"
+            if len(src["function_calls"]) > 0:
+                desc += f"Function calls affecting parameter #{src['param']} ({src['param_var']}):\n"
+                for fun_call in src["function_calls"]:
+                    desc += f"\t - {fun_call['function_name']}@{fun_call['at_function_name']}\n"
+        desc += "\n"
         return desc

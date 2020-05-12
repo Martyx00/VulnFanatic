@@ -1,7 +1,6 @@
 from binaryninja import *
 from ..utils.utils import extract_hlil_operations, get_constants_read, get_address_of_uses, get_address_of_init, get_hlil_ssa_phi_sources, get_vars_read, get_ssa_vars_read,get_constants_read_ssa,get_xrefs_of_addr
 import time
-# TODO xmlAutomataNewOnceTrans2 - memcpy -> strlen affecting param(2) and xmlStrndup
 
 class FunctionTracer:
     def __init__(self,current_view):
@@ -306,7 +305,8 @@ class FunctionTracer:
         variable_appearances = []
         #hlil_instructions = list(current_function.instructions)
         if variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
-            variable_appearances.extend(get_address_of_uses(current_function,current_hlil_instructions,variable["variable"].parent))
+            # TODO libsqlite
+            variable_appearances.extend(get_address_of_uses(current_function,current_hlil_ssa_instructions,variable["variable"].parent))
         elif variable["variable"].operation == HighLevelILOperation.HLIL_VAR or variable["variable"].operation == HighLevelILOperation.HLIL_VAR_SSA:
             if variable["variable"].ssa_form.operation != HighLevelILOperation.HLIL_VAR:
                 variable_appearances = current_function.ssa_form.get_ssa_var_uses(variable["variable"].ssa_form.var)
