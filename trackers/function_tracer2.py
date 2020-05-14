@@ -123,12 +123,11 @@ class FunctionTracer:
                 current_variable["same_branch"] = False
             
             # Get uses like fun calls etc...
-            
             current_variable["function_calls"] = current_variable["function_calls"] + [x for x in self.get_var_function_calls(current_variable,current_function,current_hlil_instructions,current_hlil_ssa_instructions) if x not in current_variable["function_calls"]]
 
             # Stack var
             if current_variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
-                init_instr = get_address_of_init(current_function,current_hlil_instructions,current_variable["variable"])
+                init_instr = get_address_of_init(current_function,current_hlil_ssa_instructions,current_variable["variable"])
                 if init_instr != None:
                     source = False
                     if init_instr.operation == HighLevelILOperation.HLIL_VAR_INIT:

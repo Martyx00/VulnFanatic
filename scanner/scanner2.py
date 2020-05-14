@@ -53,5 +53,6 @@ class Scanner2(BackgroundTaskThread):
                 desc += f"Function calls affecting parameter #{src['param']} ({src['param_var']}):\n"
                 for fun_call in src["function_calls"]:
                     desc += f"\t - {fun_call['function_name']}@{fun_call['at_function_name']}\n"
+            src_counter += 1
         desc += "\n"
         return desc
