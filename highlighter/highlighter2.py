@@ -26,6 +26,7 @@ class Highlighter2(BackgroundTaskThread):
             self.clear()
 
     def clear(self):
+        #TODO
         fun_trace = FunctionTracer(self.bv)
         results = fun_trace.selected_function_tracer(self.call_instruction,self.current_function)
         self.progress = "[VulnFanatic] Completed tracing. Clearing highlights ..."
@@ -59,7 +60,10 @@ class Highlighter2(BackgroundTaskThread):
                 self.append_comment(list(src["function"].instructions)[src["source_basic_block_start"]].address,f"Parameter {str(src['var'])} source of parameter[{src['param']}]({src['param_var']})")
             # Highlight call stack
             for call in src["call_stack"]:
-                call["function"].source_function.set_user_instr_highlight(call["address"],binaryninja.enums.HighlightStandardColor.GreenHighlightColor)
+                if type(call["function"]) == binaryninja.Function:
+                    call["function"].set_user_instr_highlight(call["address"],binaryninja.enums.HighlightStandardColor.GreenHighlightColor)
+                else:
+                    call["function"].source_function.set_user_instr_highlight(call["address"],binaryninja.enums.HighlightStandardColor.GreenHighlightColor)
             # Highlight function calls
             for fun_call in src["function_calls"]:
                 # Avoid overpainting green stuff:
