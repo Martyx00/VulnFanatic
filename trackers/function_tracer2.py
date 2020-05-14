@@ -32,7 +32,8 @@ class FunctionTracer:
                     "function_name":current_function.name,
                     "exported": False,
                     "var": None,
-                    "function":current_function
+                    "function":current_function,
+                    "call_stack":[{"function":current_function,"address":call_instruction.address}]
                 })
                 continue
                 
@@ -50,7 +51,8 @@ class FunctionTracer:
                     "function_name":current_function.name,
                     "exported": False,
                     "var": None,
-                    "function":current_function
+                    "function":current_function,
+                    "call_stack":[{"function":current_function,"address":call_instruction.address}]
                 })
                 continue
             # Not constant handlers below
@@ -76,7 +78,7 @@ class FunctionTracer:
                             "same_branch": True,
                             "function_call_basic_block_start": call.il_basic_block.start 
                         })
-        #log_info(str(function_trace_struct))
+        log_info(str(function_trace_struct))
         return function_trace_struct
 
     def trace_var(self,variable,call_basic_block_start):
@@ -97,7 +99,8 @@ class FunctionTracer:
             "current_call_index": variable.ssa_form.instr_index,
             "same_branch": True,
             "call_boundary": variable.ssa_form.instr_index,
-            "function_passes": []
+            "function_passes": [],
+            "call_stack":[{"function":variable.function,"address":variable.address}]
         }]
 
         start_time = time.time()
@@ -144,7 +147,8 @@ class FunctionTracer:
                                             "current_call_index": current_variable["current_call_index"],
                                             "same_branch": current_variable["same_branch"],
                                             "call_boundary": var_read.ssa_form.instr_index,
-                                            "function_passes": current_variable["function_passes"].copy()
+                                            "function_passes": current_variable["function_passes"].copy(),
+                                            "call_stack":current_variable["call_stack"].copy()
                                         })
                         else:
                             source = True
@@ -163,7 +167,8 @@ class FunctionTracer:
                             "function_name":current_function.source_function.name,
                             "exported": False,
                             "var": current_variable["variable"].var,
-                            "function":current_function
+                            "function":current_function,
+                            "call_stack":current_variable["call_stack"].copy()
                         })
                 continue
             def_instructions = []
@@ -206,7 +211,8 @@ class FunctionTracer:
                                     "current_call_index": current_variable["current_call_index"],
                                     "same_branch": current_variable["same_branch"],
                                     "call_boundary": def_var.ssa_form.instr_index,
-                                    "function_passes": current_variable["function_passes"].copy()
+                                    "function_passes": current_variable["function_passes"].copy(),
+                                    "call_stack":current_variable["call_stack"].copy()
                                 })
                         elif ((def_var.operation == HighLevelILOperation.HLIL_CONST or def_var.operation == HighLevelILOperation.HLIL_CONST_PTR)) and (def_var.parent.operation != HighLevelILOperation.HLIL_CALL and def_var.parent.operation != HighLevelILOperation.HLIL_CALL_SSA):
                             # Constants but not not function calls 
@@ -232,7 +238,8 @@ class FunctionTracer:
                                 "function_name":current_function.source_function.name,
                                 "exported": False,
                                 "var": current_variable["variable"].var,
-                                "function":current_function
+                                "function":current_function,
+                                "call_stack":current_variable["call_stack"].copy()
                             })
                         elif def_var.parent.operation == HighLevelILOperation.HLIL_CALL or def_var.parent.operation == HighLevelILOperation.HLIL_CALL_SSA:
                             # Only function calls without parameters
@@ -248,7 +255,8 @@ class FunctionTracer:
                                 "function_name":current_function.source_function.name,
                                 "exported": False,
                                 "var": current_variable["variable"].var,
-                                "function":current_function
+                                "function":current_function,
+                                "call_stack":current_variable["call_stack"].copy()
                             })
 
                 # Parameter          
@@ -281,7 +289,8 @@ class FunctionTracer:
                             "function_name":current_function.source_function.name,
                             "exported": exported,
                             "var": var,
-                            "function":current_function
+                            "function":current_function,
+                            "call_stack":current_variable["call_stack"].copy()
                         })
                         
                         vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
@@ -363,6 +372,8 @@ class FunctionTracer:
             if str(xref_call.dest) == current_function_name and par_index < len(xref_call.params):
                 variables = extract_hlil_operations(xref_call.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=xref_call.params[par_index])
                 for var in variables:
+                    call_stack = current_var["call_stack"].copy()
+                    call_stack.append({"function":xref_call.function,"address":xref_call.address})
                     xrefs_vars.append({
                         "variable":var.ssa_form,
                         "call_basic_block_start": var.il_basic_block.start, 
@@ -370,6 +381,7 @@ class FunctionTracer:
                         "current_call_index": var.ssa_form.instr_index,
                         "same_branch": current_var["same_branch"],
                         "call_boundary": var.ssa_form.instr_index,
-                        "function_passes": current_var["function_passes"].copy()
+                        "function_passes": current_var["function_passes"].copy(),
+                        "call_stack": call_stack
                     })
         return xrefs_vars
