@@ -268,21 +268,21 @@ class FunctionTracer:
                                 exported = True
                         param_index = list(current_function.source_function.parameter_vars).index(var)
                         # If exported add source
-                        if exported:
-                            param_sources.append({
-                                "param": None,
-                                "function_calls": current_variable["function_calls"],
-                                "call_basic_block_start": current_variable["call_basic_block_start"],
-                                "source_basic_block_start": current_function.root,
-                                "same_branch": current_variable["same_branch"],
-                                "value": None,
-                                "def_instruction_address": None,
-                                "var_type": "parameter:"+str(param_index),
-                                "function_name":current_function.source_function.name,
-                                "exported": exported,
-                                "var": var,
-                                "function":current_function
-                            })
+                        #if exported:
+                        param_sources.append({
+                            "param": None,
+                            "function_calls": current_variable["function_calls"],
+                            "call_basic_block_start": current_variable["call_basic_block_start"],
+                            "source_basic_block_start": current_function.basic_blocks[0].start,
+                            "same_branch": current_variable["same_branch"],
+                            "value": None,
+                            "def_instruction_address": None,
+                            "var_type": "parameter:"+str(param_index),
+                            "function_name":current_function.source_function.name,
+                            "exported": exported,
+                            "var": var,
+                            "function":current_function
+                        })
                         
                         vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
                         # Add vars to vars_mag

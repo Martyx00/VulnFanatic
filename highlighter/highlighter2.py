@@ -49,6 +49,10 @@ class Highlighter2(BackgroundTaskThread):
             if src["def_instruction_address"] != None:
                 self.append_comment(src["def_instruction_address"],f"Source of parameter[{src['param']}]({src['param_var']})")
                 src["function"].source_function.set_user_instr_highlight(src["def_instruction_address"],binaryninja.enums.HighlightStandardColor.RedHighlightColor)
+            if "param" in src["var_type"]:
+                # Parameter
+                # THIS IS WORKAROUND ONLY UNTIL FUNCTION COMMENTS START WORKING
+                self.append_comment(list(src["function"].instructions)[src["source_basic_block_start"]].address,f"Parameter {str(src['var'])} source of parameter[{src['param']}]({src['param_var']})")
             # Highlight function calls
             for fun_call in src["function_calls"]:
                 self.append_comment(fun_call["call_address"],f"Affecting parameter[{src['param']}]({src['param_var']})")
