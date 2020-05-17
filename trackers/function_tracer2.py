@@ -3,8 +3,10 @@ from ..utils.utils import extract_hlil_operations, get_constants_read, get_addre
 import time
 
 class FunctionTracer:
-    def __init__(self,current_view):
+    def __init__(self,current_view,xrefs_cache = dict()):
+        self.start_time = time.time()
         self.current_view = current_view
+        self.xrefs_cache = xrefs_cache
 
     def selected_function_tracer(self,call_instruction,current_function):
         function_trace_struct = {
@@ -78,7 +80,7 @@ class FunctionTracer:
                             "same_branch": True,
                             "function_call_basic_block_start": call.il_basic_block.start 
                         })
-        log_info(str(function_trace_struct))
+        #log_info(str(function_trace_struct))
         return function_trace_struct
 
     def trace_var(self,variable,call_basic_block_start):
@@ -103,7 +105,7 @@ class FunctionTracer:
             "call_stack":[{"function":variable.function,"address":variable.address}]
         }]
 
-        start_time = time.time()
+        self.start_time = time.time()
         # HLIL_VAR_INIT with value vs HLIL_VAR_DECLARE without value
         # HLIL_ASSIGN assign value to already declared variable
         while vars_mag:
@@ -115,7 +117,7 @@ class FunctionTracer:
                 current_hlil_instructions = list(current_function.instructions)
                 current_hlil_ssa_instructions = list(current_function.ssa_form.instructions)
 
-            if time.time() - start_time > 300:
+            if time.time() - self.start_time > 300:
                 break
             if str(current_variable["variable"].ssa_form) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name in function_passes:
                 continue
@@ -127,7 +129,6 @@ class FunctionTracer:
             
             # Get uses like fun calls etc...
             current_variable["function_calls"] = current_variable["function_calls"] + [x for x in self.get_var_function_calls(current_variable,current_function,current_hlil_instructions,current_hlil_ssa_instructions) if x not in current_variable["function_calls"]]
-
             # Stack var
             if current_variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
                 init_instr = get_address_of_init(current_function,current_hlil_ssa_instructions,current_variable["variable"])
@@ -292,7 +293,6 @@ class FunctionTracer:
                             "function":current_function,
                             "call_stack":current_variable["call_stack"].copy()
                         })
-                        
                         vars_mag.extend(self.get_xrefs_to(current_function,param_index,current_variable))
                         # Add vars to vars_mag
 
@@ -313,7 +313,6 @@ class FunctionTracer:
         variable_appearances = []
         #hlil_instructions = list(current_function.instructions)
         if variable["variable"].parent.operation == HighLevelILOperation.HLIL_ADDRESS_OF:
-            # TODO libsqlite
             variable_appearances.extend(get_address_of_uses(current_function,current_hlil_ssa_instructions,variable["variable"].parent))
         elif variable["variable"].operation == HighLevelILOperation.HLIL_VAR or variable["variable"].operation == HighLevelILOperation.HLIL_VAR_SSA:
             if variable["variable"].ssa_form.operation != HighLevelILOperation.HLIL_VAR:
@@ -327,7 +326,7 @@ class FunctionTracer:
         else:
             variable_appearances = current_function.ssa_form.get_ssa_var_uses(variable["variable"])
         for use in variable_appearances:
-            if use.instr_index < 500000:
+            if use.instr_index < 500000 and time.time() - self.start_time < 600:
                 try:
                     dest = use.dest
                 except:
@@ -355,6 +354,7 @@ class FunctionTracer:
         return function_calls
 
     def get_xrefs_to(self,current_function,par_index,current_var):
+        # TODO implement xrefs cache
         xrefs_vars = []
         current_function_name = current_function.source_function.name
         '''function_refs = [
@@ -367,7 +367,11 @@ class FunctionTracer:
             for instruction in xref_hlil_instructions:
                 if current_function_name in str(instruction):
                     xref_calls = extract_hlil_operations(xref.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)'''
-        xref_calls = get_xrefs_of_addr(self.current_view,current_function.source_function.lowest_address,current_function_name)
+        try:
+            xref_calls = self.xrefs_cache[current_function_name]
+        except KeyError:
+            xref_calls = get_xrefs_of_addr(self.current_view,current_function.source_function.lowest_address,current_function_name)
+            self.xrefs_cache[current_function_name] = xref_calls
         for xref_call in xref_calls:
             if str(xref_call.dest) == current_function_name and par_index < len(xref_call.params):
                 variables = extract_hlil_operations(xref_call.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=xref_call.params[par_index])

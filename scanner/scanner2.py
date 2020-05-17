@@ -15,6 +15,7 @@ class Scanner2(BackgroundTaskThread):
     def run(self):
         # For each rule in self.rules
         function_counter = 0
+        xrefs_cache = dict()
         for function in self.rules["functions"]:
             function_counter += 1
             function_refs = get_xrefs_of_symbol(self.bv,function)
@@ -23,7 +24,7 @@ class Scanner2(BackgroundTaskThread):
             for xref in function_refs:
                 self.progress = f"{self.progress_banner} - Scanning xrefs to function '{function}' ({function_counter}/{len(self.rules['functions'])}):  xref ({xref_counter}/{len(function_refs)})"
                 xref_counter += 1
-                fun_trace = FunctionTracer(self.bv)
+                fun_trace = FunctionTracer(self.bv,xrefs_cache)
                 trace = fun_trace.selected_function_tracer(xref,xref.function.source_function)
                 # Check all variants
                 for test_case in self.rules["test_cases"]:
