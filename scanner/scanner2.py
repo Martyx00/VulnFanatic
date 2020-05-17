@@ -38,7 +38,7 @@ class Scanner2(BackgroundTaskThread):
                                     details = self.create_description(query_result.get_sources())
                                     tag = xref.function.source_function.create_tag(self.bv.tag_types["[VulnFanatic] "+variant["confidence"]], f'{test_case["name"]}: {test_case["details"]}\n{details}', True)
                                     xref.function.source_function.add_user_address_tag(xref.address, tag)
-                                    log_info(variant["confidence"] + " " +f'{test_case["name"]}')
+                                    #log_info(variant["confidence"] + " " +f'{test_case["name"]}')
                                     break
     
     def create_description(self,sources):
