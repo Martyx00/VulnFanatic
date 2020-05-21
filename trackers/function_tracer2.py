@@ -7,6 +7,7 @@ class FunctionTracer:
         self.start_time = time.time()
         self.current_view = current_view
         self.xrefs_cache = xrefs_cache
+        self.anti_recurse = []
 
     def selected_function_tracer(self,call_instruction,current_function):
         function_trace_struct = {
@@ -104,7 +105,7 @@ class FunctionTracer:
             "function_passes": [],
             "call_stack":[{"function":variable.function,"address":variable.address}]
         }]
-
+        self.anti_recurse = []
         self.start_time = time.time()
         # HLIL_VAR_INIT with value vs HLIL_VAR_DECLARE without value
         # HLIL_ASSIGN assign value to already declared variable
@@ -354,7 +355,6 @@ class FunctionTracer:
         return function_calls
 
     def get_xrefs_to(self,current_function,par_index,current_var):
-        # TODO implement xrefs cache
         xrefs_vars = []
         current_function_name = current_function.source_function.name
         '''function_refs = [
@@ -367,9 +367,15 @@ class FunctionTracer:
             for instruction in xref_hlil_instructions:
                 if current_function_name in str(instruction):
                     xref_calls = extract_hlil_operations(xref.hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)'''
+        if current_function_name in self.anti_recurse:
+            return []
+        else:
+            self.anti_recurse.append(current_function_name)
         try:
+            # Cache hit
             xref_calls = self.xrefs_cache[current_function_name]
         except KeyError:
+            # Cache miss
             xref_calls = get_xrefs_of_addr(self.current_view,current_function.source_function.lowest_address,current_function_name)
             self.xrefs_cache[current_function_name] = xref_calls
         for xref_call in xref_calls:

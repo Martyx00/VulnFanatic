@@ -148,6 +148,13 @@ def get_address_of_uses(current_hlil,current_hlil_instructions,addr_of_object):
 
 # Returns single instruction which is either INIT or DECLARE
 def get_address_of_init(current_hlil,current_hlil_instructions,addr_of_object):
+    # Shortcut
+    try:
+        init_inst = current_hlil.get_var_definitions(addr_of_object.operands[0].var)[0]
+        if init_inst.operation == HighLevelILOperation.HLIL_VAR_INIT:
+            return init_inst
+    except:
+        pass
     for index in range(addr_of_object.instr_index-1,0,-1):
         # Return when we reach declaration
         if str(addr_of_object) in str(current_hlil_instructions[index]) and (current_hlil_instructions[index].operation == HighLevelILOperation.HLIL_VAR_INIT or current_hlil_instructions[index].operation == HighLevelILOperation.HLIL_VAR_DECLARE):
