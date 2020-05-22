@@ -97,7 +97,7 @@ class Sources:
     def same_branch(self):
         result = []
         for source in self.sources:
-            if source["branch_dependence"] == source["call_branch_dependence"]:
+            if source["same_branch"]:
                 result.append(source)
         self.sources = result
         return self
@@ -107,7 +107,7 @@ class Sources:
         result = []
         for source in self.sources:
             for fun_call in source["function_calls"]:
-                if function in fun_call["function_name"] and fun_call["same_basic_block"]:
+                if function in fun_call["function_name"] and fun_call["same_branch"]:
                     result.append(source)
         self.sources = result
         return self

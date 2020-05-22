@@ -364,19 +364,19 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 }
             ]
         },
@@ -394,11 +394,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Low",
@@ -420,11 +420,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
                 },
                 {
                     "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
                 },
                 {
                     "confidence": "Info",
@@ -442,11 +442,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
                 },
                 {
                     "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
+                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
                 },
                 {
                     "confidence": "Info",
@@ -518,11 +518,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Low",
@@ -550,11 +550,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Low",
@@ -605,7 +605,7 @@
             ],
             "variants":[
                 {
-                    "confidence": "Medium",
+                    "confidence": "High",
                     "where":"_or_(sources.get().params_from(2).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
                 },
                 {
@@ -676,11 +676,11 @@
             "variants":[
                 {
                     "confidence": "High",
-                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
+                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
                 },
                 {
                     "confidence": "Info",
