@@ -1,6 +1,6 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9KCEQZ8MF8TVW)
-# VulnFanatic (v1.0 alpha)
+# VulnFanatic (v2.0)
 Author: **Martin Petran**
 _Assistant plugin for vulnerability research._
 ## Description:
@@ -23,7 +23,7 @@ Scanner is using set of rules and function tracker to perform basic analysis to 
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * 1300
+ * 2000
 
 ## License
 
