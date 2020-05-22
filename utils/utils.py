@@ -167,6 +167,9 @@ def get_xrefs_of_symbol(bv,symbol_name):
     xref_addr = []
     try:
         for symbol in bv.symbols[symbol_name] if type(bv.symbols[symbol_name]) is list else [bv.symbols[symbol_name]]:
+            if "sub_" in symbol_name:
+                # Unnamed function is represented as address
+                symbol_name = symbol_name.replace("sub_","0x")
             for ref in bv.get_code_refs(symbol.address):
                 hlil_instructions = list(ref.function.hlil.instructions)
                 for block in ref.function.hlil.basic_blocks:
@@ -211,6 +214,9 @@ def get_xrefs_of_symbol(bv,symbol_name):
 def get_xrefs_of_addr(bv,address,symbol_name):
     xrefs = []
     xref_addr = []
+    if "sub_" in symbol_name:
+        # Unnamed function is represented as address
+        symbol_name = symbol_name.replace("sub_","0x")
     try:
         for ref in bv.get_code_refs(address):
             hlil_instructions = list(ref.function.hlil.instructions)
