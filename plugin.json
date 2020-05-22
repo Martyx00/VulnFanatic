@@ -21,7 +21,7 @@
 		"installers": [],
 		"other": []
 	},
-	"version": "1.0",
+	"version": "2.0",
 	"author": "Martin Petran",
-	"minimumbinaryninjaversion": 1300
+	"minimumbinaryninjaversion": 2000
 }
