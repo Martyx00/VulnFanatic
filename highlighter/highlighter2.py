@@ -39,6 +39,12 @@ class Highlighter2(BackgroundTaskThread):
                 # Parameter
                 # THIS IS WORKAROUND ONLY UNTIL FUNCTION COMMENTS START WORKING
                 self.bv.set_comment_at(list(src["function"].instructions)[src["source_basic_block_start"]].address,"")
+            # Highlight call stack
+            for call in src["call_stack"]:
+                if type(call["function"]) == binaryninja.Function:
+                    call["function"].set_user_instr_highlight(call["address"],binaryninja.enums.HighlightStandardColor.NoHighlightColor)
+                else:
+                    call["function"].source_function.set_user_instr_highlight(call["address"],binaryninja.enums.HighlightStandardColor.NoHighlightColor)
             # Highlight function calls
             for fun_call in src["function_calls"]:
                 self.bv.set_comment_at(fun_call["call_address"],"")
