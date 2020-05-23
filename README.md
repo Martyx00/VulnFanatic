@@ -1,6 +1,9 @@
-# VulnFanatic (v1.0 alpha)
+
+# VulnFanatic (v2.0)
 Author: **Martin Petran**
+
 _Assistant plugin for vulnerability research._
+
 ## Description:
 This plugin aims to assist during the vulnerability research process by providing a full tracing of sources of parameters to selected functions. It also provides a scanning capability which uses the function tracer and applies several rules to detect potentially dangerous function calls. 
 
@@ -21,12 +24,8 @@ Scanner is using set of rules and function tracker to perform basic analysis to 
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * 1300
+ * 2000
 
 ## License
 
 This plugin is released under an Apache license.
-
-## Metadata Version
-
-1
