@@ -24,7 +24,7 @@ Scanner is using set of rules and function tracker to perform basic analysis to 
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * 2000
+ * 2166
 
 ## License
 
