@@ -357,6 +357,9 @@ class FunctionTracer:
     def get_xrefs_to(self,current_function,par_index,current_var):
         xrefs_vars = []
         current_function_name = current_function.source_function.name
+        if "sub_" in current_function_name:
+            # Unnamed function is represented as address
+            current_function_name = current_function_name.replace("sub_","0x")
         '''function_refs = [
                 (ref.function,ref.address)
                 #for ref in self.current_view.get_code_refs(self.current_view.symbols["_strlen"][0].address)
