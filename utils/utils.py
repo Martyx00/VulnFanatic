@@ -165,13 +165,16 @@ def get_address_of_init(current_hlil,current_hlil_instructions,addr_of_object):
 def get_xrefs_of_symbol(bv,symbol_name):
     xrefs = []
     xref_addr = []
+    symbol_item = []
     try:
-        symbol_item = bv.symbols[symbol_name]
+        symbol_item.extend(bv.symbols[symbol_name]) if type(bv.symbols[symbol_name]) is list else symbol_item.append(bv.symbols[symbol_name])
+        #symbol_item = bv.symbols[symbol_name]
     except KeyError:
-        try:
-            symbol_item = bv.symbols[symbol_name+"@IAT"]
-        except KeyError:
-            return xrefs
+        pass
+    try:
+        symbol_item.extend(bv.symbols[symbol_name+"@IAT"]) if type(bv.symbols[symbol_name+"@IAT"]) is list else symbol_item.append(bv.symbols[symbol_name+"@IAT"])
+    except KeyError:
+        pass
     for symbol in symbol_item if type(symbol_item) is list else [symbol_item]:
         if "sub_" in symbol_name:
             # Unnamed function is represented as address
