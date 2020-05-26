@@ -41,6 +41,12 @@ class FunctionTracer:
                 continue
                 
             elif param.operation == HighLevelILOperation.HLIL_CONST:
+                if self.current_view.get_string_at(param.constant) != None:
+                    const_type = "constant_ptr"
+                    value = self.current_view.get_string_at(param.constant).value
+                else:
+                    const_type = "constant"
+                    value = hex(param.constant)
                 # Const
                 function_trace_struct["sources"].append({
                     "param": call_instruction.params.index(param),
@@ -48,9 +54,9 @@ class FunctionTracer:
                     "call_basic_block_start": call_instruction.il_basic_block.start,
                     "source_basic_block_start": None,
                     "same_branch": True,
-                    "value": hex(param.constant),
+                    "value": value,
                     "def_instruction_address": None,
-                    "var_type": "constant",
+                    "var_type": const_type,
                     "function_name":current_function.name,
                     "exported": False,
                     "var": None,
@@ -221,7 +227,7 @@ class FunctionTracer:
                             value = hex(def_var.constant)
                             const_type = "constant"
                             # Const ptr
-                            if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                            if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR or self.current_view.get_string_at(def_var.constant) != None:
                                 const_type = "constant_ptr"
                                 try:
                                     value = self.current_view.get_string_at(def_var.constant).value
@@ -327,7 +333,7 @@ class FunctionTracer:
         else:
             variable_appearances = current_function.ssa_form.get_ssa_var_uses(variable["variable"])
         for use in variable_appearances:
-            if use.instr_index < 500000 and time.time() - self.start_time < 600:
+            if use.instr_index < 500000 and time.time():
                 try:
                     dest = use.dest
                 except:
