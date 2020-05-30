@@ -2,7 +2,7 @@
 # VulnFanatic (v2.0)
 Author: **Martin Petran**
 
-_Assistant plugin for vulnerability research._
+_Binary Ninja assistant plugin for vulnerability research._
 
 ## Description:
 This plugin aims to assist during the vulnerability research process by providing a full tracing of sources of parameters to selected functions. It also provides a scanning capability which uses the function tracer and applies several rules to detect potentially dangerous function calls. 
@@ -19,6 +19,11 @@ Scanner is using set of rules and function tracker to perform basic analysis to 
 * 🟠 Medium - Detected conditions could theoretically lead to vulnerability.
 * 🟡 Low - Detected conditions are unlikely to lead to vulnerability.
 * 🔵 Info - Detected conditions were not clear enough to determine if the call is secure or not.
+
+Example of discovered issue:
+
+![Sample](https://github.com/Martyx00/VulnFanatic/tree/master/static/sample.png "Sample")
+
 
 ## Minimum Version
 
