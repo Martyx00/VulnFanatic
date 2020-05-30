@@ -1,5 +1,5 @@
 
-# VulnFanatic (v2.0)
+# VulnFanatic (v2.1)
 Author: **Martin Petran**
 
 _Binary Ninja assistant plugin for vulnerability research._
