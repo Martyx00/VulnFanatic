@@ -1,0 +1,22 @@
+[
+    {
+        "name": "_death",
+        "free_xref": <HLIL_CALL: _free(arg1)>,
+        "null_set": False,
+        "struct_free_wrapper": True,
+        "in_loop": False,
+        "object_used_without_if_checks": False,
+        "object_used": False,
+        "called_multiple_times_without_inits": False
+    },
+    {
+        "name": "_main",
+        "free_xref": <HLIL_CALL: _destruct(var_78)>,
+        "null_set": False,
+        "struct_free_wrapper": False,
+        "in_loop": True,
+        "object_used_without_if_checks": False,
+        "object_used": True,
+        "called_multiple_times_without_inits": False
+    }
+]

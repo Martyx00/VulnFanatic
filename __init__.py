@@ -1,11 +1,16 @@
 from binaryninja import *
 from .scanner.scanner2 import Scanner2
+from .scanner.free_scanner import FreeScanner
 from .highlighter.highlighter2 import Highlighter2
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
 import sys
 import time
 
+
+def uaf(bv,selection_addr):
+	free = FreeScanner(bv)
+	free.trace_free()
 
 def scan2(bv,selection_addr):
 	# Add tags
@@ -53,6 +58,7 @@ def clear_highlight2(bv,selection_addr):
 
 # Register the plugin
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
+PluginCommand.register_for_address("[VulnFanatic] UAF", "UAF", uaf)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)
 
