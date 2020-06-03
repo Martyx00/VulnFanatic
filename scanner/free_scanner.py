@@ -191,14 +191,22 @@ class FreeScanner:
             parent = parent.parent
         return None
 
-    def is_set_to_null(self,instruction,variable,hlil_instructions):
+    def is_set_to_null(self,instruction,var,hlil_instructions):
         # Go through instructions in current block and see if there is any instruction setting 0 to something, if yes, check if the variable is related to the param passed to the free or its wrapper
         # TODO make sure to check for the note in beginign ofthis file
-        for instruction_index in range(instruction.instr_index+1,instruction.il_basic_block.end):
-            current_instruction = hlil_instructions[instruction_index]
-            if current_instruction.operation == HighLevelILOperation.HLIL_ASSIGN and str(variable) in str(current_instruction.dest):
-                if (current_instruction.src.operation == HighLevelILOperation.HLIL_CONST or current_instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR) and current_instruction.src.constant == 0:
-                    return True 
+        variables = [var]
+        if var:
+            for use in instruction.function.get_var_definitions(var):
+                vars = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=hlil_instructions[use.instr_index])
+                for v in vars:
+                    if v not in variables:
+                        variables.append(v)
+        for variable in variables:
+            for instruction_index in range(instruction.instr_index+1,instruction.il_basic_block.end):
+                current_instruction = hlil_instructions[instruction_index]
+                if current_instruction.operation == HighLevelILOperation.HLIL_ASSIGN and str(variable) in str(current_instruction.dest):
+                    if (current_instruction.src.operation == HighLevelILOperation.HLIL_CONST or current_instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR) and current_instruction.src.constant == 0:
+                        return True 
         return False
 
     # Slightly adjusted function form utils to reflect needs of this scanner
