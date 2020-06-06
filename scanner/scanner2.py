@@ -1,5 +1,6 @@
 from binaryninja import *
 import json
+from .free_scanner import FreeScanner
 from ..trackers.function_tracer2 import FunctionTracer
 from .query import Sources, _or_, _and_
 from ..utils.utils import get_xrefs_of_symbol
@@ -40,6 +41,9 @@ class Scanner2(BackgroundTaskThread):
                                     xref.function.source_function.add_user_address_tag(xref.address, tag)
                                     #log_info(variant["confidence"] + " " +f'{test_case["name"]}')
                                     break
+        self.progress = f"{self.progress_banner} - Running Use-after-free scanner ... (EXPERIMENTAL ONLY)"
+        free = FreeScanner(self.bv)
+        free.trace_free()
     
     def create_description(self,sources):
         desc = ""

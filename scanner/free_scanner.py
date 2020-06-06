@@ -26,11 +26,6 @@ from ..utils.utils import get_xrefs_of_symbol,extract_hlil_operations
     "called_multiple_times_without_inits": true
 }
 '''
-# Use after-free
-# !null_set && struct_free_wrapper => Low
-# !null_set && object_used_without_if_checks => High
-# !null_set && in_loop => Info
-# !null_set && object_used => Medium
 
 # Double-free
 # called_multiple_times_without_inits => Medium
@@ -54,27 +49,7 @@ class FreeScanner:
         # TODO "operator delete"
         self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","operator delete"]        
 
-    def trace_free(self):
-        # TODO the null_set part
-        # Get all XREFs to free calls
-        # For each XREF:
-        #   if in loop:
-        #       set "in_loop" = true
-        #   if it is a free wrapper:
-        #       append all calls to XREF list (must include INIT type of XREFs)
-        #       if param to free not set to null after:
-        #           null_set = false
-        #       if init xref only:
-        #           set "struct_free_wrapper" = true
-        #   if param to this xref not set to null after:
-        #       null_set = false
-        #   get all uses of the param to this xref in current function
-        #   for all uses:
-        #       if "in_loop":
-        #           account for all uses within the loop when setting object_used_without_if_checks and object_used
-        #       else:
-        #           account only uses after the free when setting object_used_without_if_checks and object_used
-        #       
+    def trace_free(self):     
         result = []
         free_xrefs = []
         tmp_free_xrefs = self.get_free_calls(self.free_list)
@@ -122,36 +97,58 @@ class FreeScanner:
                             "param_index": list(free_xref["instruction"].function.source_function.parameter_vars).index(param_var) 
                         })
             instructions = []
-            if in_loop["in_loop"]:
-                # Load instructions with all lines in body of the loop
-                for i in in_loop["loop"].body.lines:
-                    instructions.append(i.il_instruction)
-            else:
-                # Not in loop so load instructions with all lines that follow the "free" call
-                instructions = current_hlil_instructions[xref_index+1:]
-            for ins in instructions:
-                if ins:
-                    if ins.instr_index == current_free_xref_obj["free_xref"].instr_index:
-                        # Skip this as this is not relevant for us
-                        continue
-                    if str(param_var) in str(ins):
-                        try:
-                            dest = ins.dest
-                        except:
-                            dest = None
-                        if dest != param_var and current_hlil_instructions[ins.instr_index].operation != HighLevelILOperation.HLIL_IF:
-                            current_free_xref_obj["object_used"] = True
-                            closest_if = self.find_closest_if(ins)
-                            if closest_if != None and str(param_var) in str(closest_if):
-                                current_free_xref_obj["object_used_without_if_checks"] = False
-                            else:
-                                current_free_xref_obj["object_used_without_if_checks"] = True
-            
+            if free_xref["instruction"].operation != HighLevelILOperation.HLIL_TAILCALL:
+                if in_loop["in_loop"]:
+                    # Load instructions with all lines in body of the loop
+                    for i in in_loop["loop"].body.lines:
+                        instructions.append(i.il_instruction)
+                else:
+                    # Not in loop so load instructions with all lines that follow the "free" call
+                    instructions = current_hlil_instructions[xref_index+1:]
+                for ins in instructions:
+                    if ins:
+                        if ins.instr_index == current_free_xref_obj["free_xref"].instr_index:
+                            # Skip this as this is not relevant for us
+                            continue
+                        if str(param_var) in str(ins):
+                            try:
+                                dest = ins.dest
+                            except:
+                                dest = None
+                            if dest != param_var and current_hlil_instructions[ins.instr_index].operation != HighLevelILOperation.HLIL_IF:
+                                current_free_xref_obj["object_used"] = True
+                                closest_if = self.find_closest_if(ins)
+                                if closest_if != None and str(param_var) in str(closest_if):
+                                    current_free_xref_obj["object_used_without_if_checks"] = False
+                                else:
+                                    current_free_xref_obj["object_used_without_if_checks"] = True
+                
             if append:
                 current_free_xref_obj["null_set"] = self.is_set_to_null(free_xref["instruction"],param_var,current_hlil_instructions)
                 result.append(current_free_xref_obj.copy())
-        log_info(str(result))
-        return result
+                self.evaluate_result(current_free_xref_obj)
+        #log_info(str(result))
+        #return result
+
+    def evaluate_result(self,result):
+        # Use after-free
+        # !null_set && struct_free_wrapper => Low
+        # !null_set && object_used_without_if_checks => High
+        # !null_set && in_loop => Info
+        # !null_set && object_used => Medium
+        confidence = ""
+        if not result["null_set"] and result["object_used_without_if_checks"]:
+            confidence = "High"
+        elif not result["null_set"] and result["object_used"]:
+            confidence = "Medium"
+        elif not result["null_set"] and result["struct_free_wrapper"]:
+            confidence = "Low"
+        elif not result["null_set"] and result["in_loop"]:
+            confidence = "Info"
+        if confidence:
+            tag = result["free_xref"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
+            result["free_xref"].function.source_function.add_user_address_tag(result["free_xref"].address, tag)
+
 
     def extract_param_var(self,instruction,param_index):
         if instruction.params[param_index].operation == HighLevelILOperation.HLIL_VAR:

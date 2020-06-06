@@ -8,10 +8,6 @@ import sys
 import time
 
 
-def uaf(bv,selection_addr):
-	free = FreeScanner(bv)
-	free.trace_free()
-
 def scan2(bv,selection_addr):
 	# Add tags
 	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
@@ -58,7 +54,6 @@ def clear_highlight2(bv,selection_addr):
 
 # Register the plugin
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
-PluginCommand.register_for_address("[VulnFanatic] UAF", "UAF", uaf)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)
 
