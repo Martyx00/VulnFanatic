@@ -1,21 +1,8 @@
 from binaryninja import *
 from ..utils.utils import get_xrefs_of_symbol,extract_hlil_operations
-# Loops (+ _SSA):
-#   HighLevelILOperation.HLIL_DO_WHILE
-#   HighLevelILOperation.HLIL_FOR
-#   HighLevelILOperation.HLIL_WHILE
-
-# Info to collect:
-#   branch dependence -> especially if conditions that use param of free
-#   setting the pointer to NULL after a call to free (both inside free wrappers and couple instructions below their XREFS) -> can be tracked by simple True/False param
-
-# Double free can be recognized by an If check on the free param before the free is called (outside loop with not check probably Info only)
-# Use-after-free can be reported as info for cases where the pointer of the freed object is not set to NULL after being freed, low confidence when in loop, Info everywhere else
-#   Make sure to handle this:
-#000b0286              rdi_6 = var_858:8.q
-#000b028d          if (rdi_6 != 0)
-#000b0292              _free(rdi_6)
-#                      var_858:8.q = 0
+# TODO double free completely
+# TODO use il_basic_block dominators to see whether there is allocation that always occurs before a call to free (really applicable only in loops) - need to evaluate paths separately!
+# TODO "operator delete"
 '''
 {
     "null_set": false,
@@ -23,30 +10,17 @@ from ..utils.utils import get_xrefs_of_symbol,extract_hlil_operations
     "in_loop": true,
     "object_used_without_if_checks": true,
     "object_used": true,
-    "called_multiple_times_without_inits": true
+    "called_multiple_times_without_inits": true,
+    "always_allocated": false
 }
 '''
-
-# Double-free
-# called_multiple_times_without_inits => Medium
-
-# ALGO DRAFT:
-# Get xref to free call
-# if source of the free param is parmeter to current function -> probably a free wrapper:
-#   add xrefs to current_function to tracing pipeline (relevant to given param)
-#   if xrefs only HLIL_ASSIGN operations:
-#       use of free wrapper in struct -> mark as Info if free not followed by setting the pointer to NULL (struct_free_wrapper: True ???)
-# if free (or xref to function that calls free and passes value from parameter to it) is in the loop and not followed by break:
-#   trace the usage of the parameter to free both up and down within boundaries of the loop
-# else:
-#   not in loop, trace down until end of function
 
 
 class FreeScanner:
     def __init__(self,current_view,xrefs_cache = dict()):
         self.current_view = current_view
         self.xrefs_cache = xrefs_cache
-        # TODO "operator delete"
+       
         self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","operator delete"]        
 
     def trace_free(self):     
@@ -59,7 +33,6 @@ class FreeScanner:
                 "param_index": 0 # All the default free calls take just one parameter
             })
 
-        # TODO need to keep track of param index for wrappers
         for free_xref in free_xrefs:
             append = True
             xref_index = free_xref["instruction"].instr_index
@@ -72,12 +45,10 @@ class FreeScanner:
                 "in_loop": False,
                 "object_used_without_if_checks": False,
                 "object_used": False,
-                "called_multiple_times_without_inits": False
+                "called_multiple_times_without_inits": False,
+                "always_allocated": False
             }
             in_loop = self.is_in_loop(free_xref["instruction"])
-            # Not working
-            #param_var = free_xref["instruction"].params[free_xref["param_index"]].var
-            # new version
             param_var = self.extract_param_var(free_xref["instruction"],free_xref["param_index"])
             current_free_xref_obj["in_loop"] = in_loop["in_loop"]
             if param_var in free_xref["instruction"].function.source_function.parameter_vars:
@@ -90,7 +61,6 @@ class FreeScanner:
                         current_free_xref_obj["struct_free_wrapper"] = True
                     else:
                         # Ignore this xref as we have a wrapper that is being called?
-                        # TODO Need to somehow pass the information on the "null_set" part???
                         append = False
                         free_xrefs.append({
                             "instruction": wrapper_xref,
@@ -102,6 +72,8 @@ class FreeScanner:
                     # Load instructions with all lines in body of the loop
                     for i in in_loop["loop"].body.lines:
                         instructions.append(i.il_instruction)
+                    current_free_xref_obj["always_allocated"] = self.get_preallocations(current_free_xref_obj["free_xref"],param_var,current_hlil_instructions,in_loop["loop"].il_basic_block.start)
+                    #current_free_xref_obj["always_allocated"] = False
                 else:
                     # Not in loop so load instructions with all lines that follow the "free" call
                     instructions = current_hlil_instructions[xref_index+1:]
@@ -110,13 +82,14 @@ class FreeScanner:
                         if ins.instr_index == current_free_xref_obj["free_xref"].instr_index:
                             # Skip this as this is not relevant for us
                             continue
-                        if str(param_var) in str(ins):
+                        if str(param_var) in str(ins) and str(param_var)+"_" not in str(ins):
                             try:
                                 dest = ins.dest
                             except:
                                 dest = None
                             if dest != param_var and current_hlil_instructions[ins.instr_index].operation != HighLevelILOperation.HLIL_IF:
                                 current_free_xref_obj["object_used"] = True
+                                log_info(str(ins))
                                 closest_if = self.find_closest_if(ins)
                                 if closest_if != None and str(param_var) in str(closest_if):
                                     current_free_xref_obj["object_used_without_if_checks"] = False
@@ -137,18 +110,62 @@ class FreeScanner:
         # !null_set && in_loop => Info
         # !null_set && object_used => Medium
         confidence = ""
-        if not result["null_set"] and result["object_used_without_if_checks"]:
+        if not result["null_set"] and result["object_used_without_if_checks"] and not result["always_allocated"]:
             confidence = "High"
-        elif not result["null_set"] and result["object_used"]:
+        elif not result["null_set"] and result["object_used"] and not result["always_allocated"]:
             confidence = "Medium"
-        elif not result["null_set"] and result["struct_free_wrapper"]:
+        elif not result["null_set"] and result["struct_free_wrapper"] and not result["always_allocated"]:
             confidence = "Low"
-        elif not result["null_set"] and result["in_loop"]:
+        elif not result["null_set"] and result["in_loop"] and not result["always_allocated"]:
             confidence = "Info"
         if confidence:
             tag = result["free_xref"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
             result["free_xref"].function.source_function.add_user_address_tag(result["free_xref"].address, tag)
 
+
+    def get_preallocations(self,instruction,param_var,hlil_instructions,loop_boundary):
+        root = {
+            "block":instruction.il_basic_block,
+            "start":instruction.il_basic_block.start,
+            "end":instruction.instr_index,
+            "alloc":False,
+            "blocks_on_current_path":[instruction.il_basic_block.start],
+            "dominators":[]
+            }
+        blocks = [root]
+        while blocks:
+            current_block = blocks.pop()
+            for inst_index in range(current_block["start"],current_block["end"]):
+                inst_string = str(hlil_instructions[inst_index])
+                if "alloc" in inst_string and str(param_var) in inst_string:
+                    current_block["alloc"] = True
+            # Check incoming branches and populate blocks list if there are any
+            if current_block["block"].incoming_edges and current_block["start"] != loop_boundary:
+                for b in current_block["block"].incoming_edges:
+                    if b.source.start not in current_block["blocks_on_current_path"]:
+                        current_block["blocks_on_current_path"].append(b.source.start)
+                        source = {
+                            "block":b.source,
+                            "start":b.source.start,
+                            "end":b.source.end,
+                            "alloc":current_block["alloc"],
+                            "blocks_on_current_path":current_block["blocks_on_current_path"].copy(),
+                            "dominators":[]
+                            }
+                        current_block["dominators"].append(source)
+                        blocks.append(source)
+            elif not current_block["alloc"]:
+                # No incoming edges -> top of the trace -> if path without alloc was found we can happily return False as path without alloc exists
+                return False
+        log_info(str(root))
+        return True
+
+        for dominator in instruction.il_basic_block.strict_dominators:
+            for inst_index in range(dominator.start,dominator.end):
+                # Lame but works
+                if "alloc" in str(hlil_instructions[inst_index]):
+                    return True
+        return False
 
     def extract_param_var(self,instruction,param_index):
         if instruction.params[param_index].operation == HighLevelILOperation.HLIL_VAR:
@@ -157,7 +174,6 @@ class FreeScanner:
             tmp_array = []
             tmp_array.extend(instruction.params[param_index].operands.copy())
             while tmp_array:
-                log_info(str(tmp_array))
                 op = tmp_array.pop(0)
                 if type(op) == HighLevelILInstruction:
                     if op.operation == HighLevelILOperation.HLIL_VAR:
@@ -165,7 +181,6 @@ class FreeScanner:
                     else:
                         for o in list(reversed(op.operands)):
                             tmp_array.insert(0,o)
-            log_info(str(tmp_array))
         return None
                     
 
@@ -190,7 +205,6 @@ class FreeScanner:
 
     def is_set_to_null(self,instruction,var,hlil_instructions):
         # Go through instructions in current block and see if there is any instruction setting 0 to something, if yes, check if the variable is related to the param passed to the free or its wrapper
-        # TODO make sure to check for the note in beginign ofthis file
         variables = [var]
         if var:
             for use in instruction.function.get_var_definitions(var):

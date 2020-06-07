@@ -1,102 +1,185 @@
-[
-    {
-        "name": "_libxml_domnode_tim_sort",
-        "free_xref": <HLIL_CALL: _free(rdi_6)>,
-        "null_set": True,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlMemFree",
-        "free_xref": <HLIL_TAILCALL: return _free(r14_4) __tailcall>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": True,
-        "object_used": True,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlReallocLoc",
-        "free_xref": <HLIL_CALL: _free(rbx)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": True,
-        "object_used": True,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlShell",
-        "free_xref": <HLIL_CALL: _free(rax_12)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": True,
-        "object_used_without_if_checks": False,
-        "object_used": True,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlShell",
-        "free_xref": <HLIL_CALL: _free(rax_12)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlFreeGlobalState",
-        "free_xref": <HLIL_TAILCALL: return _free(arg1) __tailcall>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlCleanupGlobals",
-        "free_xref": <HLIL_CALL: _xmlFreeMutex(rdi)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlCleanupMemory",
-        "free_xref": <HLIL_CALL: _xmlFreeMutex(*_xmlMemMutex)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlDictCleanup",
-        "free_xref": <HLIL_CALL: _xmlFreeRMutex(*_xmlDictMutex)>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    },
-    {
-        "name": "_xmlCatalogCleanup",
-        "free_xref": <HLIL_TAILCALL: return _xmlFreeRMutex(*_xmlCatalogMutex) __tailcall>,
-        "null_set": False,
-        "struct_free_wrapper": False,
-        "in_loop": False,
-        "object_used_without_if_checks": False,
-        "object_used": False,
-        "called_multiple_times_without_inits": False
-    }
-]
+{
+    "block": <block: x86_64@0x2a-0x31>,
+    "start": 42,
+    "end": 44,
+    "alloc": False,
+    "blocks_on_current_path": [
+        42,
+        41
+    ],
+    "dominators": [
+        {
+            "block": <block: x86_64@0x29-0x2a>,
+            "start": 41,
+            "end": 42,
+            "alloc": False,
+            "blocks_on_current_path": [
+                42,
+                41,
+                30,
+                35
+            ],
+            "dominators": [
+                {
+                    "block": <block: x86_64@0x1e-0x1f>,
+                    "start": 30,
+                    "end": 31,
+                    "alloc": False,
+                    "blocks_on_current_path": [
+                        42,
+                        41,
+                        30,
+                        24
+                    ],
+                    "dominators": [
+                        {
+                            "block": <block: x86_64@0x18-0x1a>,
+                            "start": 24,
+                            "end": 26,
+                            "alloc": False,
+                            "blocks_on_current_path": [
+                                42,
+                                41,
+                                30,
+                                24,
+                                20
+                            ],
+                            "dominators": [
+                                {
+                                    "block": <block: x86_64@0x14-0x17>,
+                                    "start": 20,
+                                    "end": 23,
+                                    "alloc": False,
+                                    "blocks_on_current_path": [
+                                        42,
+                                        41,
+                                        30,
+                                        24,
+                                        20,
+                                        17
+                                    ],
+                                    "dominators": [
+                                        {
+                                            "block": <block: x86_64@0x11-0x14>,
+                                            "start": 17,
+                                            "end": 20,
+                                            "alloc": False,
+                                            "blocks_on_current_path": [
+                                                42,
+                                                41,
+                                                30,
+                                                24,
+                                                20,
+                                                17,
+                                                13
+                                            ],
+                                            "dominators": [
+                                                {
+                                                    "block": <block: x86_64@0xd-0x11>,
+                                                    "start": 13,
+                                                    "end": 17,
+                                                    "alloc": False,
+                                                    "blocks_on_current_path": [
+                                                        42,
+                                                        41,
+                                                        30,
+                                                        24,
+                                                        20,
+                                                        17,
+                                                        13,
+                                                        12
+                                                    ],
+                                                    "dominators": [
+                                                        {
+                                                            "block": <block: x86_64@0xc-0xd>,
+                                                            "start": 12,
+                                                            "end": 13,
+                                                            "alloc": False,
+                                                            "blocks_on_current_path": [
+                                                                42,
+                                                                41,
+                                                                30,
+                                                                24,
+                                                                20,
+                                                                17,
+                                                                13,
+                                                                12
+                                                            ],
+                                                            "dominators": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "block": <block: x86_64@0x23-0x29>,
+                    "start": 35,
+                    "end": 41,
+                    "alloc": True,
+                    "blocks_on_current_path": [
+                        42,
+                        41,
+                        30,
+                        35,
+                        33,
+                        34
+                    ],
+                    "dominators": [
+                        {
+                            "block": <block: x86_64@0x21-0x22>,
+                            "start": 33,
+                            "end": 34,
+                            "alloc": True,
+                            "blocks_on_current_path": [
+                                42,
+                                41,
+                                30,
+                                35,
+                                33,
+                                31
+                            ],
+                            "dominators": [
+                                {
+                                    "block": <block: x86_64@0x1f-0x20>,
+                                    "start": 31,
+                                    "end": 32,
+                                    "alloc": True,
+                                    "blocks_on_current_path": [
+                                        42,
+                                        41,
+                                        30,
+                                        35,
+                                        33,
+                                        31
+                                    ],
+                                    "dominators": []
+                                }
+                            ]
+                        },
+                        {
+                            "block": <block: x86_64@0x22-0x23>,
+                            "start": 34,
+                            "end": 35,
+                            "alloc": True,
+                            "blocks_on_current_path": [
+                                42,
+                                41,
+                                30,
+                                35,
+                                33,
+                                34
+                            ],
+                            "dominators": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
