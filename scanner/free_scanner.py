@@ -1,37 +1,28 @@
 from binaryninja import *
 from ..utils.utils import get_xrefs_of_symbol,extract_hlil_operations
-# TODO double free completely
-# TODO use il_basic_block dominators to see whether there is allocation that always occurs before a call to free (really applicable only in loops) - need to evaluate paths separately!
-# TODO "operator delete"
-'''
-{
-    "null_set": false,
-    "struct_free_wrapper": true,
-    "in_loop": true,
-    "object_used_without_if_checks": true,
-    "object_used": true,
-    "called_multiple_times_without_inits": true,
-    "always_allocated": false
-}
-'''
-
+# TODO make this better :D
+# TODO RtRouteCfgTbl::~RtRouteCfgTbl
+# TODO must account for structs (arg1 + 0x8)
 
 class FreeScanner:
     def __init__(self,current_view,xrefs_cache = dict()):
         self.current_view = current_view
         self.xrefs_cache = xrefs_cache
        
-        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","operator delete"]        
+        #self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","operator delete"]  
+        self.free_list = ["operator delete"]      
 
     def trace_free(self):     
         result = []
         free_xrefs = []
         tmp_free_xrefs = self.get_free_calls(self.free_list)
+        free_strings = []
         for xref in tmp_free_xrefs:
             free_xrefs.append({
                 "instruction": xref,
                 "param_index": 0 # All the default free calls take just one parameter
             })
+            free_strings.append(str(xref.dest))
 
         for free_xref in free_xrefs:
             append = True
@@ -45,12 +36,14 @@ class FreeScanner:
                 "in_loop": False,
                 "object_used_without_if_checks": False,
                 "object_used": False,
-                "called_multiple_times_without_inits": False,
+                "potential_double_free": False,
+                "potential_double_free_without_if": False,
                 "always_allocated": False
             }
             in_loop = self.is_in_loop(free_xref["instruction"])
             param_var = self.extract_param_var(free_xref["instruction"],free_xref["param_index"])
             current_free_xref_obj["in_loop"] = in_loop["in_loop"]
+            
             if param_var in free_xref["instruction"].function.source_function.parameter_vars:
                 # Since this is wrapper, if XREFs to the wrapper are found shall we ignore it?
                 # If only assign XREFS are found it needs to be recorded
@@ -66,12 +59,22 @@ class FreeScanner:
                             "instruction": wrapper_xref,
                             "param_index": list(free_xref["instruction"].function.source_function.parameter_vars).index(param_var) 
                         })
+                        free_strings.append(str(wrapper_xref.dest))
             instructions = []
             if free_xref["instruction"].operation != HighLevelILOperation.HLIL_TAILCALL:
                 if in_loop["in_loop"]:
                     # Load instructions with all lines in body of the loop
                     for i in in_loop["loop"].body.lines:
                         instructions.append(i.il_instruction)
+                    # Keep natural order of instructions for loops
+                    ins_index = -1
+                    while ins_index != free_xref["instruction"].instr_index:
+                        ins = instructions.pop(0)
+                        instructions.append(ins)
+                        if ins:
+                            ins_index = ins.instr_index
+                        else:
+                            break
                     current_free_xref_obj["always_allocated"] = self.get_preallocations(current_free_xref_obj["free_xref"],param_var,current_hlil_instructions,in_loop["loop"].il_basic_block.start)
                     #current_free_xref_obj["always_allocated"] = False
                 else:
@@ -79,8 +82,10 @@ class FreeScanner:
                     instructions = current_hlil_instructions[xref_index+1:]
                 for ins in instructions:
                     if ins:
+                        initialize = False
                         if ins.instr_index == current_free_xref_obj["free_xref"].instr_index:
-                            # Skip this as this is not relevant for us
+                            # Mark as potential double free as we are in the loop and it is likely that the free part can get executed twice
+                            current_free_xref_obj["potential_double_free"] = True
                             continue
                         if str(param_var) in str(ins) and str(param_var)+"_" not in str(ins):
                             try:
@@ -88,14 +93,29 @@ class FreeScanner:
                             except:
                                 dest = None
                             if dest != param_var and current_hlil_instructions[ins.instr_index].operation != HighLevelILOperation.HLIL_IF:
-                                current_free_xref_obj["object_used"] = True
-                                log_info(str(ins))
+                                #current_free_xref_obj["object_used"] = True
                                 closest_if = self.find_closest_if(ins)
                                 if closest_if != None and str(param_var) in str(closest_if):
                                     current_free_xref_obj["object_used_without_if_checks"] = False
+                                    if not initialize:
+                                        for x in free_strings:
+                                            if x in str(ins):
+                                                current_free_xref_obj["potential_double_free_without_if"] = False
+                                                current_free_xref_obj["potential_double_free"] = True
+                                                current_free_xref_obj["object_used"] = False
                                 else:
                                     current_free_xref_obj["object_used_without_if_checks"] = True
-                
+                                    if not initialize:
+                                        for x in free_strings:
+                                            if x in str(ins):
+                                                # Since we mark this as potential double free remove 
+                                                current_free_xref_obj["potential_double_free"] = True
+                                                current_free_xref_obj["potential_double_free_without_if"] = True
+                                                current_free_xref_obj["object_used_without_if_checks"] = False
+                                                current_free_xref_obj["object_used"] = False
+                            elif dest == param_var:
+                                # param var was initialized
+                                initialize = True
             if append:
                 current_free_xref_obj["null_set"] = self.is_set_to_null(free_xref["instruction"],param_var,current_hlil_instructions)
                 result.append(current_free_xref_obj.copy())
@@ -121,7 +141,14 @@ class FreeScanner:
         if confidence:
             tag = result["free_xref"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
             result["free_xref"].function.source_function.add_user_address_tag(result["free_xref"].address, tag)
-
+        confidence = ""
+        if result["potential_double_free_without_if"] and not result["always_allocated"]:
+            confidence = "Medium"
+        elif result["potential_double_free"] and not result["always_allocated"]:
+            confidence = "Low"
+        if confidence:
+            tag = result["free_xref"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Double-free Vulnerability", True)
+            result["free_xref"].function.source_function.add_user_address_tag(result["free_xref"].address, tag)
 
     def get_preallocations(self,instruction,param_var,hlil_instructions,loop_boundary):
         root = {
@@ -137,7 +164,7 @@ class FreeScanner:
             current_block = blocks.pop()
             for inst_index in range(current_block["start"],current_block["end"]):
                 inst_string = str(hlil_instructions[inst_index])
-                if "alloc" in inst_string and str(param_var) in inst_string:
+                if ("alloc" in inst_string and str(param_var) in inst_string and not str(param_var)+"_" in inst_string) or hlil_instructions[inst_index].dest == param_var:
                     current_block["alloc"] = True
             # Check incoming branches and populate blocks list if there are any
             if current_block["block"].incoming_edges and current_block["start"] != loop_boundary:
@@ -157,7 +184,7 @@ class FreeScanner:
             elif not current_block["alloc"]:
                 # No incoming edges -> top of the trace -> if path without alloc was found we can happily return False as path without alloc exists
                 return False
-        log_info(str(root))
+        #log_info(str(root))
         return True
 
         for dominator in instruction.il_basic_block.strict_dominators:
@@ -168,19 +195,20 @@ class FreeScanner:
         return False
 
     def extract_param_var(self,instruction,param_index):
-        if instruction.params[param_index].operation == HighLevelILOperation.HLIL_VAR:
-            return instruction.params[param_index].var
-        else:
-            tmp_array = []
-            tmp_array.extend(instruction.params[param_index].operands.copy())
-            while tmp_array:
-                op = tmp_array.pop(0)
-                if type(op) == HighLevelILInstruction:
-                    if op.operation == HighLevelILOperation.HLIL_VAR:
-                        return op.var
-                    else:
-                        for o in list(reversed(op.operands)):
-                            tmp_array.insert(0,o)
+        if param_index < len(instruction.params):
+            if instruction.params[param_index].operation == HighLevelILOperation.HLIL_VAR:
+                return instruction.params[param_index].var
+            else:
+                tmp_array = []
+                tmp_array.extend(instruction.params[param_index].operands.copy())
+                while tmp_array:
+                    op = tmp_array.pop(0)
+                    if type(op) == HighLevelILInstruction:
+                        if op.operation == HighLevelILOperation.HLIL_VAR:
+                            return op.var
+                        else:
+                            for o in list(reversed(op.operands)):
+                                tmp_array.insert(0,o)
         return None
                     
 
@@ -213,7 +241,7 @@ class FreeScanner:
                     if v not in variables:
                         variables.append(v)
         for variable in variables:
-            for instruction_index in range(instruction.instr_index+1,instruction.il_basic_block.end):
+            for instruction_index in range(instruction.instr_index-1,instruction.il_basic_block.end):
                 current_instruction = hlil_instructions[instruction_index]
                 if current_instruction.operation == HighLevelILOperation.HLIL_ASSIGN and str(variable) in str(current_instruction.dest):
                     if (current_instruction.src.operation == HighLevelILOperation.HLIL_CONST or current_instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR) and current_instruction.src.constant == 0:
