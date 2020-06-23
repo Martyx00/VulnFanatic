@@ -16,7 +16,7 @@ def scan2(bv,selection_addr):
 		bv.create_tag_type("[VulnFanatic] Info","🔵")
 	rules_path = os.path.dirname(os.path.realpath(__file__)) + "/scanner/rules.json"
 	if rules_path:
-		uaf = show_message_box("Use-after-free Scanner", "Would you like to also run an experimental version of the Use-after-free scanner?", buttons=1, icon=1)
+		uaf = show_message_box("Use-after-free Scanner", "Would you like to also run the Use-after-free scanner?\n\n(Note that until the plugin reaches version 3.0 this feature is EXPERIMENTAL ONLY.)", buttons=1, icon=1)
 		scanner = Scanner2(rules_path,bv,uaf)
 		scanner.start()
 	else:
