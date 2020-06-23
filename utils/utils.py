@@ -175,6 +175,11 @@ def get_xrefs_of_symbol(bv,symbol_name):
         symbol_item.extend(bv.symbols[symbol_name+"@IAT"]) if type(bv.symbols[symbol_name+"@IAT"]) is list else symbol_item.append(bv.symbols[symbol_name+"@IAT"])
     except KeyError:
         pass
+    try:
+        symbol_item.extend(bv.symbols[symbol_name+"@PLT"]) if type(bv.symbols[symbol_name+"@PLT"]) is list else symbol_item.append(bv.symbols[symbol_name+"@PLT"])
+    except KeyError:
+        pass
+    
     for symbol in symbol_item if type(symbol_item) is list else [symbol_item]:
         if "sub_" in symbol_name:
             # Unnamed function is represented as address

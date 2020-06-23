@@ -1,11 +1,11 @@
 from binaryninja import *
 from .scanner.scanner2 import Scanner2
+from .scanner.free_scanner2 import FreeScanner2
 from .highlighter.highlighter2 import Highlighter2
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
 import sys
 import time
-
 
 def scan2(bv,selection_addr):
 	# Add tags
@@ -16,8 +16,12 @@ def scan2(bv,selection_addr):
 		bv.create_tag_type("[VulnFanatic] Info","🔵")
 	rules_path = os.path.dirname(os.path.realpath(__file__)) + "/scanner/rules.json"
 	if rules_path:
-		scanner = Scanner2(rules_path,bv)
+		uaf = show_message_box("Use-after-free Scanner", "Would you like to also run the Use-after-free scanner?\n\n(Note that until the plugin reaches version 3.0 this feature is EXPERIMENTAL ONLY.)", buttons=1, icon=1)
+		scanner = Scanner2(rules_path,bv,uaf)
 		scanner.start()
+	else:
+		show_message_box("Scanner Error", "File with scan rules was not found!", buttons=0, icon=2)
+		pass
 
 def highlight2(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]

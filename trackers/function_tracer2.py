@@ -35,12 +35,19 @@ class FunctionTracer:
                     "function_name":current_function.name,
                     "exported": False,
                     "var": None,
+                    "param_var":"N/A",
                     "function":current_function,
                     "call_stack":[{"function":current_function,"address":call_instruction.address}]
                 })
                 continue
                 
             elif param.operation == HighLevelILOperation.HLIL_CONST:
+                if self.current_view.get_string_at(param.constant) != None:
+                    const_type = "constant_ptr"
+                    value = self.current_view.get_string_at(param.constant).value
+                else:
+                    const_type = "constant"
+                    value = hex(param.constant)
                 # Const
                 function_trace_struct["sources"].append({
                     "param": call_instruction.params.index(param),
@@ -48,12 +55,13 @@ class FunctionTracer:
                     "call_basic_block_start": call_instruction.il_basic_block.start,
                     "source_basic_block_start": None,
                     "same_branch": True,
-                    "value": hex(param.constant),
+                    "value": value,
                     "def_instruction_address": None,
-                    "var_type": "constant",
+                    "var_type": const_type,
                     "function_name":current_function.name,
                     "exported": False,
                     "var": None,
+                    "param_var":"N/A",
                     "function":current_function,
                     "call_stack":[{"function":current_function,"address":call_instruction.address}]
                 })
@@ -62,9 +70,40 @@ class FunctionTracer:
             # First this needs to ensure that we work with HLIL_VARS
             param_vars = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
             param_calls = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
+            # No variables, just straight return value from a function call
+            if not param_vars:
+                # Get all function calls
+                tmp_calls = []
+                for call in param_calls:
+                    tmp_calls.append({
+                        "instruction": call,
+                        "call_address": call.address,
+                        "call_index": call.instr_index,
+                        "at_function_name": call.function.source_function.name,
+                        "at_function": call.function.source_function,
+                        "function_name": str(call.dest),
+                        "same_branch": True,
+                        "function_call_basic_block_start": call.il_basic_block.start 
+                    })
+                function_trace_struct["sources"].append({
+                    "param": call_instruction.params.index(param),
+                    "function_calls": tmp_calls,
+                    "call_basic_block_start": call_instruction.il_basic_block.start,
+                    "source_basic_block_start": None,
+                    "same_branch": True,
+                    "value": None,
+                    "def_instruction_address": None,
+                    "var_type": "function_return_value",
+                    "function_name":current_function.name,
+                    "exported": False,
+                    "var": None,
+                    "param_var": "N/A",
+                    "function":current_function,
+                    "call_stack":[{"function":current_function,"address":call_instruction.address}]
+                })
+
             for param_var in param_vars:
                 function_trace_struct["sources"].extend(self.trace_var(param_var,call_instruction.il_basic_block.start))
-            
             # Update param index
             for src in function_trace_struct["sources"]:
                 if src["param"] == None:
@@ -221,7 +260,7 @@ class FunctionTracer:
                             value = hex(def_var.constant)
                             const_type = "constant"
                             # Const ptr
-                            if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                            if def_var.operation == HighLevelILOperation.HLIL_CONST_PTR or self.current_view.get_string_at(def_var.constant) != None:
                                 const_type = "constant_ptr"
                                 try:
                                     value = self.current_view.get_string_at(def_var.constant).value
@@ -327,7 +366,7 @@ class FunctionTracer:
         else:
             variable_appearances = current_function.ssa_form.get_ssa_var_uses(variable["variable"])
         for use in variable_appearances:
-            if use.instr_index < 500000 and time.time() - self.start_time < 600:
+            if use.instr_index < 500000 and time.time():
                 try:
                     dest = use.dest
                 except:

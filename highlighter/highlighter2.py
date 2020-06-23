@@ -26,7 +26,6 @@ class Highlighter2(BackgroundTaskThread):
             self.clear()
 
     def clear(self):
-        #TODO
         fun_trace = FunctionTracer(self.bv)
         results = fun_trace.selected_function_tracer(self.call_instruction,self.current_function)
         self.progress = "[VulnFanatic] Completed tracing. Clearing highlights ..."
