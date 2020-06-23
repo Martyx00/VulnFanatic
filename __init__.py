@@ -7,11 +7,6 @@ import os
 import sys
 import time
 
-
-def test(bv,selection_addr):
-	fs2 = FreeScanner2(bv)
-	fs2.start()
-
 def scan2(bv,selection_addr):
 	# Add tags
 	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
@@ -21,8 +16,12 @@ def scan2(bv,selection_addr):
 		bv.create_tag_type("[VulnFanatic] Info","🔵")
 	rules_path = os.path.dirname(os.path.realpath(__file__)) + "/scanner/rules.json"
 	if rules_path:
-		scanner = Scanner2(rules_path,bv)
+		uaf = show_message_box("Use-after-free Scanner", "Would you like to also run an experimental version of the Use-after-free scanner?", buttons=1, icon=1)
+		scanner = Scanner2(rules_path,bv,uaf)
 		scanner.start()
+	else:
+		show_message_box("Scanner Error", "File with scan rules was not found!", buttons=0, icon=2)
+		pass
 
 def highlight2(bv,selection_addr):
 	current_function = bv.get_functions_containing(selection_addr)[0]
@@ -57,7 +56,6 @@ def clear_highlight2(bv,selection_addr):
 
 
 # Register the plugin
-PluginCommand.register_for_address("[VulnFanatic] Test", "test", test)
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)

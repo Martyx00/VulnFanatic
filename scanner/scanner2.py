@@ -1,15 +1,16 @@
 from binaryninja import *
 import json
-from .free_scanner import FreeScanner
+from .free_scanner2 import FreeScanner2
 from ..trackers.function_tracer2 import FunctionTracer
 from .query import Sources, _or_, _and_
 from ..utils.utils import get_xrefs_of_symbol
 
 class Scanner2(BackgroundTaskThread):
-    def __init__(self,rules_path,bv):
+    def __init__(self,rules_path,bv,uaf):
         self.progress_banner = f"[VulnFanatic] Running the scanner ... "
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.bv = bv
+        self.uaf_scan = uaf
         with open(rules_path,'r') as rules_file:
             self.rules = json.load(rules_file)
          
@@ -41,9 +42,9 @@ class Scanner2(BackgroundTaskThread):
                                     xref.function.source_function.add_user_address_tag(xref.address, tag)
                                     #log_info(variant["confidence"] + " " +f'{test_case["name"]}')
                                     break
-        self.progress = f"{self.progress_banner} - Running Use-after-free scanner ... (EXPERIMENTAL ONLY)"
-        free = FreeScanner(self.bv)
-        free.trace_free()
+        if self.uaf_scan:
+            free = FreeScanner2(self.bv)
+            free.start()
     
     def create_description(self,sources):
         desc = ""
