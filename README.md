@@ -1,5 +1,5 @@
 
-# VulnFanatic (v2.1)
+# VulnFanatic (2.1)
 Author: **Martin Petran**
 
 _Binary Ninja assistant plugin for vulnerability research._
@@ -22,7 +22,7 @@ Scanner is using set of rules and function tracker to perform basic analysis to 
 
 Example of discovered issue:
 
-![Sample](https://github.com/Martyx00/VulnFanatic/tree/master/static/sample.png "Sample")
+![Sample](https://github.com/Martyx00/VulnFanatic/blob/master/static/sample.png?raw=true "Sample")
 
 
 ## Minimum Version
