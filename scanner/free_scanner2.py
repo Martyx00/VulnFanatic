@@ -84,12 +84,16 @@ class FreeScanner2(BackgroundTaskThread):
                             return True 
         return False
 
+    # TODO this needs rework to take into account paths in the function flow
     def used_after(self,instructions,param_vars,instruction):
         uaf = False
         uaf_if = False
         for i in instructions:
             if i and i.instr_index != instruction.instr_index:
                 for param in param_vars["possible_values"]:
+                    #if i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)) and not uaf:
+                        # Assigned new value before it is ever used
+                    #    return False, False
                     #if (re.search(param,str(i)) and not (i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest))) and not i.operation == HighLevelILOperation.HLIL_IF):
                     if (re.search(param,str(i)) and not i.operation == HighLevelILOperation.HLIL_ASSIGN and not i.operation == HighLevelILOperation.HLIL_IF):
                         if self.not_if_dependent(instruction,param_vars):
