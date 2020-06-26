@@ -84,7 +84,8 @@ class FreeScanner2(BackgroundTaskThread):
                             return True 
         return False
 
-    # TODO this needs rework to take into account paths in the function flow
+    # TODO this needs rework to take into account paths in the function flow -> pathing is required for proper use tracking
+    # A path needs to exist which leads to the use of the variable without prior initialization
     def used_after(self,instructions,param_vars,instruction):
         uaf = False
         uaf_if = False
@@ -100,6 +101,26 @@ class FreeScanner2(BackgroundTaskThread):
                             uaf_if = True
                         uaf = True
         return uaf, uaf_if
+
+    def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
+        # Go block by block from the instruction (in loops we need to go until we pass the loop boundary for second time, for non-loops until end of function)
+        # if the variable is initialized on the given path, stop tracking following blocks
+        # if the variable is detected as being used check for ifs and return True
+        # This way blocks that follow variable initialization should not be taken into account
+        blocks = [{"block":instruction.il_basic_block,"start":instruction.instr_index + 1,"end":instruction.il_basic_block.end}]
+        loop_pass = False
+        while blocks:
+            current_block = blocks.pop()
+            if current_block.start == in_loop["loop_start"] and loop_pass:
+                # Now we are 100% sure that the whole loop was searched throughs
+                pass
+            # First check all instructions inside current block
+            for index in range(current_block["start"],current_block["end"]):
+                pass
+            # Check following blocks
+            for edge in current_block["block"].outgoing_edges:
+                pass
+        pass
 
     def get_xrefs_with_wrappers(self):
         free_xrefs = []
@@ -176,7 +197,7 @@ class FreeScanner2(BackgroundTaskThread):
         parent = instruction.parent
         while parent != None:
             if parent.operation == HighLevelILOperation.HLIL_DO_WHILE or parent.operation == HighLevelILOperation.HLIL_FOR or parent.operation == HighLevelILOperation.HLIL_WHILE:
-                loop_object = {"loop":parent,"in_loop":True}
+                loop_object = {"loop":parent,"in_loop":True,"loop_start":parent.il_basic_block.start}
                 return loop_object
             parent = parent.parent
         return loop_object
