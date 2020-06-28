@@ -15,8 +15,10 @@ class FreeScanner2(BackgroundTaskThread):
     def run(self):
         free_xrefs = self.get_xrefs_with_wrappers()
         counter = 1
+        total = len(free_xrefs)
         # With all wrappers detected lets do the scan
         for free_xref in free_xrefs:
+            self.progress = f"{self.progress_banner} ({counter}/{total})"
             counter += 1
             param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
             uaf,uaf_if,not_init,null_set = self.scan(free_xref["instruction"],param_vars)
@@ -102,6 +104,8 @@ class FreeScanner2(BackgroundTaskThread):
                         uaf = True
         return uaf, uaf_if
 
+    # TODO also use in loop boundary should not count 
+    # TODO avoid self-use in loops
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         # Go block by block from the instruction (in loops we need to go until we pass the loop boundary for second time, for non-loops until end of function)
         # if the variable is initialized on the given path, stop tracking following blocks
