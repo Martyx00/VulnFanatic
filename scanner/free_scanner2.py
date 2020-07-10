@@ -47,32 +47,35 @@ class FreeScanner2(BackgroundTaskThread):
         # Check if instruction is in loop so that we know how to proceed with checks further
         in_loop = self.is_in_loop(instruction)
         instructions = []
-        if in_loop["in_loop"]:
+        '''if in_loop["in_loop"]:
             # In loop
             for i in in_loop["loop"].body.lines:
                 instructions.append(i.il_instruction)
             # Keep natural order of instructions for loops
-            '''ins_index = -1
+            ins_index = -1
             while ins_index != instruction.instr_index:
                 ins = instructions.pop(0)
                 instructions.append(ins)
                 if ins:
                     ins_index = ins.instr_index
                 else:
-                    break'''
+                    break
         else:
             # set instructions to go through at current instruction -1, this will ensure that we do no lose info if null is set before a call to delete operator for example
-            instructions = current_hlil_instructions[instruction.instr_index-1:]
+            instructions = current_hlil_instructions[instruction.instr_index-1:]'''
         # Check if param set to null
         is_set_to_null = self.is_set_to_null(instructions,param_vars)
         
         # Check if param is used after the free call, if not in loop get rid of first instruction
         if not in_loop["in_loop"]:
-            used_after, used_after_with_if = self.used_after(instructions[1:],param_vars,instruction)
+            #used_after, used_after_with_if = self.used_after(instructions[1:],param_vars,instruction)
+            used_after, used_after_with_if = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
             not_initialized_before_free = True
         else:
+            # TODO check if below is needed
             not_initialized_before_free = self.get_preallocations(instruction,param_vars,instructions,in_loop["loop"].il_basic_block.start)
-            used_after, used_after_with_if = self.used_after(instructions,param_vars,instruction)
+            #used_after, used_after_with_if = self.used_after(instructions,param_vars,instruction)
+            used_after, used_after_with_if = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
         return used_after, used_after_with_if, not_initialized_before_free, is_set_to_null
 
     def is_set_to_null(self,instructions,param_vars):
@@ -106,25 +109,54 @@ class FreeScanner2(BackgroundTaskThread):
 
     # TODO also use in loop boundary should not count 
     # TODO avoid self-use in loops
+    # TODO cmdedit_read_input -> nested loops cause endless looping need to detect that and avoid
+    # TODO etlnetmain -> block 0x161 part of endless loop
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         # Go block by block from the instruction (in loops we need to go until we pass the loop boundary for second time, for non-loops until end of function)
         # if the variable is initialized on the given path, stop tracking following blocks
         # if the variable is detected as being used check for ifs and return True
         # This way blocks that follow variable initialization should not be taken into account
+        loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
+        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN]
+        skip_operations.extend(loops)
+        uaf = False
+        uaf_if = False
         blocks = [{"block":instruction.il_basic_block,"start":instruction.instr_index + 1,"end":instruction.il_basic_block.end}]
         loop_pass = False
+        nested_loops = []
+        visited_blocks = []
         while blocks:
+            initialized = False
             current_block = blocks.pop()
-            if current_block.start == in_loop["loop_start"] and loop_pass:
+            visited_blocks.append(current_block["start"])
+            if current_block["start"] < len(hlil_instructions) and hlil_instructions[current_block["start"]].operation in loops:
+                nested_loops.append(current_block["start"])
+            if in_loop["in_loop"] and current_block["start"] == in_loop["loop_start"] and loop_pass:
                 # Now we are 100% sure that the whole loop was searched throughs
-                pass
+                # This needs to finnish for all paths
+                continue
+            elif in_loop["in_loop"] and current_block["start"] == in_loop["loop_start"] and not loop_pass:
+                loop_pass = True
             # First check all instructions inside current block
             for index in range(current_block["start"],current_block["end"]):
-                pass
-            # Check following blocks
-            for edge in current_block["block"].outgoing_edges:
-                pass
-        pass
+                i = hlil_instructions[index]
+                for param in param_vars["possible_values"]:
+                    if i and i.instr_index != instruction.instr_index:
+                        if i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)):
+                            # Found initialization of the variable
+                            initialized = True
+                            break
+                        if (re.search(param,str(i)) and not i.operation in skip_operations):
+                            if self.not_if_dependent(instruction,param_vars):
+                                uaf_if = True
+                            uaf = True
+                            return uaf, uaf_if
+            # Add following blocks only if current block have not initialized the variable
+            if not initialized:
+                for edge in current_block["block"].outgoing_edges:
+                    if edge.target.start not in visited_blocks:
+                        blocks.append({"block":edge.target,"start":edge.target.start,"end":edge.target.end})
+        return uaf, uaf_if
 
     def get_xrefs_with_wrappers(self):
         free_xrefs = []
