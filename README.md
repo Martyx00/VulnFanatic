@@ -29,7 +29,7 @@ Example of discovered issue:
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * 2166
+ * 2263
 
 ## License
 
