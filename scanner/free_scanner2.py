@@ -9,7 +9,7 @@ class FreeScanner2(BackgroundTaskThread):
         self.current_view = bv
         self.progress_banner = f"[VulnFanatic] Running the scanner ... looking for Use-after-free issues"
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
-        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","operator delete"]
+        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete"]
         #self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale"]
 
     def run(self):
@@ -20,26 +20,27 @@ class FreeScanner2(BackgroundTaskThread):
         for free_xref in free_xrefs:
             self.progress = f"{self.progress_banner} ({counter}/{total})"
             counter += 1
-            param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
-            uaf,uaf_if,null_set = self.scan(free_xref["instruction"],param_vars)
-            current_free_xref_obj = {
-                "used_after": uaf,
-                "without_if": uaf_if,
-                "is_set_to_null": null_set,
-                "struct_free_wrapper": free_xref["struct_free_wrapper"]
-            }
-            # First process parameter variables
-            confidence = ""
-            if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"] and not current_free_xref_obj["is_set_to_null"]:
-                confidence = "Medium"
-            elif current_free_xref_obj["used_after"] and not current_free_xref_obj["is_set_to_null"]:
-                confidence = "Low"
-            elif not current_free_xref_obj["is_set_to_null"] and current_free_xref_obj["struct_free_wrapper"]:
-                confidence = "Info"
-            if confidence:
-                tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
-                free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
-            #log_info(str(current_free_xref_obj))
+            if free_xref["param_index"] < len(free_xref["instruction"].params):
+                param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
+                uaf,uaf_if,null_set = self.scan(free_xref["instruction"],param_vars)
+                current_free_xref_obj = {
+                    "used_after": uaf,
+                    "without_if": uaf_if,
+                    "is_set_to_null": null_set,
+                    "struct_free_wrapper": free_xref["struct_free_wrapper"]
+                }
+                # First process parameter variables
+                confidence = ""
+                if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"] and not current_free_xref_obj["is_set_to_null"]:
+                    confidence = "Medium"
+                elif current_free_xref_obj["used_after"] and not current_free_xref_obj["is_set_to_null"]:
+                    confidence = "Low"
+                elif not current_free_xref_obj["is_set_to_null"] and current_free_xref_obj["struct_free_wrapper"]:
+                    confidence = "Info"
+                if confidence:
+                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
+                    free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                #log_info(str(current_free_xref_obj))
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)
@@ -88,12 +89,8 @@ class FreeScanner2(BackgroundTaskThread):
 
     # TODO Double free
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
-        # Go block by block from the instruction (in loops we need to go until we pass the loop boundary for second time, for non-loops until end of function)
-        # if the variable is initialized on the given path, stop tracking following blocks
-        # if the variable is detected as being used check for ifs and return True
-        # This way blocks that follow variable initialization should not be taken into account
         loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
-        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN]
+        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN,HighLevelILOperation.HLIL_VAR_INIT]
         skip_operations.extend(loops)
         uaf = False
         uaf_if = False
@@ -118,7 +115,8 @@ class FreeScanner2(BackgroundTaskThread):
                 i = hlil_instructions[index]
                 for param in param_vars["possible_values"]:
                     if i and i.instr_index != instruction.instr_index:
-                        if i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)):
+                        if (i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)) or 
+                        i.operation == HighLevelILOperation.HLIL_VAR_INIT and re.search(param,str(i.dest))):
                             # Found initialization of the variable
                             initialized = True
                             break
