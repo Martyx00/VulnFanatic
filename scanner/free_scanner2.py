@@ -234,27 +234,27 @@ class FreeScanner2(BackgroundTaskThread):
             except KeyError:
                 pass
             # Operator Delete refs -> TODO this takes long time -> REWORK for sure
+            
             if symbol_name == "operator delete":
-                if len(self.current_view.functions) < len(self.current_view.symbols):
-                    symbol_list = self.current_view.functions
-                    name = True
-                else:
-                    symbol_list = self.current_view.symbols
-                    name = False
-                for symbol in symbol_list:
-                    if name:
-                        sym = symbol.name
+                symbols_mag = [list(self.current_view.symbols.items())] 
+                while symbols_mag:
+                    current_symbols = symbols_mag.pop()
+                    if len(current_symbols) != 1:
+                        l = round(len(current_symbols)/2)
+                        if "operator delete" in str(current_symbols[l:]):
+                            symbols_mag.append(current_symbols[l:])
+                        if "operator delete" in str(current_symbols[:l]):
+                            symbols_mag.append(current_symbols[:l])
                     else:
-                        sym = symbol
-                    try:
+                        log_info(str(current_symbols))
+                        log_info(str(current_symbols[0]))
+                        sym = current_symbols[0][0]
                         if type(self.current_view.symbols[sym]) is list:
                             for item in self.current_view.symbols[sym]:
                                 if "operator delete" in item.full_name and item not in symbol_item:
                                     symbol_item.append(item)
                         elif "operator delete" in self.current_view.symbols[sym].full_name and self.current_view.symbols[sym] not in symbol_item:
                             symbol_item.append(self.current_view.symbols[sym])
-                    except:
-                        pass
             for symbol in symbol_item if type(symbol_item) is list else [symbol_item]:
                 for ref in self.current_view.get_code_refs(symbol.address):
                     # Get exact instruction index
