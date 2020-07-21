@@ -3,13 +3,12 @@ import re
 from ..utils.utils import extract_hlil_operations
 import time
 
-
 class FreeScanner2(BackgroundTaskThread):
     def __init__(self,bv):
         self.current_view = bv
         self.progress_banner = f"[VulnFanatic] Running the scanner ... looking for Use-after-free issues"
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
-        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete"]
+        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete","operator delete[]"]
         #self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale"]
 
     def run(self):
@@ -22,12 +21,11 @@ class FreeScanner2(BackgroundTaskThread):
             counter += 1
             if free_xref["param_index"] < len(free_xref["instruction"].params):
                 param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
-                uaf,uaf_if,double,null_set = self.scan(free_xref["instruction"],param_vars)
+                uaf,uaf_if,double = self.scan(free_xref["instruction"],param_vars)
                 current_free_xref_obj = {
                     "used_after": uaf,
                     "without_if": uaf_if,
                     "double_free": double,
-                    "is_set_to_null": null_set,
                     "struct_free_wrapper": free_xref["struct_free_wrapper"]
                 }
                 if current_free_xref_obj["double_free"] and current_free_xref_obj["without_if"]:
@@ -40,14 +38,18 @@ class FreeScanner2(BackgroundTaskThread):
                     continue
                 # First process parameter variables
                 confidence = ""
-                if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"] and not current_free_xref_obj["is_set_to_null"]:
+                if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"]:
                     confidence = "Medium"
-                elif current_free_xref_obj["used_after"] and not current_free_xref_obj["is_set_to_null"]:
+                elif current_free_xref_obj["used_after"]:
                     confidence = "Low"
-                elif not current_free_xref_obj["is_set_to_null"] and current_free_xref_obj["struct_free_wrapper"]:
+                elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
                 if confidence:
-                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], "Potential Use-afer-free Vulnerability", True)
+                    if confidence == "Info":
+                        desc = "Free wrapper worth to investigate."
+                    else:
+                        desc = "Potential Use-afer-free Vulnerability"
+                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
 
                 #log_info(str(current_free_xref_obj))
@@ -56,31 +58,16 @@ class FreeScanner2(BackgroundTaskThread):
         current_hlil_instructions = list(instruction.function.instructions)
         # Check if instruction is in loop so that we know how to proceed with checks further
         in_loop = self.is_in_loop(instruction)
-        instructions = []
-        # Check if param set to null
-        is_set_to_null = self.is_set_to_null(instructions,param_vars)
-        
         # Check if param is used after the free call, if not in loop get rid of first instruction
         if not in_loop["in_loop"]:
             used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
         else:
             used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
-        return used_after, used_after_with_if, double, is_set_to_null
-
-    def is_set_to_null(self,instructions,param_vars):
-        for i in instructions:
-            if i:
-                for param in param_vars["possible_values"]:
-                    if i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)):
-                        # one of the possible values was found in the instruction which assigns value
-                        if (i.src.operation == HighLevelILOperation.HLIL_CONST or i.src.operation == HighLevelILOperation.HLIL_CONST_PTR) and i.src.constant == 0:
-                            # Null assgined -> return True
-                            return True 
-        return False
+        return used_after, used_after_with_if, double
 
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
-        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN,HighLevelILOperation.HLIL_VAR_INIT]
+        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN,HighLevelILOperation.HLIL_VAR_INIT,HighLevelILOperation.HLIL_RET]
         skip_operations.extend(loops)
         uaf = False
         uaf_if = False
@@ -217,6 +204,12 @@ class FreeScanner2(BackgroundTaskThread):
         return if_dep
 
     def get_xrefs_to_call(self,function_names):
+        altered_names = []
+        for f in function_names:
+            if f[:4] == "sub_":
+                altered_names.append(f"0x{f[4:]}")
+            else:
+                altered_names.append(f)
         checked_functions = []
         xrefs = []
         for symbol_name in function_names:
@@ -233,8 +226,6 @@ class FreeScanner2(BackgroundTaskThread):
                 symbol_item.extend(self.current_view.symbols[symbol_name+"@PLT"]) if type(self.current_view.symbols[symbol_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[symbol_name+"@PLT"])
             except KeyError:
                 pass
-            # Operator Delete refs -> TODO this takes long time -> REWORK for sure
-            
             if symbol_name == "operator delete":
                 symbols_mag = [list(self.current_view.symbols.items())] 
                 while symbols_mag:
@@ -246,15 +237,13 @@ class FreeScanner2(BackgroundTaskThread):
                         if "operator delete" in str(current_symbols[:l]):
                             symbols_mag.append(current_symbols[:l])
                     else:
-                        log_info(str(current_symbols))
-                        log_info(str(current_symbols[0]))
                         sym = current_symbols[0][0]
                         if type(self.current_view.symbols[sym]) is list:
                             for item in self.current_view.symbols[sym]:
                                 if "operator delete" in item.full_name and item not in symbol_item:
                                     symbol_item.append(item)
                         elif "operator delete" in self.current_view.symbols[sym].full_name and self.current_view.symbols[sym] not in symbol_item:
-                            symbol_item.append(self.current_view.symbols[sym])
+                            symbol_item.append(self.current_view.symbols[sym])            
             for symbol in symbol_item if type(symbol_item) is list else [symbol_item]:
                 for ref in self.current_view.get_code_refs(symbol.address):
                     # Get exact instruction index
@@ -269,6 +258,6 @@ class FreeScanner2(BackgroundTaskThread):
                                 # Extract the call here
                                 calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
                                 for call in calls:
-                                    if str(call.dest) in function_names and call not in xrefs:
+                                    if str(call.dest) in altered_names and call not in xrefs:
                                         xrefs.append(call)
         return xrefs
