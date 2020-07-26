@@ -366,7 +366,7 @@ class FunctionTracer:
         else:
             variable_appearances = current_function.ssa_form.get_ssa_var_uses(variable["variable"])
         for use in variable_appearances:
-            if use.instr_index < 500000 and time.time():
+            if use.instr_index < 500000:
                 try:
                     dest = use.dest
                 except:

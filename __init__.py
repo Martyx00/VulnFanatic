@@ -24,7 +24,11 @@ def scan2(bv,selection_addr):
 		pass
 
 def highlight2(bv,selection_addr):
-	current_function = bv.get_functions_containing(selection_addr)[0]
+	try:
+		current_function = bv.get_functions_containing(selection_addr)[0]
+	except IndexError:
+		show_message_box("Highlighter Error", "Not a valid highlight!", buttons=0, icon=2)
+		return
 	function_calls_at_address = []
 	function_calls_at_address = extract_hlil_operations(current_function.hlil,[HighLevelILOperation.HLIL_CALL],instruction_address=selection_addr)
 	if len(function_calls_at_address) == 0:
