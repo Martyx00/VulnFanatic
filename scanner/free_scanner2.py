@@ -104,6 +104,9 @@ class FreeScanner2(BackgroundTaskThread):
                             if self.not_if_dependent(instruction,param_vars):
                                 uaf_if = True
                             uaf = True
+                            if i.function.source_function.name == "plugins_free":
+                                log_info(f"[*] Use detected at {i.function.source_function.name} in instruction {str(i)}")
+                                log_info(str(param_vars["possible_values"]))
                             return uaf, uaf_if, double
             # Add following blocks only if current block have not initialized the variable
             if not initialized:
@@ -143,7 +146,7 @@ class FreeScanner2(BackgroundTaskThread):
                         })
                         append = False
         return free_xrefs
-
+    
     def prepare_relevant_variables(self,param):
         param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
         param_vars = []
@@ -165,11 +168,10 @@ class FreeScanner2(BackgroundTaskThread):
             for d in definitions:
                 if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN)and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
                     val = str(param).replace(str(var),str(d.src.postfix_operands[0]))
-                    tmp_possible.append(val)
+                    #tmp_possible.append(val)
+                    tmp_possible.append(str(d.src))
                     vars["vars"].append(d.src.postfix_operands[0])
                     param_vars.append(d.src.postfix_operands[0])
-                    for v in vars["vars"]:
-                        val.replace(str(v),str(v)+"\\:?\\d*\\.?\\w*")
         for val in tmp_possible:
             tmp_val = val
             positions = [(m.start(0), m.end(0)) for m in re.finditer(r':\d+\.\w+', val)]
