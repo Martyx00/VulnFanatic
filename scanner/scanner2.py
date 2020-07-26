@@ -1,5 +1,6 @@
 from binaryninja import *
 import json
+import time
 from .free_scanner2 import FreeScanner2
 from ..trackers.function_tracer2 import FunctionTracer
 from .query import Sources, _or_, _and_
@@ -15,8 +16,10 @@ class Scanner2(BackgroundTaskThread):
             self.rules = json.load(rules_file)
          
     def run(self):
+        start = time.time()
         # For each rule in self.rules
         function_counter = 0
+        issue_counter = 0
         xrefs_cache = dict()
         for function in self.rules["functions"]:
             function_counter += 1
@@ -40,8 +43,10 @@ class Scanner2(BackgroundTaskThread):
                                     details = self.create_description(query_result.get_sources())
                                     tag = xref.function.source_function.create_tag(self.bv.tag_types["[VulnFanatic] "+variant["confidence"]], f'{test_case["name"]}: {test_case["details"]}\n{details}', True)
                                     xref.function.source_function.add_user_address_tag(xref.address, tag)
+                                    issue_counter += 1
                                     #log_info(variant["confidence"] + " " +f'{test_case["name"]}')
                                     break
+        log_info(f"[*] Completed in {time.time() - start} and flaged {issue_counter} places")
         if self.uaf_scan:
             free = FreeScanner2(self.bv)
             free.start()

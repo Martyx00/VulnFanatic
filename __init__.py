@@ -1,11 +1,23 @@
 from binaryninja import *
 from .scanner.scanner2 import Scanner2
+from .scanner.scanner3 import Scanner3
 from .scanner.free_scanner2 import FreeScanner2
 from .highlighter.highlighter2 import Highlighter2
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
 import sys
 import time
+
+
+def scan3(bv,selection_addr):
+	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
+		bv.create_tag_type("[VulnFanatic] High","🔴")
+		bv.create_tag_type("[VulnFanatic] Medium","🟠")
+		bv.create_tag_type("[VulnFanatic] Low","🟡")
+		bv.create_tag_type("[VulnFanatic] Info","🔵")
+	scanner = Scanner3(bv)
+	scanner.start()
+
 
 def scan2(bv,selection_addr):
 	# Add tags
@@ -61,6 +73,7 @@ def clear_highlight2(bv,selection_addr):
 
 # Register the plugin
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
+PluginCommand.register_for_address("[VulnFanatic] TEST SCAN3", "TEST SCAN 3", scan3)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)
 
