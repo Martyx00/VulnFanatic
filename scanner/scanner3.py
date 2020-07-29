@@ -40,6 +40,43 @@ class Scanner3(BackgroundTaskThread):
 
         log_info(f"[*] Done in {time.time()-start}")
 
+
+    '''
+    KeyError -> not to be considered
+    {
+        "High":{
+            "0":{
+                "affected_by":[...],
+                "not_affected_by": [...],
+                "exported": True/False,
+                "if_dependant":True/False,
+                "constants": [...]
+            },
+            "1":{
+                "affected_by":[...],
+                "not_affected_by": [...],
+                "exported": True/False,
+                "if_dependant":True/False,
+                "constants": [...]
+            }
+            
+        },
+        "Medium":{
+            ...
+        }
+        "Info": {
+            ...
+        }
+    }
+    '''
+    def evaluate_results(self,trace):
+        # For each level of confidence
+        # Go through requirements and comapre them with trace[key]
+        # if all param requirments of a confidence level are met
+        for test in self.rules["test_cases"]:
+            pass
+        pass
+
     def trace(self,xref,params_arg):
         # Get list of isntructions
         hlil_instructions = list(xref.function.instructions)
