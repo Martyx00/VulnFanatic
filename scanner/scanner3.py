@@ -10,7 +10,7 @@ import time
  "0":{
         "constant": False,
         "user_controled": True,
-        "param_of_exported: : True,
+        "exported: : True,
         "if_dependant": True,
         "affected_by": ["strlen,toa,toi"],
         "affected_by_without_if": ["alloc"]
@@ -35,7 +35,7 @@ class Scanner3(BackgroundTaskThread):
             function_counter += 1
             function_refs = self.get_function_xrefs(function["function_name"])
             for xref in function_refs:
-                self.trace(xref,function["trace_params"])
+                self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter = 1
 
         log_info(f"[*] Done in {time.time()-start}")
@@ -44,38 +44,91 @@ class Scanner3(BackgroundTaskThread):
     '''
     KeyError -> not to be considered
     {
-        "High":{
-            "0":{
-                "affected_by":[...],
-                "not_affected_by": [...],
-                "exported": True/False,
-                "if_dependant":True/False,
-                "constants": [...]
-            },
-            "1":{
-                "affected_by":[...],
-                "not_affected_by": [...],
-                "exported": True/False,
-                "if_dependant":True/False,
-                "constants": [...]
-            }
-            
-        },
-        "Medium":{
-            ...
-        }
-        "Info": {
-            ...
-        }
+        "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": [...],
+                            "exported": True/False,
+                            "if_dependant": True/False,
+                            "constants": [...],
+                            "is_constant": true,
+                            "affected_by_in_same_block": []
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": [],
+                            "exported": True/False,
+                            "if_dependant": True/False,
+                            "constants": [...],
+                            "is_constant": true,
+                            "affected_by_in_same_block": []
+                        }
+                    }
+                ],
+    }
+
+
+    "0":{
+        "is_constant": False,
+        "constant_value": [],
+        "exported": False,
+        "if_dependant": True,
+        "affected_by": [],
+        "affected_by_in_same_block": []
     }
     '''
-    def evaluate_results(self,trace):
+    def evaluate_results(self,trace,function_name,xref):
         # For each level of confidence
         # Go through requirements and comapre them with trace[key]
-        # if all param requirments of a confidence level are met
+        # if all param requirments of a confidence level are met mark as an issue an go to next one
+        confidence = ["High","Medium","Low","Info"]
         for test in self.rules["test_cases"]:
-            pass
-        pass
+            if function_name in test["functions"]:
+                for conf in confidence:
+                    try:
+                        current_confidence = test["checks"][conf]
+                    except KeyError:
+                        continue
+                    for current_rule in current_confidence:
+                        matches = True
+                        for param_key in current_rule:
+                            for check_key in current_rule[param_key]:
+                                # This takes the approach that if anything is false, break
+                                if current_rule[param_key][check_key] is list:
+                                    if check_key == "not_affected_by":
+                                        if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                            matches = False
+                                            log_info(f"[*] Matched for {check_key}")
+                                            break
+                                    elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
+                                        matches = False
+                                        log_info(f"[*] Matched for {check_key}")
+                                        break
+                                else:
+                                    if not trace[param_key][check_key] == current_rule[param_key][check_key]:
+                                        matches = False
+                                        log_info(f"[*] Matched for {check_key}")
+                                        break
+                        if matches:
+                            details = "dummy"
+                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n{details}', True)
+                            xref.function.source_function.add_user_address_tag(xref.address, tag)
+                            log_info(f"[*] RULE MATCHED FOR {function_name}: {trace}")
+                            break
+                    if matches:
+                        break
+
+
+    def is_in_array(self,a,b):
+        for item_a in a:
+            if item_a in b:
+                return True
+        return False
 
     def trace(self,xref,params_arg):
         # Get list of isntructions
@@ -88,9 +141,9 @@ class Scanner3(BackgroundTaskThread):
         while params:
             p = params.pop()
             trace_struct[str(p)] = {
-                "constant": False,
-                "user_controlled": False,
-                "param_of_exported": False,
+                "is_constant": False,
+                "constant_value": [],
+                "exported": False,
                 "if_dependant": True,
                 "affected_by": [],
                 "affected_by_in_same_block": []
@@ -103,7 +156,8 @@ class Scanner3(BackgroundTaskThread):
             param_vars = self.prepare_relevant_variables(xref.params[p])
             if not param_vars["vars"]:
                 # handle constant here
-                trace_struct[str(p)]["constant"] = xref.params[p]
+                trace_struct[str(p)]["is_constant"] = True
+                trace_struct[str(p)]["constant_value"].append(xref.params[p])
                 continue
             #log_info(str(param_vars))
             # The main tracing loop
@@ -156,6 +210,10 @@ class Scanner3(BackgroundTaskThread):
                     # Check of param_vars["vars"] contains arg and look further and mark exported function params where applicable
                     for v in param_vars["vars"]:
                         if v in current_block["block"].function.parameter_vars:
+                            for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
+                                if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_block["block"].function.name:
+                                    # Exported function
+                                    trace_struct[str(p)]["exported"] = True
                             par_index = list(current_block["block"].function.parameter_vars).index(v)
                             # TODO
                             # Visited blocks need to be copied! and contain function name

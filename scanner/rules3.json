@@ -358,6 +358,46 @@
                 "_vwprintf_s_l",
                 "vwprintf_s_l"
             ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "0":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+
+            },
             "variants":[
                 {
                     "confidence": "High",
@@ -382,7 +422,7 @@
                 "_objc_msgSend@PLT",
                 "objc_msgSend@PLT"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(_and_(sources.get().param(1).constant_contains(\"alertWithMessageText\"),_or_(sources.get().param(6).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(6).source_type(\"parameter\").exported().same_branch())),_and_(_or_(sources.get().param(1).constant_contains(\"appendFormat:\"),sources.get().param(1).constant_contains(\"stringByAppendingFormat:\"),sources.get().param(1).constant_contains(\"stringWithFormat:\")),_or_(sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(2).source_type(\"parameter\").exported().same_branch())),_and_(sources.get().param(1).constant_contains(\"raise:format\"),_or_(sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(3).source_type(\"parameter\").exported().same_branch())))"
@@ -483,7 +523,7 @@
                 "__printf_chk",
                 "__vprintf_chk"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -551,7 +591,7 @@
                 "__vfwprintf_chk",
                 "__vfprintf_chk" 
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -584,7 +624,7 @@
                 "__vsprintf_chk" 
                 
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(3).source_type(\"parameter\").exported().same_branch(),sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -611,7 +651,7 @@
                 "__vsnprintf_chk"
                 
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(4).source_type(\"parameter\").exported().same_branch(),sources.get().param(4).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -639,7 +679,7 @@
                 "lstrcpyA",
                 "lstrcpyW"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
@@ -671,7 +711,7 @@
                 "lstrcatA",
                 "lstrcatW"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
@@ -699,7 +739,7 @@
                 "lstrcpynA",
                 "lstrcpynW"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
@@ -721,7 +761,7 @@
                 "strncat",
                 "_strncat"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
@@ -745,7 +785,7 @@
                 "wmemcpy",
                 "_wmemcpy"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
@@ -769,7 +809,7 @@
                 "wmemmove",
                 "_wmemmove"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
@@ -797,7 +837,7 @@
                 "_mbscpy_s_l",
                 "mbscpy_s_l"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
@@ -829,7 +869,7 @@
                 "_mbscat_s_l",
                 "mbscat_s_l"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
@@ -855,7 +895,7 @@
                 "gets",
                 "_gets"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"sources.get().param(0)"
@@ -871,7 +911,7 @@
                 "fscanf",
                 "_fscanf"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"sources.get().param(0)"
@@ -885,7 +925,7 @@
                 "sprintf",
                 "_sprintf"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "Medium",
                     "where":"_or_(sources.get().params_from(2).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -909,7 +949,7 @@
                 "wmemcpy_s",
                 "_wmemcpy_s"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_constant())"
@@ -933,7 +973,7 @@
                 "wmemmove_s",
                 "_wmemmove_s"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_constant())"
@@ -955,7 +995,7 @@
                 "snprintf",
                 "_snprintf"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
@@ -977,7 +1017,7 @@
                 "vsprintf",
                 "_vsprintf"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -999,7 +1039,7 @@
                 "vsnprintf",
                 "_vsnprintf"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_and_(_or_(sources.get().param(3).source_type(\"parameter\").exported().same_branch(),sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
@@ -1025,7 +1065,7 @@
                 "wpopen",
                 "_wpopen"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(sources.get().param(0).source_type(\"parameter\").exported().same_branch(),sources.get().param(0).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
@@ -1074,7 +1114,7 @@
                 "___strcpy_chk",
                 "___memmove_chk"
             ],
-            "variants":[
+            "checks":{},"variants":[
                 {
                     "confidence": "Medium",
                     "where":"sources.get().param(0).same_branch_function_call(\"alloc\")"
