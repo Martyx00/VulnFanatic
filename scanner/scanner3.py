@@ -5,7 +5,6 @@ from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
 import time
 
-
 '''
  "0":{
         "constant": False,
@@ -18,26 +17,29 @@ import time
 
 On lighttpd competing against 431
 '''
-
+# TODO run UAF scanner
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
-        self.progress_banner = f"[VulnFanatic] Running the scanner ... "
+        self.progress_banner = f"[VulnFanatic] Running the scanner ..."
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.current_view = bv
+        self.xrefs_cache = dict()
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
 
     def run(self):
         start = time.time()
         function_counter = 0
-        xrefs_cache = dict()
+        
         for function in self.rules["functions"]:
             function_counter += 1
             function_refs = self.get_function_xrefs(function["function_name"])
+            xrefs_count = len(function_refs)
+            xref_counter = 0
             for xref in function_refs:
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
-                xref_counter = 1
-
+                xref_counter += 1
+                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({xref_counter}/{xrefs_count})"
         log_info(f"[*] Done in {time.time()-start}")
 
 
@@ -103,22 +105,18 @@ class Scanner3(BackgroundTaskThread):
                                     if check_key == "not_affected_by":
                                         if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
                                             matches = False
-                                            log_info(f"[*] Matched for {check_key}")
                                             break
                                     elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
                                         matches = False
-                                        log_info(f"[*] Matched for {check_key}")
                                         break
                                 else:
                                     if not trace[param_key][check_key] == current_rule[param_key][check_key]:
                                         matches = False
-                                        log_info(f"[*] Matched for {check_key}")
                                         break
                         if matches:
                             details = "dummy"
                             tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n{details}', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
-                            log_info(f"[*] RULE MATCHED FOR {function_name}: {trace}")
                             break
                     if matches:
                         break
@@ -152,7 +150,6 @@ class Scanner3(BackgroundTaskThread):
             if p < 0:
                 for t_p in range(abs(p),len(xref.params)):
                     params.append(t_p)
-            # TODO is peresence of any parameter in param_vars["vars"] a good indicator of param source?
             param_vars = self.prepare_relevant_variables(xref.params[p])
             if not param_vars["vars"]:
                 # handle constant here
@@ -167,37 +164,40 @@ class Scanner3(BackgroundTaskThread):
                 current_block = blocks.pop()
                 if previous_function != current_block["block"].function.name:
                     hlil_instructions = list(current_block["block"].function.hlil.instructions)
-                    log_info(f"SWITCHING FUNCTION TO {current_block['block'].function.name}")
                     previous_function = current_block['block'].function.name
                 # Previous functio nhere always holds current functio name
-                current_block["visited_blocks"].append(f"{current_block['start']}@{previous_function}")
+                
                 for index in range(current_block["end"],current_block["start"],-1):
                     if index < len(hlil_instructions):
                         instruction = hlil_instructions[index]
                         for param in current_block["param_vars"]["possible_values"]:
-                            if re.search(param,str(instruction)):
-                                # found instruction where the desired parameter is used
-                                # Check if it is part of an if:
-                                if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                    trace_struct[str(p)]["if_dependant"] = True
-                                # Check if it is part of a call:
-                                calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
-                                for call in calls:
-                                    if re.search(param,str(call.params)):
-                                        trace_struct[str(p)]["affected_by"].append(call.dest)
-                                        if instruction.il_basic_block.start == home_block:
-                                            trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
-                                    elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
-                                    instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
-                                        # Not in the parameter so check if not assigned with the return value
-                                        trace_struct[str(p)]["affected_by"].append(call.dest)
-                                        if instruction.il_basic_block.start == home_block:
-                                            trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
+                            try:
+                                if re.search(param,str(instruction)):
+                                    # found instruction where the desired parameter is used
+                                    # Check if it is part of an if:
+                                    if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                        trace_struct[str(p)]["if_dependant"] = True
+                                    # Check if it is part of a call:
+                                    calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                    for call in calls:
+                                        if re.search(param,str(call.params)):
+                                            trace_struct[str(p)]["affected_by"].append(call.dest)
+                                            if instruction.il_basic_block.start == home_block:
+                                                trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
+                                        elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
+                                        instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
+                                            # Not in the parameter so check if not assigned with the return value
+                                            trace_struct[str(p)]["affected_by"].append(call.dest)
+                                            if instruction.il_basic_block.start == home_block:
+                                                trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
+                            except re.error:
+                                log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
 
                 # Add preceeding blocks
                 if current_block["block"].incoming_edges:
                     for edge in current_block["block"].incoming_edges:
                         if f"{edge.source.start}@{previous_function}" not in current_block["visited_blocks"]:
+                            current_block["visited_blocks"].append(f"{edge.source.start}@{previous_function}")
                             blocks.append({
                                 "block":edge.source,
                                 "start":edge.source.start-1,
@@ -206,7 +206,6 @@ class Scanner3(BackgroundTaskThread):
                                 "visited_blocks":current_block["visited_blocks"]
                                 })
                 else:
-                    # TODO No incoming edges -> likely start of the function
                     # Check of param_vars["vars"] contains arg and look further and mark exported function params where applicable
                     for v in param_vars["vars"]:
                         if v in current_block["block"].function.parameter_vars:
@@ -215,26 +214,19 @@ class Scanner3(BackgroundTaskThread):
                                     # Exported function
                                     trace_struct[str(p)]["exported"] = True
                             par_index = list(current_block["block"].function.parameter_vars).index(v)
-                            # TODO
-                            # Visited blocks need to be copied! and contain function name
-                            # param_vars freshly taken from the xref
-                            # Handle expored also!
-                            log_info("FOUND PARAMS")
-                            # TODO XREFS CACHE
                             xrefs_to_follow = self.get_function_xrefs(current_block["block"].function.name)
                             for x2f in xrefs_to_follow:
-                                x2f_param_vars = self.prepare_relevant_variables(x2f.params[par_index])
-                                blocks.append({
-                                    "block":x2f.il_basic_block,
-                                    "start":x2f.il_basic_block.start-1,
-                                    "end":x2f.instr_index-1,
-                                    "param_vars":x2f_param_vars,
-                                    "visited_blocks":current_block["visited_blocks"].copy()
-                                    })
-                    pass
-        if xref.function.source_function.name == "_vuln_malloc":
-        #log_info(f"{str(xref)}@{xref.function.source_function.name}")
-            log_info(str(trace_struct))
+                                if par_index < len(list(x2f.params)):
+                                    x2f_param_vars = self.prepare_relevant_variables(x2f.params[par_index])
+                                    current_block["visited_blocks"].append(f"{x2f.il_basic_block.start}@{x2f.function.source_function.name}")
+                                    blocks.append({
+                                        "block":x2f.il_basic_block,
+                                        "start":x2f.il_basic_block.start-1,
+                                        "end":x2f.instr_index-1,
+                                        "param_vars":x2f_param_vars,
+                                        "visited_blocks":current_block["visited_blocks"].copy()
+                                        })
+        #log_info(str(trace_struct))
         return trace_struct
             
 
@@ -279,9 +271,11 @@ class Scanner3(BackgroundTaskThread):
     # Can this be copied?
     def not_if_dependent(self,instruction,param_vars):
         pass
-
-    # TODO XREFS cache
+  
     def get_function_xrefs(self,fun_name):
+        if fun_name in self.xrefs_cache:
+            #log_info("CACHE HIT")
+            return self.xrefs_cache[fun_name]
         checked_functions = []
         xrefs = []
         symbol_item = []
@@ -317,6 +311,9 @@ class Scanner3(BackgroundTaskThread):
                         for call in calls:
                             if function_name in str(call.dest) and call not in xrefs:
                                 xrefs.append(call)
+        
+        #if not fun_name in self.xrefs_cache:
+        self.xrefs_cache[fun_name] = xrefs.copy()
         return xrefs
     
 
