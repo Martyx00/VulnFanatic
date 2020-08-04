@@ -39,7 +39,7 @@ class Scanner3(BackgroundTaskThread):
             for xref in function_refs:
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
-                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({xref_counter}/{xrefs_count})"
+                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
         log_info(f"[*] Done in {time.time()-start}")
 
 
@@ -53,7 +53,7 @@ class Scanner3(BackgroundTaskThread):
                             "not_affected_by": [...],
                             "exported": True/False,
                             "if_dependant": True/False,
-                            "constants": [...],
+                            "constant_value": [...],
                             "is_constant": true,
                             "affected_by_in_same_block": []
                         }
@@ -66,7 +66,7 @@ class Scanner3(BackgroundTaskThread):
                             "not_affected_by": [],
                             "exported": True/False,
                             "if_dependant": True/False,
-                            "constants": [...],
+                            "constant_value": [...],
                             "is_constant": true,
                             "affected_by_in_same_block": []
                         }

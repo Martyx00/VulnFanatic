@@ -422,7 +422,164 @@
                 "_objc_msgSend@PLT",
                 "objc_msgSend@PLT"
             ],
-            "checks":{},"variants":[
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText:"]
+                        },
+                        "6":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format"]
+                        },
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format"]
+                        },
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format"]
+                        },
+                        "3":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format"]
+                        },
+                        "3":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "is_constant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "is_constant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format"]
+                        },
+                        "3":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            },
+            "variants":[
                 {
                     "confidence": "High",
                     "where":"_or_(_and_(sources.get().param(1).constant_contains(\"alertWithMessageText\"),_or_(sources.get().param(6).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(6).source_type(\"parameter\").exported().same_branch())),_and_(_or_(sources.get().param(1).constant_contains(\"appendFormat:\"),sources.get().param(1).constant_contains(\"stringByAppendingFormat:\"),sources.get().param(1).constant_contains(\"stringWithFormat:\")),_or_(sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(2).source_type(\"parameter\").exported().same_branch())),_and_(sources.get().param(1).constant_contains(\"raise:format\"),_or_(sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch(),sources.get().param(3).source_type(\"parameter\").exported().same_branch())))"
