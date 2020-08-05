@@ -97,11 +97,12 @@ class Scanner3(BackgroundTaskThread):
                     except KeyError:
                         continue
                     for current_rule in current_confidence:
+                        #log_info(f"[*] Matching against: {current_rule}")
                         matches = True
                         for param_key in current_rule:
                             for check_key in current_rule[param_key]:
                                 # This takes the approach that if anything is false, break
-                                if current_rule[param_key][check_key] is list:
+                                if type(current_rule[param_key][check_key]) is list:
                                     if check_key == "not_affected_by":
                                         if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
                                             matches = False
@@ -123,8 +124,10 @@ class Scanner3(BackgroundTaskThread):
 
 
     def is_in_array(self,a,b):
-        for item_a in a:
-            if item_a in b:
+        #for item_a in a:
+        tmp = str(a)
+        for item_b in b:
+            if item_b in tmp:
                 return True
         return False
 
@@ -142,7 +145,7 @@ class Scanner3(BackgroundTaskThread):
                 "is_constant": False,
                 "constant_value": [],
                 "exported": False,
-                "if_dependant": True,
+                "if_dependant": False,
                 "affected_by": [],
                 "affected_by_in_same_block": []
             }
@@ -150,82 +153,96 @@ class Scanner3(BackgroundTaskThread):
             if p < 0:
                 for t_p in range(abs(p),len(xref.params)):
                     params.append(t_p)
-            param_vars = self.prepare_relevant_variables(xref.params[p])
-            if not param_vars["vars"]:
-                # handle constant here
-                trace_struct[str(p)]["is_constant"] = True
-                trace_struct[str(p)]["constant_value"].append(xref.params[p])
-                continue
-            #log_info(str(param_vars))
-            # The main tracing loop
-            blocks = [{"block":xref.il_basic_block,"start":xref.il_basic_block.start-1,"end":xref.instr_index-1,"param_vars":param_vars.copy(),"visited_blocks":[]}]
-            previous_function = xref.il_basic_block.function.name
-            while blocks:
-                current_block = blocks.pop()
-                if previous_function != current_block["block"].function.name:
-                    hlil_instructions = list(current_block["block"].function.hlil.instructions)
-                    previous_function = current_block['block'].function.name
-                # Previous functio nhere always holds current functio name
-                
-                for index in range(current_block["end"],current_block["start"],-1):
-                    if index < len(hlil_instructions):
-                        instruction = hlil_instructions[index]
-                        for param in current_block["param_vars"]["possible_values"]:
-                            try:
-                                if re.search(param,str(instruction)):
-                                    # found instruction where the desired parameter is used
-                                    # Check if it is part of an if:
-                                    if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                        trace_struct[str(p)]["if_dependant"] = True
-                                    # Check if it is part of a call:
-                                    calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
-                                    for call in calls:
-                                        if re.search(param,str(call.params)):
-                                            trace_struct[str(p)]["affected_by"].append(call.dest)
-                                            if instruction.il_basic_block.start == home_block:
-                                                trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
-                                        elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
-                                        instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
-                                            # Not in the parameter so check if not assigned with the return value
-                                            trace_struct[str(p)]["affected_by"].append(call.dest)
-                                            if instruction.il_basic_block.start == home_block:
-                                                trace_struct[str(p)]["affected_by_in_same_block"].append(call.dest)
-                            except re.error:
-                                log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
+            if p < len(xref.params):
+                param_vars = self.prepare_relevant_variables(xref.params[p])
+                if not param_vars["vars"] and (xref.params[p].operation == HighLevelILOperation.HLIL_CONST or xref.params[p].operation == HighLevelILOperation.HLIL_CONST_PTR):
+                    try:
+                        value = self.current_view.get_string_at(xref.params[p].constant).value
+                    except:
+                        value = hex(xref.params[p].constant)
+                    # handle constant here
+                    trace_struct[str(p)]["is_constant"] = True
+                    trace_struct[str(p)]["constant_value"].append(value)
+                    continue
+                # The main tracing loop
+                blocks = [{"block":xref.il_basic_block,"start":xref.il_basic_block.start-1,"end":xref.instr_index-1,"param_vars":param_vars.copy(),"visited_blocks":[]}]
+                previous_function = xref.il_basic_block.function.name
+                while blocks:
+                    current_block = blocks.pop()
+                    if previous_function != current_block["block"].function.name:
+                        hlil_instructions = list(current_block["block"].function.hlil.instructions)
+                        previous_function = current_block['block'].function.name
+                    # Previous function here always holds current function name
+                    
+                    for index in range(current_block["end"],current_block["start"],-1):
+                        if index < len(hlil_instructions):
+                            instruction = hlil_instructions[index]
+                            for param in current_block["param_vars"]["possible_values"]:
+                                try:
+                                    if re.search(param,str(instruction)):
+                                        # found instruction where the desired parameter is used
+                                        # Check if it is part of an if:
+                                        if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                            trace_struct[str(p)]["if_dependant"] = True
+                                        # Constant check
+                                        if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
+                                            if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                                try:
+                                                    value = self.current_view.get_string_at(instruction.src.constant).value
+                                                except:
+                                                    value = hex(instruction.src.constant)
+                                                # handle constant here
+                                                trace_struct[str(p)]["is_constant"] = True
+                                                trace_struct[str(p)]["constant_value"].append(value)
+                                        # Check if it is part of a call:
+                                        calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                        for call in calls:
+                                            if re.search(param,str(call.params)):
+                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                if instruction.il_basic_block.start == home_block:
+                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                            elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
+                                            instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
+                                                # Not in the parameter so check if not assigned with the return value
+                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                if instruction.il_basic_block.start == home_block:
+                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                except re.error:
+                                    log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
 
-                # Add preceeding blocks
-                if current_block["block"].incoming_edges:
-                    for edge in current_block["block"].incoming_edges:
-                        if f"{edge.source.start}@{previous_function}" not in current_block["visited_blocks"]:
-                            current_block["visited_blocks"].append(f"{edge.source.start}@{previous_function}")
-                            blocks.append({
-                                "block":edge.source,
-                                "start":edge.source.start-1,
-                                "end":edge.source.end-1,
-                                "param_vars":current_block["param_vars"],
-                                "visited_blocks":current_block["visited_blocks"]
-                                })
-                else:
-                    # Check of param_vars["vars"] contains arg and look further and mark exported function params where applicable
-                    for v in param_vars["vars"]:
-                        if v in current_block["block"].function.parameter_vars:
-                            for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
-                                if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_block["block"].function.name:
-                                    # Exported function
-                                    trace_struct[str(p)]["exported"] = True
-                            par_index = list(current_block["block"].function.parameter_vars).index(v)
-                            xrefs_to_follow = self.get_function_xrefs(current_block["block"].function.name)
-                            for x2f in xrefs_to_follow:
-                                if par_index < len(list(x2f.params)):
-                                    x2f_param_vars = self.prepare_relevant_variables(x2f.params[par_index])
-                                    current_block["visited_blocks"].append(f"{x2f.il_basic_block.start}@{x2f.function.source_function.name}")
-                                    blocks.append({
-                                        "block":x2f.il_basic_block,
-                                        "start":x2f.il_basic_block.start-1,
-                                        "end":x2f.instr_index-1,
-                                        "param_vars":x2f_param_vars,
-                                        "visited_blocks":current_block["visited_blocks"].copy()
-                                        })
+                    # Add preceeding blocks
+                    if current_block["block"].incoming_edges:
+                        for edge in current_block["block"].incoming_edges:
+                            if f"{edge.source.start}@{previous_function}" not in current_block["visited_blocks"]:
+                                current_block["visited_blocks"].append(f"{edge.source.start}@{previous_function}")
+                                blocks.append({
+                                    "block":edge.source,
+                                    "start":edge.source.start-1,
+                                    "end":edge.source.end-1,
+                                    "param_vars":current_block["param_vars"],
+                                    "visited_blocks":current_block["visited_blocks"]
+                                    })
+                    else:
+                        # Check of param_vars["vars"] contains arg and look further and mark exported function params where applicable
+                        for v in param_vars["vars"]:
+                            if v in current_block["block"].function.parameter_vars:
+                                for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
+                                    if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_block["block"].function.name:
+                                        # Exported function
+                                        trace_struct[str(p)]["exported"] = True
+                                par_index = list(current_block["block"].function.parameter_vars).index(v)
+                                xrefs_to_follow = self.get_function_xrefs(current_block["block"].function.name)
+                                for x2f in xrefs_to_follow:
+                                    if par_index < len(list(x2f.params)):
+                                        x2f_param_vars = self.prepare_relevant_variables(x2f.params[par_index])
+                                        current_block["visited_blocks"].append(f"{x2f.il_basic_block.start}@{x2f.function.source_function.name}")
+                                        blocks.append({
+                                            "block":x2f.il_basic_block,
+                                            "start":x2f.il_basic_block.start-1,
+                                            "end":x2f.instr_index-1,
+                                            "param_vars":x2f_param_vars,
+                                            "visited_blocks":current_block["visited_blocks"].copy()
+                                            })
         #log_info(str(trace_struct))
         return trace_struct
             
@@ -250,12 +267,17 @@ class Scanner3(BackgroundTaskThread):
             # Also uses are relevant
             definitions.extend(param.function.get_var_uses(var))
             for d in definitions:
-                if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN)and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
-                    val = str(param).replace(str(var),str(d.src.postfix_operands[0]))
-                    #tmp_possible.append(val)
+                if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
                     tmp_possible.append(str(d.src))
                     vars["vars"].append(d.src.postfix_operands[0])
                     param_vars.append(d.src.postfix_operands[0])
+                elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                    # Handle assignments from calls
+                    for param in d.src.params:
+                        if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["vars"]:
+                            tmp_possible.append(str(param))
+                            vars["vars"].append(param.postfix_operands[0])
+                            param_vars.append(param.postfix_operands[0])
         for val in tmp_possible:
             tmp_val = val
             positions = [(m.start(0), m.end(0)) for m in re.finditer(r':\d+\.\w+', val)]
