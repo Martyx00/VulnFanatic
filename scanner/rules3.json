@@ -53,7 +53,7 @@
             {"function_name":"_snprintf", "trace_params":[2, 1, 0,-3]},
             {"function_name":"_sprintf", "trace_params":[1,-2]},
             {"function_name":"_sprintf_p_l", "trace_params":[2]},
-            {"function_name":"_sscanf", "trace_params":[1]},
+            {"function_name":"_sscanf", "trace_params":[1,0]},
             {"function_name":"_strcat", "trace_params":[1, 0]},
             {"function_name":"_strcat_s", "trace_params":[2, 1]},
             {"function_name":"_strcpy", "trace_params":[1, 0]},
@@ -157,7 +157,7 @@
             {"function_name":"mbscat", "trace_params":[1, 0]},
             {"function_name":"mbscat_s", "trace_params":[2, 1]},
             {"function_name":"mbscat_s_l", "trace_params":[2, 1]},
-            {"function_name":"mbscpy", "trace_params":[1]},
+            {"function_name":"mbscpy", "trace_params":[1,0]},
             {"function_name":"mbscpy_s", "trace_params":[2, 1, 0]},
             {"function_name":"mbscpy_s_l", "trace_params":[2, 1, 0]},
             {"function_name":"memcpy", "trace_params":[1, 2, 0]},
@@ -170,12 +170,12 @@
             {"function_name":"scanf", "trace_params":[0]},
             {"function_name":"snprintf", "trace_params":[2, 1, 0,-3]},
             {"function_name":"sprintf", "trace_params":[1,-2]},
-            {"function_name":"sscanf", "trace_params":[1]},
+            {"function_name":"sscanf", "trace_params":[1,0]},
             {"function_name":"strcat", "trace_params":[1, 0]},
             {"function_name":"strcat_s", "trace_params":[2, 1]},
             {"function_name":"strcpy", "trace_params":[1, 0]},
             {"function_name":"strcpy_s", "trace_params":[2, 1, 0]},
-            {"function_name":"strncat", "trace_params":[1, 2]},
+            {"function_name":"strncat", "trace_params":[1, 2, 0]},
             {"function_name":"strncpy", "trace_params":[1, 2, 0]},
             {"function_name":"swprintf", "trace_params":[2]},
             {"function_name":"system", "trace_params":[0]},
@@ -255,7 +255,7 @@
             {"function_name":"vwscanf_s", "trace_params":[0]},
             {"function_name":"wcscat", "trace_params":[1, 0]},
             {"function_name":"wcscat_s", "trace_params":[2, 1]},
-            {"function_name":"wcscpy", "trace_params":[1]},
+            {"function_name":"wcscpy", "trace_params":[1,0]},
             {"function_name":"wcscpy_s", "trace_params":[2, 1, 0]},
             {"function_name":"wmemcpy", "trace_params":[1, 2]},
             {"function_name":"wmemcpy_s", "trace_params":[2, 3, 1, 0]},
@@ -269,9 +269,9 @@
             {"function_name":"___memcpy_chk", "trace_params":[0]},
             {"function_name":"___strcpy_chk", "trace_params":[0]},
             {"function_name":"___memmove_chk", "trace_params":[0]},
-            {"function_name":"lstrcpyA", "trace_params":[1]},
+            {"function_name":"lstrcpyA", "trace_params":[1,0]},
             {"function_name":"lstrcpynA", "trace_params":[1, 2]},
-            {"function_name":"lstrcpyW", "trace_params":[1]},
+            {"function_name":"lstrcpyW", "trace_params":[1,0]},
             {"function_name":"lstrcpynW", "trace_params":[1, 2]},
             {"function_name":"lstrcatA", "trace_params":[1, 0]},
             {"function_name":"lstrcatW", "trace_params":[1, 0]}
@@ -915,6 +915,9 @@
                             "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ],
@@ -924,6 +927,9 @@
                             "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     },
                     {
@@ -931,6 +937,9 @@
                             "exported": true,
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ],
@@ -940,6 +949,9 @@
                             "exported": true,
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ],
@@ -951,25 +963,7 @@
                         }
                     }
                 ]
-            },
-            "variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                }
-            ]
+            }
         },
         {
             "name": "Buffer Overflow (strcat)",
@@ -984,24 +978,62 @@
                 "lstrcatA",
                 "lstrcatW"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(0).not_affected_by_function_calls([\"strlen\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"sources.get().param(1).not_constant()"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (strncpy)",
@@ -1012,20 +1044,82 @@
                 "lstrcpynA",
                 "lstrcpynW"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (strncat)",
@@ -1034,20 +1128,82 @@
                 "strncat",
                 "_strncat"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (memcpy and variants)",
@@ -1058,20 +1214,82 @@
                 "wmemcpy",
                 "_wmemcpy"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (memmove and variants)",
@@ -1082,20 +1300,82 @@
                 "wmemmove",
                 "_wmemmove"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (strcpy_s variants)",
@@ -1110,24 +1390,94 @@
                 "_mbscpy_s_l",
                 "mbscpy_s_l"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(2).not_constant(),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (strcat_s variants)",
@@ -1142,24 +1492,94 @@
                 "_mbscat_s_l",
                 "mbscat_s_l"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),_or_(sources.get().param(1).source_type(\"parameter\").exported().same_branch(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Medium",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),_or_(sources.get().param(1).source_type(\"parameter\").exported(),sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(2).not_constant(),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (gets)",
@@ -1168,12 +1588,14 @@
                 "gets",
                 "_gets"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"sources.get().param(0)"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (scanf/fscanf)",
@@ -1184,12 +1606,67 @@
                 "fscanf",
                 "_fscanf"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"sources.get().param(0)"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (sscanf)",
+            "details": "The application is using function \"sscanf\" which could cause buffer overflow vulnerability.",
+            "functions":[
+                "sscanf",
+                "_sscanf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported":true,
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low":[
+                    {
+                        "0":{
+                            "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (sprintf)",
@@ -1198,20 +1675,48 @@
                 "sprintf",
                 "_sprintf"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "Medium",
-                    "where":"_or_(sources.get().params_from(2).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_or_(sources.get().params_from(2).source_type(\"parameter\").exported(),sources.get().params_from(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"sources.get().params_from(2).not_constant()"
-                }
-            ]
+            "checks":{
+                "Medium":[
+                    {
+                        "-2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "exported":true,
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low":[
+                    {
+                        "-2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (memcpy_s and variants)",
@@ -1222,20 +1727,102 @@
                 "wmemcpy_s",
                 "_wmemcpy_s"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_constant())"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (memmove_s and variants)",
@@ -1246,20 +1833,102 @@
                 "wmemmove_s",
                 "_wmemmove_s"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]),sources.get().param(1).not_constant())"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(1).not_constant(),sources.get().param(2).not_constant(),sources.get().param(3).not_constant(),sources.get().param(3).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (snprintf)",
@@ -1290,20 +1959,50 @@
                 "vsprintf",
                 "_vsprintf"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_or_(sources.get().param(2).source_type(\"parameter\").exported().same_branch(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_or_(sources.get().param(2).source_type(\"parameter\").exported(),sources.get().param(2).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"sources.get().param(2).not_constant()"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (vsnprintf)",
@@ -1312,20 +2011,70 @@
                 "vsnprintf",
                 "_vsnprintf"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().param(3).source_type(\"parameter\").exported().same_branch(),sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().param(3).source_type(\"parameter\").exported(),sources.get().param(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().param(3).not_constant(),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"alloc\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "OS Command Injection",
@@ -1338,20 +2087,45 @@
                 "wpopen",
                 "_wpopen"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_or_(sources.get().param(0).source_type(\"parameter\").exported().same_branch(),sources.get().param(0).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch())"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_or_(sources.get().param(0).source_type(\"parameter\").exported(),sources.get().param(0).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"sources.get().param(0).not_constant()"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "0":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Potential Null Pointer Dereference",
@@ -1387,12 +2161,15 @@
                 "___strcpy_chk",
                 "___memmove_chk"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "Medium",
-                    "where":"sources.get().param(0).same_branch_function_call(\"alloc\")"
-                }
-            ]
+            "checks":{
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by_in_same_block":["alloc"]
+                        }
+                    }
+                ]
+            }
         }
     ]
 }

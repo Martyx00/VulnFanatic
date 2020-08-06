@@ -18,29 +18,41 @@ import time
 On lighttpd competing against 431
 '''
 # TODO run UAF scanner
+# CFM (v2): [*] Completed in 6746.591761827469 and flaged 1428 places out of 3510 checked.
+#           [*] Completed in 8136.563944816589 and flaged 1428 places out of 3510 checked.
+
+# CFM (v3): [*] Done in 5470.578544139862 seconds and marked 743 out of 3291
+#           [*] Done in 8878.285166025162 seconds and marked 743 out of 3291
+#           [*] Done in 7919.742606878281 seconds and marked 759 out of 3291
+#           [*] Done in 10391.178053855896 seconds and marked 773 out of 3323
+
+
+
+
+
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
         self.progress_banner = f"[VulnFanatic] Running the scanner ..."
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.current_view = bv
         self.xrefs_cache = dict()
+        self.marked = 0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
 
     def run(self):
         start = time.time()
-        function_counter = 0
-        
+        total_xrefs = 0
         for function in self.rules["functions"]:
-            function_counter += 1
             function_refs = self.get_function_xrefs(function["function_name"])
             xrefs_count = len(function_refs)
+            total_xrefs += xrefs_count
             xref_counter = 0
             for xref in function_refs:
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
-                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
-        log_info(f"[*] Done in {time.time()-start}")
+                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%) - {xref_counter}/{xrefs_count}"
+        log_info(f"[*] Done in {time.time()-start} seconds and marked {self.marked} out of {total_xrefs}")
 
 
     '''
@@ -96,27 +108,39 @@ class Scanner3(BackgroundTaskThread):
                         current_confidence = test["checks"][conf]
                     except KeyError:
                         continue
-                    for current_rule in current_confidence:
-                        #log_info(f"[*] Matching against: {current_rule}")
+                    for cur_rule in current_confidence:
                         matches = True
-                        for param_key in current_rule:
-                            for check_key in current_rule[param_key]:
-                                # This takes the approach that if anything is false, break
-                                if type(current_rule[param_key][check_key]) is list:
-                                    if check_key == "not_affected_by":
-                                        if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                        keys = []
+                        for par_key in cur_rule:
+                            if int(par_key) < 0:
+                                keys = []
+                                current_rule = cur_rule.copy()
+                                for key in trace:
+                                    if int(key) >= abs(int(par_key)):
+                                        keys.append(key)
+                                        current_rule[key] = cur_rule[par_key].copy()
+                            else:
+                                keys = [par_key]
+                                current_rule = cur_rule.copy()
+                            for param_key in keys:
+                                for check_key in current_rule[param_key]:
+                                    # This takes the approach that if anything is false, break
+                                    if type(current_rule[param_key][check_key]) is list:
+                                        if check_key == "not_affected_by":
+                                            if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                                matches = False
+                                                break
+                                        elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
                                             matches = False
                                             break
-                                    elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
-                                        matches = False
-                                        break
-                                else:
-                                    if not trace[param_key][check_key] == current_rule[param_key][check_key]:
-                                        matches = False
-                                        break
+                                    else:
+                                        if not trace[param_key][check_key] == current_rule[param_key][check_key]:
+                                            matches = False
+                                            break
                         if matches:
+                            self.marked += 1
                             details = "dummy"
-                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n{details}', True)
+                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n {details}', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
                             break
                     if matches:
@@ -153,6 +177,7 @@ class Scanner3(BackgroundTaskThread):
             if p < 0:
                 for t_p in range(abs(p),len(xref.params)):
                     params.append(t_p)
+                continue
             if p < len(xref.params):
                 param_vars = self.prepare_relevant_variables(xref.params[p])
                 if not param_vars["vars"] and (xref.params[p].operation == HighLevelILOperation.HLIL_CONST or xref.params[p].operation == HighLevelILOperation.HLIL_CONST_PTR):
@@ -173,7 +198,6 @@ class Scanner3(BackgroundTaskThread):
                         hlil_instructions = list(current_block["block"].function.hlil.instructions)
                         previous_function = current_block['block'].function.name
                     # Previous function here always holds current function name
-                    
                     for index in range(current_block["end"],current_block["start"],-1):
                         if index < len(hlil_instructions):
                             instruction = hlil_instructions[index]
@@ -197,7 +221,7 @@ class Scanner3(BackgroundTaskThread):
                                         # Check if it is part of a call:
                                         calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
                                         for call in calls:
-                                            if re.search(param,str(call.params)):
+                                            if re.search(param,str(call.params)) and call != xref:
                                                 trace_struct[str(p)]["affected_by"].append(str(call.dest))
                                                 if instruction.il_basic_block.start == home_block:
                                                     trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
@@ -208,7 +232,8 @@ class Scanner3(BackgroundTaskThread):
                                                 if instruction.il_basic_block.start == home_block:
                                                     trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
                                 except re.error:
-                                    log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
+                                    pass
+                                    #log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
 
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
@@ -243,6 +268,7 @@ class Scanner3(BackgroundTaskThread):
                                             "param_vars":x2f_param_vars,
                                             "visited_blocks":current_block["visited_blocks"].copy()
                                             })
+        #if xref.function.source_function.name == "do_cgi":
         #log_info(str(trace_struct))
         return trace_struct
             
@@ -295,48 +321,48 @@ class Scanner3(BackgroundTaskThread):
         pass
   
     def get_function_xrefs(self,fun_name):
-        if fun_name in self.xrefs_cache:
-            #log_info("CACHE HIT")
+        try:
             return self.xrefs_cache[fun_name]
-        checked_functions = []
-        xrefs = []
-        symbol_item = []
-        function_name = fun_name
-        if function_name[:4] == "sub_":
-            symbol_item.append(fun_help(int("0x"+function_name[4:],16)))
-            function_name = "0x"+function_name[4:]
-        else:
-            try:
-                symbol_item.extend(self.current_view.symbols[function_name]) if type(self.current_view.symbols[function_name]) is list else symbol_item.append(self.current_view.symbols[function_name])
-            except KeyError:
-                pass
-            try:
-                symbol_item.extend(self.current_view.symbols[function_name+"@IAT"]) if type(self.current_view.symbols[function_name+"@IAT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@IAT"])
-            except KeyError:
-                pass
-            try:
-                symbol_item.extend(self.current_view.symbols[function_name+"@PLT"]) if type(self.current_view.symbols[function_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@PLT"])
-            except KeyError:
-                pass
-        for symbol in symbol_item:
-            for ref in self.current_view.get_code_refs(symbol.address):
-                # Get exact instruction index
-                if ref.function.name in checked_functions:
-                    continue
-                else:
-                    checked_functions.append(ref.function.name)
-                for instruction in ref.function.hlil.instructions:
-                    # For each instruction check if any of the functions we are looking for is called
-                    if function_name in str(instruction):
-                        # Extract the call here
-                        calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
-                        for call in calls:
-                            if function_name in str(call.dest) and call not in xrefs:
-                                xrefs.append(call)
-        
-        #if not fun_name in self.xrefs_cache:
-        self.xrefs_cache[fun_name] = xrefs.copy()
-        return xrefs
+        except KeyError:
+            checked_functions = []
+            xrefs = []
+            symbol_item = []
+            function_name = fun_name
+            if function_name[:4] == "sub_":
+                symbol_item.append(fun_help(int("0x"+function_name[4:],16)))
+                function_name = "0x"+function_name[4:]
+            else:
+                try:
+                    symbol_item.extend(self.current_view.symbols[function_name]) if type(self.current_view.symbols[function_name]) is list else symbol_item.append(self.current_view.symbols[function_name])
+                except KeyError:
+                    pass
+                try:
+                    symbol_item.extend(self.current_view.symbols[function_name+"@IAT"]) if type(self.current_view.symbols[function_name+"@IAT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@IAT"])
+                except KeyError:
+                    pass
+                try:
+                    symbol_item.extend(self.current_view.symbols[function_name+"@PLT"]) if type(self.current_view.symbols[function_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@PLT"])
+                except KeyError:
+                    pass
+            for symbol in symbol_item:
+                for ref in self.current_view.get_code_refs(symbol.address):
+                    # Get exact instruction index
+                    if ref.function.name in checked_functions:
+                        continue
+                    else:
+                        checked_functions.append(ref.function.name)
+                    for instruction in ref.function.hlil.instructions:
+                        # For each instruction check if any of the functions we are looking for is called
+                        if function_name in str(instruction):
+                            # Extract the call here
+                            calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
+                            for call in calls:
+                                if function_name == str(call.dest) and call not in xrefs:
+                                    xrefs.append(call)
+            
+            #if not fun_name in self.xrefs_cache:
+            self.xrefs_cache[fun_name] = xrefs.copy()
+            return xrefs
     
 
 class fun_help():

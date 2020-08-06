@@ -6,6 +6,7 @@ from ..trackers.function_tracer2 import FunctionTracer
 from .query import Sources, _or_, _and_
 from ..utils.utils import get_xrefs_of_symbol
 
+
 class Scanner2(BackgroundTaskThread):
     def __init__(self,rules_path,bv,uaf):
         self.progress_banner = f"[VulnFanatic] Running the scanner ... "
@@ -21,9 +22,11 @@ class Scanner2(BackgroundTaskThread):
         function_counter = 0
         issue_counter = 0
         xrefs_cache = dict()
+        total_xrefs = 0
         for function in self.rules["functions"]:
             function_counter += 1
             function_refs = get_xrefs_of_symbol(self.bv,function)
+            total_xrefs += len(function_refs)
             xref_counter = 1 
             # Recursively get all calls with the details
             for xref in function_refs:
@@ -46,7 +49,7 @@ class Scanner2(BackgroundTaskThread):
                                     issue_counter += 1
                                     #log_info(variant["confidence"] + " " +f'{test_case["name"]}')
                                     break
-        log_info(f"[*] Completed in {time.time() - start} and flaged {issue_counter} places")
+        log_info(f"[*] Completed in {time.time() - start} and flaged {issue_counter} places out of {total_xrefs} checked.")
         if self.uaf_scan:
             free = FreeScanner2(self.bv)
             free.start()
