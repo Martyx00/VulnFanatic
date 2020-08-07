@@ -50,7 +50,7 @@
             {"function_name":"_popen", "trace_params":[0]},
             {"function_name":"_printf", "trace_params":[0]},
             {"function_name":"_scanf", "trace_params":[0]},
-            {"function_name":"_snprintf", "trace_params":[2, 1, 0,-3]},
+            {"function_name":"_snprintf", "trace_params":[2, 1,-3]},
             {"function_name":"_sprintf", "trace_params":[1,-2]},
             {"function_name":"_sprintf_p_l", "trace_params":[2]},
             {"function_name":"_sscanf", "trace_params":[1,0]},
@@ -112,7 +112,7 @@
             {"function_name":"_vsnwprintf_l", "trace_params":[2]},
             {"function_name":"_vsnwprintf_s", "trace_params":[2, 3]},
             {"function_name":"_vsnwprintf_s_l", "trace_params":[3]},
-            {"function_name":"_vsprintf", "trace_params":[1, 2]},
+            {"function_name":"_vsprintf", "trace_params":[0,1, 2]},
             {"function_name":"_vsprintf_l", "trace_params":[1]},
             {"function_name":"_vsprintf_p", "trace_params":[2]},
             {"function_name":"_vsprintf_p_l", "trace_params":[2]},
@@ -168,7 +168,7 @@
             {"function_name":"popen", "trace_params":[0]},
             {"function_name":"printf", "trace_params":[0]},
             {"function_name":"scanf", "trace_params":[0]},
-            {"function_name":"snprintf", "trace_params":[2, 1, 0,-3]},
+            {"function_name":"snprintf", "trace_params":[0, 2, 1,-3]},
             {"function_name":"sprintf", "trace_params":[1,-2]},
             {"function_name":"sscanf", "trace_params":[1,0]},
             {"function_name":"strcat", "trace_params":[1, 0]},
@@ -230,7 +230,7 @@
             {"function_name":"vsnwprintf_l", "trace_params":[2]},
             {"function_name":"vsnwprintf_s", "trace_params":[2, 3]},
             {"function_name":"vsnwprintf_s_l", "trace_params":[3]},
-            {"function_name":"vsprintf", "trace_params":[1, 2]},
+            {"function_name":"vsprintf", "trace_params":[0,1, 2]},
             {"function_name":"vsprintf_l", "trace_params":[1]},
             {"function_name":"vsprintf_p", "trace_params":[2]},
             {"function_name":"vsprintf_s", "trace_params":[1, 2]},
@@ -1937,20 +1937,85 @@
                 "snprintf",
                 "_snprintf"
             ],
-            "checks":{},"variants":[
-                {
-                    "confidence": "High",
-                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported().same_branch(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"]).same_branch()),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Low",
-                    "where":"_and_(_or_(sources.get().params_from(3).source_type(\"parameter\").exported(),sources.get().params_from(3).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"]))"
-                },
-                {
-                    "confidence": "Info",
-                    "where":"_and_(sources.get().params_from(3).not_constant(),sources.get().param(1).not_constant(),sources.get().param(1).not_affected_by_function_calls([\"strlen\"]))"
-                }
-            ]
+            "checks":{
+                "High":[
+                    {
+                        "-3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "-3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-3":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "-3":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "-3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
         },
         {
             "name": "Buffer Overflow (vsprintf)",
