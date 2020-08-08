@@ -24,6 +24,12 @@ On lighttpd competing against 431
 
 # Lighttpd (v2): [*] Completed in 460.0162880420685 and flaged 21 places out of 62 checked.
 
+# Libxml [*] Completed in 40274.60975623131 and flaged 50 places out of 327 checked.
+
+# Libnetwork: [*] Completed in 9947.95410990715 and flaged 52 places out of 1397 checked.
+
+
+
 
 # Version 3:
 # CFM: [*] Done in 5470.578544139862 seconds and marked 743 out of 3291
@@ -35,6 +41,11 @@ On lighttpd competing against 431
 # Lighttpd: [*] Done in 814.2151880264282 seconds and marked 13 out of 62
 
 # Libxml: [*] Done in 1523.0357477664948 seconds and marked 33 out of 314
+
+
+# Sandbox: [*] Done in 289.77969193458557 seconds and marked 6 out of 69
+
+# Libnetwork: [*] Done in 2955.574746131897 seconds and marked 61 out of 1086
 
 
 

@@ -158,7 +158,6 @@ class FunctionTracer:
                 current_hlil_ssa_instructions = list(current_function.ssa_form.instructions)
 
             if time.time() - self.start_time > 300:
-                log_info("BREAKED")
                 break
             if str(current_variable["variable"].ssa_form) + hex(current_variable["variable"].address)+"@"+current_function.source_function.name in function_passes:
                 continue
