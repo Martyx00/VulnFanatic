@@ -5,53 +5,7 @@ from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
 import time
 
-'''
- "0":{
-        "constant": False,
-        "user_controled": True,
-        "exported: : True,
-        "if_dependant": True,
-        "affected_by": ["strlen,toa,toi"],
-        "affected_by_without_if": ["alloc"]
-    }
-
-On lighttpd competing against 431
-'''
 # TODO run UAF scanner
-# CFM (v2): [*] Completed in 6746.591761827469 and flaged 1428 places out of 3510 checked.
-#           [*] Completed in 8136.563944816589 and flaged 1428 places out of 3510 checked.
-#           [*] Completed in 4508.443830013275 and flaged 1428 places out of 3510 checked.
-
-# Lighttpd (v2): [*] Completed in 460.0162880420685 and flaged 21 places out of 62 checked.
-
-# Libxml [*] Completed in 40274.60975623131 and flaged 50 places out of 327 checked.
-
-# Libnetwork: [*] Completed in 9947.95410990715 and flaged 52 places out of 1397 checked.
-
-
-
-
-# Version 3:
-# CFM: [*] Done in 5470.578544139862 seconds and marked 743 out of 3291
-#      [*] Done in 8878.285166025162 seconds and marked 743 out of 3291
-#      [*] Done in 7919.742606878281 seconds and marked 759 out of 3291
-#      [*] Done in 10391.178053855896 seconds and marked 773 out of 3323
-#      [*] Done in 5077.696810007095 seconds and marked 1001 out of 3323
-
-# Lighttpd: [*] Done in 814.2151880264282 seconds and marked 13 out of 62
-
-# Libxml: [*] Done in 1523.0357477664948 seconds and marked 33 out of 314
-
-
-# Sandbox: [*] Done in 289.77969193458557 seconds and marked 6 out of 69
-
-# Libnetwork: [*] Done in 2955.574746131897 seconds and marked 61 out of 1086
-
-
-
-
-
-
 
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -64,7 +18,7 @@ class Scanner3(BackgroundTaskThread):
             self.rules = json.load(rules_file)
 
     def run(self):
-        start = time.time()
+        #start = time.time()
         total_xrefs = 0
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
@@ -75,7 +29,9 @@ class Scanner3(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%) - {xref_counter}/{xrefs_count}"
-        log_info(f"[*] Done in {time.time()-start} seconds and marked {self.marked} out of {total_xrefs}")
+        free = FreeScanner2(self.current_view)
+        free.start()
+        #log_info(f"[*] Done in {time.time()-start} seconds and marked {self.marked} out of {total_xrefs}")
 
     def evaluate_results(self,trace,function_name,xref):
         # For each level of confidence

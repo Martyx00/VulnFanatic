@@ -50,7 +50,7 @@
             {"function_name":"_popen", "trace_params":[0]},
             {"function_name":"_printf", "trace_params":[0]},
             {"function_name":"_scanf", "trace_params":[0]},
-            {"function_name":"_snprintf", "trace_params":[2, 1,-3]},
+            {"function_name":"_snprintf", "trace_params":[0,2, 1,-3]},
             {"function_name":"_sprintf", "trace_params":[1,-2]},
             {"function_name":"_sprintf_p_l", "trace_params":[2]},
             {"function_name":"_sscanf", "trace_params":[1,0]},
