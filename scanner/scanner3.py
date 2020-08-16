@@ -60,6 +60,8 @@ class Scanner3(BackgroundTaskThread):
                                 keys = [par_key]
                                 current_rule = cur_rule.copy()
                             for param_key in keys:
+                                if param_key not in trace:
+                                    continue
                                 for check_key in current_rule[param_key]:
                                     # This takes the approach that if anything is false, break
                                     if type(current_rule[param_key][check_key]) is list:
