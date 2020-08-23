@@ -181,7 +181,12 @@ class FreeScanner2(BackgroundTaskThread):
             for v in vars["vars"]:
                 # Lol but worth a try :D
                 tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
-            vars["possible_values"].append(tmp_val)        
+            try:
+                # validate resulting regex
+                re.compile(tmp_val)
+                vars["possible_values"].append(tmp_val)
+            except re.error:
+                pass
         return vars
 
     def is_in_loop(self,instruction):
