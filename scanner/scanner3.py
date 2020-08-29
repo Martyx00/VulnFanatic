@@ -3,9 +3,7 @@ import re
 import json
 from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
-import time
 
-# TODO run UAF scanner
 
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -18,7 +16,6 @@ class Scanner3(BackgroundTaskThread):
             self.rules = json.load(rules_file)
 
     def run(self):
-        #start = time.time()
         total_xrefs = 0
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
@@ -31,7 +28,6 @@ class Scanner3(BackgroundTaskThread):
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%) - {xref_counter}/{xrefs_count}"
         free = FreeScanner2(self.current_view)
         free.start()
-        #log_info(f"[*] Done in {time.time()-start} seconds and marked {self.marked} out of {total_xrefs}")
 
     def evaluate_results(self,trace,function_name,xref):
         # For each level of confidence
@@ -180,8 +176,6 @@ class Scanner3(BackgroundTaskThread):
                                                         trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
                                     except re.error:
                                         pass
-                                        #log_warn("Regex error due to wrong variable mapping in Binary Ninja: Issue #1864")
-
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
                         for edge in current_block["block"].incoming_edges:
@@ -258,9 +252,8 @@ class Scanner3(BackgroundTaskThread):
                 tmp_val = val[0: pos[0]:] + val[pos[1]::]
             tmp_val = re.escape(tmp_val)
             for v in vars["vars"]:
-                # Lol but worth a try :D
                 tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
-            vars["possible_values"].append(tmp_val)        
+            vars["possible_values"].append(tmp_val)      
         return vars
     
     # Can this be copied?

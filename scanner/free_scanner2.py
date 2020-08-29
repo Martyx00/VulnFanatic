@@ -1,7 +1,6 @@
 from binaryninja import *
 import re
 from ..utils.utils import extract_hlil_operations
-import time
 
 class FreeScanner2(BackgroundTaskThread):
     def __init__(self,bv):
@@ -179,7 +178,6 @@ class FreeScanner2(BackgroundTaskThread):
                 tmp_val = val[0: pos[0]:] + val[pos[1]::]
             tmp_val = re.escape(tmp_val)
             for v in vars["vars"]:
-                # Lol but worth a try :D
                 tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
             try:
                 # validate resulting regex

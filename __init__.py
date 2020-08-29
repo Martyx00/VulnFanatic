@@ -3,10 +3,10 @@ from .scanner.scanner2 import Scanner2
 from .scanner.scanner3 import Scanner3
 from .scanner.free_scanner2 import FreeScanner2
 from .highlighter.highlighter2 import Highlighter2
+from .highlighter.highlighter3 import Highlighter3
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
 import sys
-import time
 
 
 def scan3(bv,selection_addr):
@@ -70,10 +70,24 @@ def clear_highlight2(bv,selection_addr):
 	high = Highlighter2(bv,call_instruction,current_function,False)
 	high.start()
 
+def highlight3(bv,selection_addr):
+	colors = ["Black","Blue","Cyan","Green","Magenta","Orange","Red","White","Yellow"]
+	types = ["Assembly Blocks (This function only)","Assembly Blocks (All functions)","Function Call Parameters (This function only)","Function Call Parameters (All functions)"]
+	try:
+		current_function = bv.get_functions_containing(selection_addr)[0]
+	except IndexError:
+		show_message_box("Highlighter Error", "Not a valid highlight!", buttons=0, icon=2)
+		return
+	highlight_type = get_choice_input("Highlight Type","Select type of the highlighting",types)
+	color_choice = get_choice_input("Highlight Color","Select color that will be used to highlight:",colors)
+	high = Highlighter3(bv,selection_addr,current_function,colors[color_choice],types[highlight_type])
+	high.start()
+
 
 # Register the plugin
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
 PluginCommand.register_for_address("[VulnFanatic] TEST SCAN3", "TEST SCAN 3", scan3)
+PluginCommand.register_for_address("[VulnFanatic] TEST HIGHLIGHT", "HIGHLIGHT 3", highlight3)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)
 
