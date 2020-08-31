@@ -173,12 +173,12 @@ class FreeScanner2(BackgroundTaskThread):
                     param_vars.append(d.src.postfix_operands[0])
         for val in tmp_possible:
             tmp_val = val
-            positions = [(m.start(0), m.end(0)) for m in re.finditer(r':\d+\.\w+', val)]
+            positions = [(m.start(0), m.end(0)) for m in re.finditer(r'\.\w+|:\d+\.\w+', val)]
             for pos in positions:
                 tmp_val = val[0: pos[0]:] + val[pos[1]::]
             tmp_val = re.escape(tmp_val)
             for v in vars["vars"]:
-                tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
+                tmp_val = tmp_val.replace(str(v),str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
             try:
                 # validate resulting regex
                 re.compile(tmp_val)
@@ -263,6 +263,12 @@ class FreeScanner2(BackgroundTaskThread):
                                 # Extract the call here
                                 calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
                                 for call in calls:
-                                    if str(call.dest) in altered_names and call not in xrefs:
+                                    if str(call.dest) in altered_names and not self.is_in(call,xrefs):
                                         xrefs.append(call)
         return xrefs
+
+    def is_in(self,item,array):
+        for i in array:
+            if item is i:
+                return True
+        return False

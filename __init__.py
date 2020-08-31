@@ -71,16 +71,27 @@ def clear_highlight2(bv,selection_addr):
 	high.start()
 
 def highlight3(bv,selection_addr):
-	colors = ["Black","Blue","Cyan","Green","Magenta","Orange","Red","White","Yellow"]
-	types = ["Assembly Blocks (This function only)","Assembly Blocks (All functions)","Function Call Parameters (This function only)","Function Call Parameters (All functions)"]
+	# TODO HLIL blocks
+	colors = ["Red","Blue","Cyan","Green","Magenta","Orange","Black","White","Yellow"]
+	types = ["Assembly Blocks","HLIL Blocks","Assembly Variable","HLIL Variable"]
 	try:
 		current_function = bv.get_functions_containing(selection_addr)[0]
 	except IndexError:
 		show_message_box("Highlighter Error", "Not a valid highlight!", buttons=0, icon=2)
 		return
-	highlight_type = get_choice_input("Highlight Type","Select type of the highlighting",types)
-	color_choice = get_choice_input("Highlight Color","Select color that will be used to highlight:",colors)
-	high = Highlighter3(bv,selection_addr,current_function,colors[color_choice],types[highlight_type])
+	if colors and types:
+		highlight_type = get_choice_input("Highlight Type","Select type of the highlighting",types)
+		color_choice = get_choice_input("Highlight Color","Select color that will be used to highlight:",colors)
+		high = Highlighter3(bv,selection_addr,current_function,colors[color_choice],types[highlight_type])
+		high.start()
+
+def clear_highlight3(bv,selection_addr):
+	try:
+		current_function = bv.get_functions_containing(selection_addr)[0]
+	except IndexError:
+		show_message_box("Highlighter Error", "Not a valid highlight!", buttons=0, icon=2)
+		return
+	high = Highlighter3(bv,selection_addr,current_function,None,"clear")
 	high.start()
 
 
@@ -88,6 +99,7 @@ def highlight3(bv,selection_addr):
 PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan2)
 PluginCommand.register_for_address("[VulnFanatic] TEST SCAN3", "TEST SCAN 3", scan3)
 PluginCommand.register_for_address("[VulnFanatic] TEST HIGHLIGHT", "HIGHLIGHT 3", highlight3)
+PluginCommand.register_for_address("[VulnFanatic] CLEAR TEST HIGHLIGHT", "CLEAR HIGHLIGHT 3", clear_highlight3)
 PluginCommand.register_for_address("[VulnFanatic] Highlight parameters", "Highlights parameters with color highlights", highlight2)
 PluginCommand.register_for_address("[VulnFanatic] Clear highlighted parameters", "Removes highlights of parameters", clear_highlight2)
 

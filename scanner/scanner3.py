@@ -3,7 +3,7 @@ import re
 import json
 from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
-
+# 32 libxml
 
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -247,12 +247,12 @@ class Scanner3(BackgroundTaskThread):
                     vars["vars"].append(d.var)
         for val in tmp_possible:
             tmp_val = val
-            positions = [(m.start(0), m.end(0)) for m in re.finditer(r':\d+\.\w+', val)]
+            positions = [(m.start(0), m.end(0)) for m in re.finditer(r'\.\w+|:\d+\.\w+', val)]
             for pos in positions:
                 tmp_val = val[0: pos[0]:] + val[pos[1]::]
             tmp_val = re.escape(tmp_val)
             for v in vars["vars"]:
-                tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
+                tmp_val = tmp_val.replace(str(v),str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
             vars["possible_values"].append(tmp_val)      
         return vars
     
@@ -297,13 +297,18 @@ class Scanner3(BackgroundTaskThread):
                             # Extract the call here
                             calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
                             for call in calls:
-                                if function_name == str(call.dest) and call not in xrefs and call.params:
+                                if function_name == str(call.dest) and not self.is_in(call,xrefs) and call.params:
                                     xrefs.append(call)
             
             #if not fun_name in self.xrefs_cache:
             self.xrefs_cache[fun_name] = xrefs.copy()
             return xrefs
     
+    def is_in(self,item,array):
+        for i in array:
+            if item is i:
+                return True
+        return False
 
 class fun_help():
     def __init__(self,address):
