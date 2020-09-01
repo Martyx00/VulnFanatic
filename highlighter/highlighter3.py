@@ -24,6 +24,7 @@ class Highlighter3(BackgroundTaskThread):
         }
 
     def run(self):
+        #log_info(str(self.is_in_list(["hello",2,"world"],["1",2,3,"hello",2,"world",4])))
         if self.type == "Assembly Blocks":
             self.highlight_assembly_blocks()
         elif self.type == "HLIL Variable":
@@ -62,7 +63,7 @@ class Highlighter3(BackgroundTaskThread):
         visited_blocks = []
         blocks = []
         current_hlil = self.current_function.hlil
-        current_hlil_instructions = list(current_hlil.instructions)
+        #current_hlil_instructions = list(current_hlil.instructions)
         for ins in current_hlil_instructions:
             if ins.address == self.current_address:
                 blocks.append(ins.il_basic_block)
@@ -93,7 +94,6 @@ class Highlighter3(BackgroundTaskThread):
                 variables = list(set(variables))
                 var_choice = get_choice_input(f"Available variables for instruction:\n {hex(self.current_address)} {str(ins)}","Choose variable",variables)
                 if var_choice != None:
-                    # TODO extract whole params not just variables
                     trace_vars = self.prepare_relevant_variables(variables[var_choice])
                     self.current_function.set_auto_instr_highlight(self.current_address,self.color_set[self.color])
         for instruction in current_hlil_instructions:
@@ -101,6 +101,7 @@ class Highlighter3(BackgroundTaskThread):
                 # Remove when fixed
                 try:
                     if re.search(var,str(instruction)):
+                        log_info(str(self.expand_operands(instruction)))
                         self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
                 except re.error:
                     pass
@@ -114,7 +115,6 @@ class Highlighter3(BackgroundTaskThread):
         param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
         param_vars = []
         original_value = str(param)
-        tmp_possible = [original_value]
         for p in param_vars_hlil:
             vars["orig_vars"][str(p)] = []
             param_vars.append(p.var)
@@ -124,24 +124,20 @@ class Highlighter3(BackgroundTaskThread):
                 if var not in vars["orig_vars"][param_var]:
                     vars["orig_vars"][param_var].append(var)
                     vars["vars"].append(var)
-                    vars["orig_vars"][str(var)] = []
                 definitions = param.function.get_var_definitions(var)
                 # Also uses are relevant
                 definitions.extend(param.function.get_var_uses(var))
                 for d in definitions:
                     if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                        #tmp_possible.append(str(d.src))
                         vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
                         param_vars.append(d.src.postfix_operands[0])
                     elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
                         # Handle assignments from calls
                         for param in d.src.params:
                             if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                                #tmp_possible.append(str(param))
                                 vars["orig_vars"][param_var].append(param.postfix_operands[0])
                                 param_vars.append(param.postfix_operands[0])
                     elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
-                        #tmp_possible.append(str(d))
                         vars["orig_vars"][param_var].append(d.var)
             for v in vars["orig_vars"][param_var]:
                 tmp = re.escape(re.sub(f'{param_var}\.\w+|:\d+\.\w+', str(v), original_value))
@@ -149,3 +145,29 @@ class Highlighter3(BackgroundTaskThread):
                 if tmp2 not in vars["possible_values"]:
                     vars["possible_values"].append(tmp2)  
         return vars
+
+    def is_in_list(self,sublist,full_list):
+        sublist_size = len(sublist)
+        full_list_size = len(full_list)
+        if sublist_size < full_list_size:
+            for i in range(0,full_list_size-sublist_size+1):
+                log_info(f"{sublist} vs. {full_list[i:i+sublist_size]}")
+                if sublist == full_list[i:i+sublist_size]:
+                    return True
+        return False
+
+    def expand_operands(self,operands):
+        if type(operands) == binaryninja.HighLevelILInstruction:
+            op = [operands]
+        else:
+            op = operands.copy()
+        ret_val = []
+        while op:
+            current_op = op.pop(0)
+            if type(current_op) == binaryninja.HighLevelILInstruction:
+                op[0:0] = current_op.operands
+            elif type(current_op) is list:
+                op[0:0] = current_op
+            else:
+                ret_val.append(current_op)
+        return ret_val

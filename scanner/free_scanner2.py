@@ -120,7 +120,7 @@ class FreeScanner2(BackgroundTaskThread):
             append = True
             if len(xref.params) > 0:
                 param_vars = self.prepare_relevant_variables(xref.params[0])
-                for var in param_vars["orig_vars"]:
+                for var in param_vars["param_vars"]:
                     if var in xref.function.source_function.parameter_vars:
                         wrapper_xrefs = self.get_xrefs_to_call([xref.function.source_function.name])
                         if wrapper_xrefs:
@@ -147,44 +147,50 @@ class FreeScanner2(BackgroundTaskThread):
         return free_xrefs
     
     def prepare_relevant_variables(self,param):
-        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
-        param_vars = []
-        for p in param_vars_hlil:
-            param_vars.append(p.var)
         vars = {
             "possible_values": [],
             "vars": [],
-            "orig_vars": []
+            "orig_vars": {},
+            "param_vars": []
         }
-        tmp_possible = [str(param)]
-        for var in param_vars:
-            if var not in vars["vars"]:
-                vars["vars"].append(var)
-                vars["orig_vars"].append(var)
-            definitions = param.function.get_var_definitions(var)
-            # Also uses are relevant
-            definitions.extend(param.function.get_var_uses(var))
-            for d in definitions:
-                if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN)and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
-                    val = str(param).replace(str(var),str(d.src.postfix_operands[0]))
-                    #tmp_possible.append(val)
-                    tmp_possible.append(str(d.src))
-                    vars["vars"].append(d.src.postfix_operands[0])
-                    param_vars.append(d.src.postfix_operands[0])
-        for val in tmp_possible:
-            tmp_val = val
-            positions = [(m.start(0), m.end(0)) for m in re.finditer(r'\.\w+|:\d+\.\w+', val)]
-            for pos in positions:
-                tmp_val = val[0: pos[0]:] + val[pos[1]::]
-            tmp_val = re.escape(tmp_val)
-            for v in vars["vars"]:
-                tmp_val = tmp_val.replace(str(v),str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
-            try:
-                # validate resulting regex
-                re.compile(tmp_val)
-                vars["possible_values"].append(tmp_val)
-            except re.error:
-                pass
+        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+        param_vars = []
+        original_value = str(param)
+        for p in param_vars_hlil:
+            vars["orig_vars"][str(p)] = []
+            param_vars.append(p.var)
+            vars["param_vars"].append(p.var)
+        for param_var in vars["orig_vars"]:
+            # For each of the original variables find its possible alternatives
+            for var in param_vars:
+                if var not in vars["orig_vars"][param_var]:
+                    vars["orig_vars"][param_var].append(var)
+                    vars["vars"].append(var)
+                definitions = param.function.get_var_definitions(var)
+                # Also uses are relevant
+                definitions.extend(param.function.get_var_uses(var))
+                for d in definitions:
+                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                        param_vars.append(d.src.postfix_operands[0])
+                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                        # Handle assignments from calls
+                        for param in d.src.params:
+                            if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                param_vars.append(param.postfix_operands[0])
+                    elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.var)
+            for v in vars["orig_vars"][param_var]:
+                tmp = re.escape(re.sub(f'{param_var}\.\w+|:\d+\.\w+', str(v), original_value))
+                tmp2 = tmp.replace(str(v), str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
+                if tmp2 not in vars["possible_values"]:
+                    try:
+                        # validate resulting regex
+                        re.compile(tmp2)
+                        vars["possible_values"].append(tmp2)
+                    except re.error:
+                        pass
         return vars
 
     def is_in_loop(self,instruction):
