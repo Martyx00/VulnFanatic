@@ -31,13 +31,15 @@ class Highlighter3(BackgroundTaskThread):
             self.highlight_hlil_var()
         elif self.type == "HLIL Blocks":
             self.highlight_hlil_blocks()
+        elif self.type == "Assembly Variable":
+            self.highlight_assembly_variable()
         elif self.type == "clear":
             self.clear()
 
     def clear(self):
         current_hlil = self.current_function.hlil
         current_hlil_instructions = list(current_hlil.instructions)
-        for instruction in current_hlil_instructions:
+        for instruction in self.current_function.mlil.instructions:
             self.current_function.set_auto_instr_highlight(instruction.address,binaryninja.highlight.HighlightStandardColor.NoHighlightColor)
         for b in self.current_function.basic_blocks:
             b.set_auto_highlight(binaryninja.highlight.HighlightStandardColor.NoHighlightColor) 
@@ -63,7 +65,7 @@ class Highlighter3(BackgroundTaskThread):
         visited_blocks = []
         blocks = []
         current_hlil = self.current_function.hlil
-        #current_hlil_instructions = list(current_hlil.instructions)
+        current_hlil_instructions = list(current_hlil.instructions)
         for ins in current_hlil_instructions:
             if ins.address == self.current_address:
                 blocks.append(ins.il_basic_block)
@@ -78,6 +80,43 @@ class Highlighter3(BackgroundTaskThread):
                     blocks.append(edge.source)
                     visited_blocks.append(f"{edge.source.start}@{edge.source.function.name}")
 
+    def highlight_assembly_variable(self):
+        vars_to_trace = []
+        vars_choice = []
+        checked_vars = []
+        tmp_mlil = self.current_function.get_low_level_il_at(self.current_address).mlil
+        disass_text = self.current_function.get_basic_block_at(self.current_address).disassembly_text
+        for dt in disass_text:
+            if dt.address == self.current_address:
+                ins = dt
+                break
+        if tmp_mlil:
+            vars_choice.extend(tmp_mlil.vars_read)
+            vars_choice.extend(tmp_mlil.vars_written)
+            var_choice = get_choice_input(f"Available variables for instruction:\n {hex(self.current_address)} {str(ins)}","Choose variable",vars_choice)
+            vars_to_trace.append(vars_choice[var_choice])
+            checked_vars.append(vars_choice[var_choice].name)
+        while vars_to_trace:
+            current_var = vars_to_trace.pop()
+            for instruction in self.current_function.mlil.instructions:
+                if instruction.address == self.current_address:
+                    continue
+                if current_var in instruction.vars_read:
+                    # A varaible we are looking for was read from
+                    # Highlight this place
+                    self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
+                    # And add any written variables to the vars choice array
+                    #for v in instruction.vars_written:
+                        #if v.name not in checked_vars:
+                            #vars_to_trace.append(v)
+                            #checked_vars.append(v.name)
+                elif current_var in instruction.vars_written:
+                    self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
+                    #for v in instruction.vars_read:
+                        #if v.name not in checked_vars:
+                            #vars_to_trace.append(v)
+                            #checked_vars.append(v.name)
+    
     def highlight_hlil_var(self):
         trace_vars = []
         current_hlil = self.current_function.hlil
@@ -96,6 +135,7 @@ class Highlighter3(BackgroundTaskThread):
                 if var_choice != None:
                     trace_vars = self.prepare_relevant_variables(variables[var_choice])
                     self.current_function.set_auto_instr_highlight(self.current_address,self.color_set[self.color])
+                break
         for instruction in current_hlil_instructions:
             for var in trace_vars["possible_values"]:
                 # Remove when fixed
