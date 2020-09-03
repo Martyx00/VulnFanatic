@@ -1,6 +1,0 @@
-_and_(
-    _or_(
-        sources.get().param(1).source_type(\"parameter\").exported(),
-        sources.get().param(1).function_calls([\"gets\",\"scanf\",\"fgets\",\"recv\",\"recvfrom\", \"recvmsg\",\"getc\",\"fread\",\"read\",\"sprintf\",\"memcpy\",\"strcpy\",\"strncpy\",\"getenv\"])
-    ),
-    sources.get().param(1).not_affected_by_function_calls([\"strlen\",\"toa\",\"toi\"])sources.get().param(2).not_constant(),sources.get().param(2).not_affected_by_function_calls([\"strlen\",\"alloc\"]))

@@ -37,8 +37,8 @@ class Highlighter3(BackgroundTaskThread):
             self.clear()
 
     def clear(self):
-        current_hlil = self.current_function.hlil
-        current_hlil_instructions = list(current_hlil.instructions)
+        for instruction in self.current_function.hlil.instructions:
+            self.current_function.set_auto_instr_highlight(instruction.address,binaryninja.highlight.HighlightStandardColor.NoHighlightColor)
         for instruction in self.current_function.mlil.instructions:
             self.current_function.set_auto_instr_highlight(instruction.address,binaryninja.highlight.HighlightStandardColor.NoHighlightColor)
         for b in self.current_function.basic_blocks:
@@ -135,7 +135,7 @@ class Highlighter3(BackgroundTaskThread):
                 if var_choice != None:
                     trace_vars = self.prepare_relevant_variables(variables[var_choice])
                     self.current_function.set_auto_instr_highlight(self.current_address,self.color_set[self.color])
-                break
+                    #break
         for instruction in current_hlil_instructions:
             for var in trace_vars["possible_values"]:
                 # Remove when fixed
