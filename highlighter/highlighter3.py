@@ -121,7 +121,7 @@ class Highlighter3(BackgroundTaskThread):
         current_hlil = self.current_function.hlil
         current_hlil_instructions = list(current_hlil.instructions)
         for ins in current_hlil_instructions:
-            if ins.address == self.current_address:
+            if ins.address == self.current_address and ins.operation != HighLevelILOperation.HLIL_LABEL:
                 variables = extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_VAR],specific_instruction=ins)
                 calls = extract_hlil_operations(current_hlil,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=ins)
                 for call in calls:
@@ -166,20 +166,24 @@ class Highlighter3(BackgroundTaskThread):
                 # Also uses are relevant
                 definitions.extend(param.function.get_var_uses(var))
                 for d in definitions:
-                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                        vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
-                        param_vars.append(d.src.postfix_operands[0])
-                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
-                        # Handle assignments from calls
-                        for param in d.src.params:
-                            if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                                vars["orig_vars"][param_var].append(param.postfix_operands[0])
-                                param_vars.append(param.postfix_operands[0])
-                    elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
-                        vars["orig_vars"][param_var].append(d.var)
+                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and re.search(str(var), str(d.src)):
+                        # assign and variable we are tracing is in src
+                        for v in extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=d.dest):
+                            # do appending
+                            if v.var not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(v.var)
+                                param_vars.append(v.var)
+                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and re.search(str(var), str(d.dest)):
+                        # Variable currently tracing is in dest
+                        for v in extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=d.src):
+                            # do appending
+                            if v.var not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(v.var)
+                                param_vars.append(v.var)
             for v in vars["orig_vars"][param_var]:
                 tmp = re.escape(re.sub(f'{param_var}\.\w+|:\d+\.\w+', str(v), original_value))
                 tmp2 = tmp.replace(str(v), str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
                 if tmp2 not in vars["possible_values"]:
-                    vars["possible_values"].append(tmp2)  
+                    vars["possible_values"].append(tmp2)
+        log_info(str(vars)) 
         return vars

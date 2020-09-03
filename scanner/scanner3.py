@@ -25,7 +25,7 @@ class Scanner3(BackgroundTaskThread):
             for xref in function_refs:
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
-                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%) - {xref_counter}/{xrefs_count}"
+                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
         free = FreeScanner2(self.current_view)
         free.start()
 
