@@ -24,7 +24,6 @@ class Highlighter3(BackgroundTaskThread):
         }
 
     def run(self):
-        #log_info(str(self.is_in_list(["hello",2,"world"],["1",2,3,"hello",2,"world",4])))
         if self.type == "Assembly Blocks":
             self.highlight_assembly_blocks()
         elif self.type == "HLIL Variable":
@@ -141,7 +140,6 @@ class Highlighter3(BackgroundTaskThread):
                 # Remove when fixed
                 try:
                     if re.search(var,str(instruction)):
-                        log_info(str(self.expand_operands(instruction)))
                         self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
                 except re.error:
                     pass
@@ -185,29 +183,3 @@ class Highlighter3(BackgroundTaskThread):
                 if tmp2 not in vars["possible_values"]:
                     vars["possible_values"].append(tmp2)  
         return vars
-
-    def is_in_list(self,sublist,full_list):
-        sublist_size = len(sublist)
-        full_list_size = len(full_list)
-        if sublist_size < full_list_size:
-            for i in range(0,full_list_size-sublist_size+1):
-                log_info(f"{sublist} vs. {full_list[i:i+sublist_size]}")
-                if sublist == full_list[i:i+sublist_size]:
-                    return True
-        return False
-
-    def expand_operands(self,operands):
-        if type(operands) == binaryninja.HighLevelILInstruction:
-            op = [operands]
-        else:
-            op = operands.copy()
-        ret_val = []
-        while op:
-            current_op = op.pop(0)
-            if type(current_op) == binaryninja.HighLevelILInstruction:
-                op[0:0] = current_op.operands
-            elif type(current_op) is list:
-                op[0:0] = current_op
-            else:
-                ret_val.append(current_op)
-        return ret_val

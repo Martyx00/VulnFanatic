@@ -103,9 +103,6 @@ class FreeScanner2(BackgroundTaskThread):
                             if self.not_if_dependent(instruction,param_vars):
                                 uaf_if = True
                             uaf = True
-                            if i.function.source_function.name == "plugins_free":
-                                log_info(f"[*] Use detected at {i.function.source_function.name} in instruction {str(i)}")
-                                log_info(str(param_vars["possible_values"]))
                             return uaf, uaf_if, double
             # Add following blocks only if current block have not initialized the variable
             if not initialized:
