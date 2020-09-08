@@ -6,7 +6,7 @@ import os
 import sys
 
 
-def scan3(bv,selection_addr):
+def scan3(bv):
 	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
 		bv.create_tag_type("[VulnFanatic] High","🔴")
 		bv.create_tag_type("[VulnFanatic] Medium","🟠")
@@ -39,11 +39,10 @@ def clear_highlight3(bv,selection_addr):
 	high = Highlighter3(bv,selection_addr,current_function,None,"clear")
 	high.start()
 
-
 # Register the plugin
-PluginCommand.register_for_address("[VulnFanatic] Start Scan", "Start Scan", scan3)
-PluginCommand.register_for_address("[VulnFanatic] Highlight", "Highlights parameters with color highlights", highlight3)
-PluginCommand.register_for_address("[VulnFanatic] Clear highlights", "Removes highlights of parameters", clear_highlight3)
+PluginCommand.register("VulnFanatic\\Start Scan", "Start Scan", scan3)
+PluginCommand.register_for_address("VulnFanatic\\Highlight", "Highlights parameters with color highlights", highlight3)
+PluginCommand.register_for_address("VulnFanatic\\Clear highlights", "Removes highlights of parameters", clear_highlight3)
 
 
 #PluginCommand.register_for_address("TraceFanatic: Comment parameters", "Adds comments to variables that influence parameters of highlighted call", start_comment)

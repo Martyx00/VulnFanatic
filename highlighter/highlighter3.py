@@ -185,5 +185,4 @@ class Highlighter3(BackgroundTaskThread):
                 tmp2 = tmp.replace(str(v), str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
                 if tmp2 not in vars["possible_values"]:
                     vars["possible_values"].append(tmp2)
-        log_info(str(vars)) 
         return vars

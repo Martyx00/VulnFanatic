@@ -16,15 +16,16 @@ class FreeScanner2(BackgroundTaskThread):
         total = len(free_xrefs)
         # With all wrappers detected lets do the scan
         for free_xref in free_xrefs:
-            self.progress = f"{self.progress_banner} ({counter}/{total})"
+            self.progress = f"{self.progress_banner} ({round((counter/total)*100)}%)"
             counter += 1
             if free_xref["param_index"] < len(free_xref["instruction"].params):
                 param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
-                uaf,uaf_if,double = self.scan(free_xref["instruction"],param_vars)
+                uaf,uaf_if,double,glob = self.scan(free_xref["instruction"],param_vars)
                 current_free_xref_obj = {
                     "used_after": uaf,
                     "without_if": uaf_if,
                     "double_free": double,
+                    "global_uaf": glob,
                     "struct_free_wrapper": free_xref["struct_free_wrapper"]
                 }
                 if current_free_xref_obj["double_free"] and current_free_xref_obj["without_if"]:
@@ -39,7 +40,8 @@ class FreeScanner2(BackgroundTaskThread):
                 confidence = ""
                 if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"]:
                     confidence = "Medium"
-                elif current_free_xref_obj["used_after"]:
+                elif current_free_xref_obj["used_after"] or (current_free_xref_obj["global_uaf"] and not current_free_xref_obj["struct_free_wrapper"]):
+                #elif current_free_xref_obj["used_after"]:
                     confidence = "Low"
                 elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
@@ -58,11 +60,8 @@ class FreeScanner2(BackgroundTaskThread):
         # Check if instruction is in loop so that we know how to proceed with checks further
         in_loop = self.is_in_loop(instruction)
         # Check if param is used after the free call, if not in loop get rid of first instruction
-        if not in_loop["in_loop"]:
-            used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
-        else:
-            used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
-        return used_after, used_after_with_if, double
+        used_after, used_after_with_if,double, init = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
+        return used_after, used_after_with_if, double, init
 
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
@@ -73,8 +72,11 @@ class FreeScanner2(BackgroundTaskThread):
         double = False
         blocks = [{"block":instruction.il_basic_block,"start":instruction.instr_index + 1,"end":instruction.il_basic_block.end}]
         loop_pass = False
+        initialized = False
         #nested_loops = []
         visited_blocks = []
+        global_uaf = False
+        init = False
         while blocks:
             initialized = False
             current_block = blocks.pop()
@@ -92,10 +94,11 @@ class FreeScanner2(BackgroundTaskThread):
                 i = hlil_instructions[index]
                 for param in param_vars["possible_values"]:
                     if i and i.instr_index != instruction.instr_index:
-                        if (i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)) or 
-                        i.operation == HighLevelILOperation.HLIL_VAR_INIT and re.search(param,str(i.dest))):
+                        if ((i.operation == HighLevelILOperation.HLIL_ASSIGN or i.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(i.dest)) or 
+                        re.search(param,str(i)) and re.search("alloc",str(i))):
                             # Found initialization of the variable
                             initialized = True
+                            init = True
                             break
                         if (re.search(param,str(i)) and not i.operation in skip_operations):
                             if i.operation == HighLevelILOperation.HLIL_CALL and str(i.dest) in self.free_list:
@@ -103,13 +106,46 @@ class FreeScanner2(BackgroundTaskThread):
                             if self.not_if_dependent(instruction,param_vars):
                                 uaf_if = True
                             uaf = True
-                            return uaf, uaf_if, double
+                            return uaf, uaf_if, double, global_uaf
             # Add following blocks only if current block have not initialized the variable
             if not initialized:
                 for edge in current_block["block"].outgoing_edges:
                     if edge.target.start not in visited_blocks:
                         blocks.append({"block":edge.target,"start":edge.target.start,"end":edge.target.end})
-        return uaf, uaf_if, double
+        # Was not initialized but also not used
+        # See if source is dereference of constant, this signals use of global variable
+        if not init:
+            glob = False
+            for v in param_vars["param_vars"]:
+                if self.is_global_var(v,instruction.function):
+                    glob = True
+                    break
+            refs = self.get_xrefs_to_call([instruction.function.source_function.name])
+            for ref in refs:
+                in_loop = self.is_in_loop(ref)
+                if in_loop["in_loop"] and glob:
+                    global_uaf = True
+        return uaf, uaf_if, double, global_uaf
+
+    def is_global_var(self,var,function):
+        vars = [var]
+        current_hlil_instructions = list(function.instructions)
+        checked_vars = []
+        while vars:
+            v = vars.pop()
+            checked_vars.append(v.name)
+            defs = function.get_var_definitions(v)
+            for d in defs:
+                consts = extract_hlil_operations(function,[HighLevelILOperation.HLIL_CONST_PTR],specific_instruction=current_hlil_instructions[d.instr_index])
+                for c in consts:
+                    if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
+                        # Likely a global variable deref
+                        return True
+                vs = extract_hlil_operations(function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_hlil_instructions[d.instr_index])
+                for a in vs:
+                    if a.var.name not in checked_vars:
+                        vars.append(a.var)
+        return False
 
     def get_xrefs_with_wrappers(self):
         free_xrefs = []
@@ -216,6 +252,10 @@ class FreeScanner2(BackgroundTaskThread):
         for f in function_names:
             if f[:4] == "sub_":
                 altered_names.append(f"0x{f[4:]}")
+            elif f[:2] == "_Z":
+                value = re.sub(r'\(.*\)', '', self.current_view.symbols[f].full_name)
+                altered_names.append(value)
+                function_names.append(value)
             else:
                 altered_names.append(f)
         checked_functions = []

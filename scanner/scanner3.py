@@ -3,7 +3,6 @@ import re
 import json
 from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
-# 32 libxml
 
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -284,6 +283,9 @@ class Scanner3(BackgroundTaskThread):
                     symbol_item.extend(self.current_view.symbols[function_name+"@PLT"]) if type(self.current_view.symbols[function_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@PLT"])
                 except KeyError:
                     pass
+            if fun_name[:2] == "_Z":
+                # Handle C++ mangled names
+                function_name = re.sub(r'\(.*\)', '', self.current_view.symbols[fun_name].full_name)
             for symbol in symbol_item:
                 for ref in self.current_view.get_code_refs(symbol.address):
                     # Get exact instruction index
