@@ -13,7 +13,7 @@ class Scanner3(BackgroundTaskThread):
         self.marked = 0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
-
+    
     def run(self):
         total_xrefs = 0
         for function in self.rules["functions"]:
@@ -22,6 +22,8 @@ class Scanner3(BackgroundTaskThread):
             total_xrefs += xrefs_count
             xref_counter = 0
             for xref in function_refs:
+                if self.cancelled:
+                    return
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
@@ -144,37 +146,34 @@ class Scanner3(BackgroundTaskThread):
                             if index < len(hlil_instructions):
                                 instruction = hlil_instructions[index]
                                 for param in params_to_check:
-                                    try:
-                                        if re.search(param,str(instruction)):
-                                            # found instruction where the desired parameter is used
-                                            # Check if it is part of an if:
-                                            if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                                trace_struct[str(p)]["if_dependant"] = True
-                                            # Constant check
-                                            if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
-                                                if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                                                    try:
-                                                        value = self.current_view.get_string_at(instruction.src.constant).value
-                                                    except:
-                                                        value = hex(instruction.src.constant)
-                                                    # handle constant here
-                                                    trace_struct[str(p)]["is_constant"] = True
-                                                    trace_struct[str(p)]["constant_value"].append(value)
-                                            # Check if it is part of a call:
-                                            calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
-                                            for call in calls:
-                                                if re.search(param,str(call.params)) and call != xref:
-                                                    trace_struct[str(p)]["affected_by"].append(str(call.dest))
-                                                    if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                        trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
-                                                elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
-                                                instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
-                                                    # Not in the parameter so check if not assigned with the return value
-                                                    trace_struct[str(p)]["affected_by"].append(str(call.dest))
-                                                    if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                        trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
-                                    except re.error:
-                                        pass
+                                    if re.search(param,str(instruction)):
+                                        # found instruction where the desired parameter is used
+                                        # Check if it is part of an if:
+                                        if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                            trace_struct[str(p)]["if_dependant"] = True
+                                        # Constant check
+                                        if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
+                                            if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                                try:
+                                                    value = self.current_view.get_string_at(instruction.src.constant).value
+                                                except:
+                                                    value = hex(instruction.src.constant)
+                                                # handle constant here
+                                                trace_struct[str(p)]["is_constant"] = True
+                                                trace_struct[str(p)]["constant_value"].append(value)
+                                        # Check if it is part of a call:
+                                        calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                        for call in calls:
+                                            if re.search(param,str(call.params)) and call != xref:
+                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
+                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                            elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
+                                            instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
+                                                # Not in the parameter so check if not assigned with the return value
+                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
+                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
                         for edge in current_block["block"].incoming_edges:
@@ -252,7 +251,12 @@ class Scanner3(BackgroundTaskThread):
             tmp_val = re.escape(tmp_val)
             for v in vars["vars"]:
                 tmp_val = tmp_val.replace(str(v),str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
-            vars["possible_values"].append(tmp_val)      
+            try:
+                # validate resulting regex
+                re.compile(tmp_val)
+                vars["possible_values"].append(tmp_val)
+            except:
+                pass      
         return vars
     
     # Can this be copied?
