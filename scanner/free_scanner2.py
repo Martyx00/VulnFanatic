@@ -18,6 +18,8 @@ class FreeScanner2(BackgroundTaskThread):
         for free_xref in free_xrefs:
             self.progress = f"{self.progress_banner} ({round((counter/total)*100)}%)"
             counter += 1
+            if self.cancelled:
+                return
             if free_xref["param_index"] < len(free_xref["instruction"].params):
                 param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
                 uaf,uaf_if,double,glob = self.scan(free_xref["instruction"],param_vars)
