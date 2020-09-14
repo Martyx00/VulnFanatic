@@ -254,6 +254,7 @@ class FreeScanner2(BackgroundTaskThread):
         for f in function_names:
             if f[:4] == "sub_":
                 altered_names.append(f"0x{f[4:]}")
+            # C++ mangled names
             elif f[:2] == "_Z":
                 value = re.sub(r'\(.*\)', '', self.current_view.symbols[f].full_name)
                 altered_names.append(value)

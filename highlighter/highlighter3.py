@@ -52,8 +52,6 @@ class Highlighter3(BackgroundTaskThread):
         while blocks:
             current_block = blocks.pop()
             visited_blocks.append(f"{current_block}@{current_block.function.name}")
-            #if current_block.start == 0 and "All functions" in self.type:
-            #    blocks.extend(self.get_address_xref(current_block.function.start))
             current_block.set_auto_highlight(self.color_set[self.color]) 
             for edge in current_block.incoming_edges:
                 if f"{edge.source.start}@{edge.source.function.name}" not in visited_blocks:
@@ -71,8 +69,6 @@ class Highlighter3(BackgroundTaskThread):
         while blocks:
             current_block = blocks.pop()
             visited_blocks.append(f"{current_block}@{current_block.function.name}")
-            #if current_block.start == 0 and "All functions" in self.type:
-            #    blocks.extend(self.get_address_xref(current_block.function.start))
             current_block.set_auto_highlight(self.color_set[self.color]) 
             for edge in current_block.incoming_edges:
                 if f"{edge.source.start}@{edge.source.function.name}" not in visited_blocks:
@@ -104,17 +100,8 @@ class Highlighter3(BackgroundTaskThread):
                     # A varaible we are looking for was read from
                     # Highlight this place
                     self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
-                    # And add any written variables to the vars choice array
-                    #for v in instruction.vars_written:
-                        #if v.name not in checked_vars:
-                            #vars_to_trace.append(v)
-                            #checked_vars.append(v.name)
                 elif current_var in instruction.vars_written:
                     self.current_function.set_auto_instr_highlight(instruction.address,self.color_set[self.color])
-                    #for v in instruction.vars_read:
-                        #if v.name not in checked_vars:
-                            #vars_to_trace.append(v)
-                            #checked_vars.append(v.name)
     
     def highlight_hlil_var(self):
         trace_vars = []
