@@ -1,0 +1,2240 @@
+{
+    "functions":[
+            {"function_name":"NSLog", "trace_params":[0]},
+            {"function_name":"_NSLog", "trace_params":[0]},
+            {"function_name":"___fprintf_chk", "trace_params":[2]},
+            {"function_name":"___printf_chk", "trace_params":[1]},
+            {"function_name":"___snprintf_chk", "trace_params":[4]},
+            {"function_name":"___sprintf_chk", "trace_params":[3]},
+            {"function_name":"___vfprintf_chk", "trace_params":[2]},
+            {"function_name":"___vprintf_chk", "trace_params":[1]},
+            {"function_name":"___vsnprintf_chk", "trace_params":[4]},
+            {"function_name":"___vsprintf_chk", "trace_params":[3]},
+            {"function_name":"__asprintf_chk", "trace_params":[2]},
+            {"function_name":"__dprintf_chk", "trace_params":[2]},
+            {"function_name":"__fprintf_chk", "trace_params":[2]},
+            {"function_name":"__fwprintf_chk", "trace_params":[2]},
+            {"function_name":"__obstack_printf_chk", "trace_params":[2]},
+            {"function_name":"__obstack_vprintf_chk", "trace_params":[2]},
+            {"function_name":"__printf_chk", "trace_params":[1]},
+            {"function_name":"__snprintf_chk", "trace_params":[4]},
+            {"function_name":"__sprintf_chk", "trace_params":[3]},
+            {"function_name":"__swprintf_chk", "trace_params":[4]},
+            {"function_name":"__vasprintf_chk", "trace_params":[2]},
+            {"function_name":"__vdprintf_chk", "trace_params":[2]},
+            {"function_name":"__vfprintf_chk", "trace_params":[2]},
+            {"function_name":"__vfwprintf_chk", "trace_params":[2]},
+            {"function_name":"__vprintf_chk", "trace_params":[1]},
+            {"function_name":"__vsnprintf_chk", "trace_params":[4]},
+            {"function_name":"__vsprintf_chk", "trace_params":[3]},
+            {"function_name":"__vswprintf_chk", "trace_params":[4]},
+            {"function_name":"__vswprintf_l", "trace_params":[1]},
+            {"function_name":"__vwprintf_chk", "trace_params":[1]},
+            {"function_name":"__wprintf_chk", "trace_params":[1]},
+            {"function_name":"_asprintf", "trace_params":[1]},
+            {"function_name":"_fprintf", "trace_params":[1]},
+            {"function_name":"_fscanf", "trace_params":[1, 0]},
+            {"function_name":"_fwprintf", "trace_params":[1]},
+            {"function_name":"_gets", "trace_params":[0]},
+            {"function_name":"_mbscat", "trace_params":[1, 0]},
+            {"function_name":"_mbscat_s", "trace_params":[2, 1]},
+            {"function_name":"_mbscat_s_l", "trace_params":[2, 1]},
+            {"function_name":"_mbscpy", "trace_params":[1,0]},
+            {"function_name":"_mbscpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"_mbscpy_s_l", "trace_params":[2, 1, 0]},
+            {"function_name":"_memcpy", "trace_params":[1, 2, 0]},
+            {"function_name":"_memcpy_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"_memmove", "trace_params":[1, 2, 0]},
+            {"function_name":"_memmove_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"_objc_msgSend", "trace_params":[1, 6, 2, 3]},
+            {"function_name":"_popen", "trace_params":[0]},
+            {"function_name":"_printf", "trace_params":[0]},
+            {"function_name":"_scanf", "trace_params":[0]},
+            {"function_name":"_snprintf", "trace_params":[0,2, 1,-3]},
+            {"function_name":"_sprintf", "trace_params":[1,-2]},
+            {"function_name":"_sprintf_p_l", "trace_params":[2]},
+            {"function_name":"_sscanf", "trace_params":[1,0]},
+            {"function_name":"_strcat", "trace_params":[1, 0]},
+            {"function_name":"_strcat_s", "trace_params":[2, 1]},
+            {"function_name":"_strcpy", "trace_params":[1, 0]},
+            {"function_name":"_strcpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"_strncat", "trace_params":[1, 2, 0]},
+            {"function_name":"_strncpy", "trace_params":[1, 2, 0]},
+            {"function_name":"_swprintf", "trace_params":[2]},
+            {"function_name":"_system", "trace_params":[0]},
+            {"function_name":"_vcprintf", "trace_params":[0]},
+            {"function_name":"_vcprintf_l", "trace_params":[0]},
+            {"function_name":"_vcprintf_p", "trace_params":[0]},
+            {"function_name":"_vcprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vcwprintf", "trace_params":[0]},
+            {"function_name":"_vcwprintf_l", "trace_params":[0]},
+            {"function_name":"_vcwprintf_p", "trace_params":[0]},
+            {"function_name":"_vcwprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vcwprintf_s", "trace_params":[0]},
+            {"function_name":"_vcwprintf_s_l", "trace_params":[0]},
+            {"function_name":"_vfprintf", "trace_params":[1]},
+            {"function_name":"_vfprintf_l", "trace_params":[1]},
+            {"function_name":"_vfprintf_p", "trace_params":[1]},
+            {"function_name":"_vfprintf_p_l", "trace_params":[1]},
+            {"function_name":"_vfprintf_s", "trace_params":[1]},
+            {"function_name":"_vfprintf_s_l", "trace_params":[1]},
+            {"function_name":"_vfscanf", "trace_params":[1]},
+            {"function_name":"_vfscanf_s", "trace_params":[1]},
+            {"function_name":"_vfwprintf", "trace_params":[1]},
+            {"function_name":"_vfwprintf_l", "trace_params":[1]},
+            {"function_name":"_vfwprintf_p", "trace_params":[1]},
+            {"function_name":"_vfwprintf_p_l", "trace_params":[1]},
+            {"function_name":"_vfwprintf_s", "trace_params":[1]},
+            {"function_name":"_vfwprintf_s_l", "trace_params":[1]},
+            {"function_name":"_vfwscanf", "trace_params":[1]},
+            {"function_name":"_vfwscanf_s", "trace_params":[1]},
+            {"function_name":"_vprintf", "trace_params":[0]},
+            {"function_name":"_vprintf_l", "trace_params":[0]},
+            {"function_name":"_vprintf_p", "trace_params":[0]},
+            {"function_name":"_vprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vprintf_s", "trace_params":[0]},
+            {"function_name":"_vprintf_s_l", "trace_params":[0]},
+            {"function_name":"_vscanf", "trace_params":[0]},
+            {"function_name":"_vscanf_s", "trace_params":[0]},
+            {"function_name":"_vscprintf", "trace_params":[0]},
+            {"function_name":"_vscprintf_l", "trace_params":[0]},
+            {"function_name":"_vscprintf_p", "trace_params":[0]},
+            {"function_name":"_vscprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vscwprintf", "trace_params":[0]},
+            {"function_name":"_vscwprintf_l", "trace_params":[0]},
+            {"function_name":"_vscwprintf_p", "trace_params":[0]},
+            {"function_name":"_vscwprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vsnprintf", "trace_params":[2, 3, 1]},
+            {"function_name":"_vsnprintf_l", "trace_params":[2]},
+            {"function_name":"_vsnprintf_s", "trace_params":[2, 3]},
+            {"function_name":"_vsnprintf_s_l", "trace_params":[3]},
+            {"function_name":"_vsnwprintf", "trace_params":[2]},
+            {"function_name":"_vsnwprintf_l", "trace_params":[2]},
+            {"function_name":"_vsnwprintf_s", "trace_params":[2, 3]},
+            {"function_name":"_vsnwprintf_s_l", "trace_params":[3]},
+            {"function_name":"_vsprintf", "trace_params":[0,1, 2]},
+            {"function_name":"_vsprintf_l", "trace_params":[1]},
+            {"function_name":"_vsprintf_p", "trace_params":[2]},
+            {"function_name":"_vsprintf_p_l", "trace_params":[2]},
+            {"function_name":"_vsprintf_s", "trace_params":[1, 2]},
+            {"function_name":"_vsprintf_s_l", "trace_params":[2]},
+            {"function_name":"_vsscanf", "trace_params":[1]},
+            {"function_name":"_vsscanf_s", "trace_params":[1]},
+            {"function_name":"_vswprintf", "trace_params":[1, 2]},
+            {"function_name":"_vswprintf_l", "trace_params":[2]},
+            {"function_name":"_vswprintf_p", "trace_params":[2]},
+            {"function_name":"_vswprintf_p_l", "trace_params":[2]},
+            {"function_name":"_vswprintf_s", "trace_params":[1, 2]},
+            {"function_name":"_vswprintf_s_l", "trace_params":[2]},
+            {"function_name":"_vswscanf", "trace_params":[1]},
+            {"function_name":"_vswscanf_s", "trace_params":[1]},
+            {"function_name":"_vwprintf", "trace_params":[0]},
+            {"function_name":"_vwprintf_l", "trace_params":[0]},
+            {"function_name":"_vwprintf_p", "trace_params":[0]},
+            {"function_name":"_vwprintf_p_l", "trace_params":[0]},
+            {"function_name":"_vwprintf_s", "trace_params":[0]},
+            {"function_name":"_vwprintf_s_l", "trace_params":[0]},
+            {"function_name":"_vwscanf", "trace_params":[0]},
+            {"function_name":"_vwscanf_s", "trace_params":[0]},
+            {"function_name":"_wcscat", "trace_params":[1, 0]},
+            {"function_name":"_wcscat_s", "trace_params":[2, 1]},
+            {"function_name":"_wcscpy", "trace_params":[1,0]},
+            {"function_name":"_wcscpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"_wmemcpy", "trace_params":[0, 1, 2]},
+            {"function_name":"_wmemcpy_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"_wmemmove", "trace_params":[0, 1, 2]},
+            {"function_name":"_wmemmove_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"_wpopen", "trace_params":[0]},
+            {"function_name":"_wprintf", "trace_params":[0]},
+            {"function_name":"_wsprintf", "trace_params":[1]},
+            {"function_name":"_wsprintfA", "trace_params":[1]},
+            {"function_name":"_wsprintfW", "trace_params":[1]},
+            {"function_name":"asprintf", "trace_params":[1]},
+            {"function_name":"fprintf", "trace_params":[1]},
+            {"function_name":"fscanf", "trace_params":[1, 0]},
+            {"function_name":"fwprintf", "trace_params":[1]},
+            {"function_name":"gets", "trace_params":[0]},
+            {"function_name":"mbscat", "trace_params":[1, 0]},
+            {"function_name":"mbscat_s", "trace_params":[2, 1]},
+            {"function_name":"mbscat_s_l", "trace_params":[2, 1]},
+            {"function_name":"mbscpy", "trace_params":[1,0]},
+            {"function_name":"mbscpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"mbscpy_s_l", "trace_params":[2, 1, 0]},
+            {"function_name":"memcpy", "trace_params":[1, 2, 0]},
+            {"function_name":"memcpy_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"memmove", "trace_params":[1, 2, 0]},
+            {"function_name":"memmove_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"objc_msgSend", "trace_params":[1, 6, 2, 3]},
+            {"function_name":"popen", "trace_params":[0]},
+            {"function_name":"printf", "trace_params":[0]},
+            {"function_name":"scanf", "trace_params":[0]},
+            {"function_name":"snprintf", "trace_params":[0, 2, 1,-3]},
+            {"function_name":"sprintf", "trace_params":[1,-2]},
+            {"function_name":"sscanf", "trace_params":[1,0]},
+            {"function_name":"strcat", "trace_params":[1, 0]},
+            {"function_name":"strcat_s", "trace_params":[2, 1]},
+            {"function_name":"strcpy", "trace_params":[1, 0]},
+            {"function_name":"strcpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"strncat", "trace_params":[1, 2, 0]},
+            {"function_name":"strncpy", "trace_params":[1, 2, 0]},
+            {"function_name":"swprintf", "trace_params":[2]},
+            {"function_name":"system", "trace_params":[0]},
+            {"function_name":"vasprintf", "trace_params":[1]},
+            {"function_name":"vcprintf", "trace_params":[0]},
+            {"function_name":"vcprintf_l", "trace_params":[0]},
+            {"function_name":"vcprintf_p", "trace_params":[0]},
+            {"function_name":"vcprintf_p_l", "trace_params":[0]},
+            {"function_name":"vcwprintf", "trace_params":[0]},
+            {"function_name":"vcwprintf_l", "trace_params":[0]},
+            {"function_name":"vcwprintf_p", "trace_params":[0]},
+            {"function_name":"vcwprintf_p_l", "trace_params":[0]},
+            {"function_name":"vcwprintf_s", "trace_params":[0]},
+            {"function_name":"vcwprintf_s_l", "trace_params":[0]},
+            {"function_name":"vfprintf", "trace_params":[1]},
+            {"function_name":"vfprintf_l", "trace_params":[1]},
+            {"function_name":"vfprintf_p", "trace_params":[1]},
+            {"function_name":"vfprintf_p_l", "trace_params":[1]},
+            {"function_name":"vfprintf_s", "trace_params":[1]},
+            {"function_name":"vfprintf_s_l", "trace_params":[1]},
+            {"function_name":"vfscanf", "trace_params":[1]},
+            {"function_name":"vfscanf_s", "trace_params":[1]},
+            {"function_name":"vfwprintf", "trace_params":[1]},
+            {"function_name":"vfwprintf_l", "trace_params":[1]},
+            {"function_name":"vfwprintf_p", "trace_params":[1]},
+            {"function_name":"vfwprintf_p_l", "trace_params":[1]},
+            {"function_name":"vfwprintf_s", "trace_params":[1]},
+            {"function_name":"vfwprintf_s_l", "trace_params":[1]},
+            {"function_name":"vfwscanf", "trace_params":[1]},
+            {"function_name":"vfwscanf_s", "trace_params":[1]},
+            {"function_name":"vprintf", "trace_params":[0]},
+            {"function_name":"vprintf_l", "trace_params":[0]},
+            {"function_name":"vprintf_p", "trace_params":[0]},
+            {"function_name":"vprintf_p_l", "trace_params":[0]},
+            {"function_name":"vprintf_s", "trace_params":[0]},
+            {"function_name":"vprintf_s_l", "trace_params":[0]},
+            {"function_name":"vscanf", "trace_params":[0]},
+            {"function_name":"vscanf_s", "trace_params":[0]},
+            {"function_name":"vscprintf", "trace_params":[0]},
+            {"function_name":"vscprintf_l", "trace_params":[0]},
+            {"function_name":"vscprintf_p", "trace_params":[0]},
+            {"function_name":"vscprintf_p_l", "trace_params":[0]},
+            {"function_name":"vscwprintf", "trace_params":[0]},
+            {"function_name":"vscwprintf_l", "trace_params":[0]},
+            {"function_name":"vscwprintf_p", "trace_params":[0]},
+            {"function_name":"vscwprintf_p_l", "trace_params":[0]},
+            {"function_name":"vsnprintf", "trace_params":[2, 3, 1]},
+            {"function_name":"vsnprintf_l", "trace_params":[2]},
+            {"function_name":"vsnprintf_s", "trace_params":[2, 3]},
+            {"function_name":"vsnprintf_s_l", "trace_params":[3]},
+            {"function_name":"vsnwprintf", "trace_params":[2]},
+            {"function_name":"vsnwprintf_l", "trace_params":[2]},
+            {"function_name":"vsnwprintf_s", "trace_params":[2, 3]},
+            {"function_name":"vsnwprintf_s_l", "trace_params":[3]},
+            {"function_name":"vsprintf", "trace_params":[0,1, 2]},
+            {"function_name":"vsprintf_l", "trace_params":[1]},
+            {"function_name":"vsprintf_p", "trace_params":[2]},
+            {"function_name":"vsprintf_s", "trace_params":[1, 2]},
+            {"function_name":"vsprintf_s_l", "trace_params":[2]},
+            {"function_name":"vsscanf", "trace_params":[1]},
+            {"function_name":"vsscanf_s", "trace_params":[1]},
+            {"function_name":"vswprintf", "trace_params":[1, 2]},
+            {"function_name":"vswprintf_l", "trace_params":[2]},
+            {"function_name":"vswprintf_p", "trace_params":[2]},
+            {"function_name":"vswprintf_p_l", "trace_params":[2]},
+            {"function_name":"vswprintf_s", "trace_params":[1, 2]},
+            {"function_name":"vswprintf_s_l", "trace_params":[2]},
+            {"function_name":"vswscanf", "trace_params":[1]},
+            {"function_name":"vswscanf_s", "trace_params":[1]},
+            {"function_name":"vwprintf", "trace_params":[0]},
+            {"function_name":"vwprintf_l", "trace_params":[0]},
+            {"function_name":"vwprintf_p", "trace_params":[0]},
+            {"function_name":"vwprintf_p_l", "trace_params":[0]},
+            {"function_name":"vwprintf_s", "trace_params":[0]},
+            {"function_name":"vwprintf_s_l", "trace_params":[0]},
+            {"function_name":"vwscanf", "trace_params":[0]},
+            {"function_name":"vwscanf_s", "trace_params":[0]},
+            {"function_name":"wcscat", "trace_params":[1, 0]},
+            {"function_name":"wcscat_s", "trace_params":[2, 1]},
+            {"function_name":"wcscpy", "trace_params":[1,0]},
+            {"function_name":"wcscpy_s", "trace_params":[2, 1, 0]},
+            {"function_name":"wmemcpy", "trace_params":[0, 1, 2]},
+            {"function_name":"wmemcpy_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"wmemmove", "trace_params":[0, 1, 2]},
+            {"function_name":"wmemmove_s", "trace_params":[2, 3, 1, 0]},
+            {"function_name":"wpopen", "trace_params":[0]},
+            {"function_name":"wprintf", "trace_params":[0]},
+            {"function_name":"wsprintf", "trace_params":[1]},
+            {"function_name":"wsprintfA", "trace_params":[1]},
+            {"function_name":"wsprintfW", "trace_params":[1]},
+            {"function_name":"___memcpy_chk", "trace_params":[0]},
+            {"function_name":"___strcpy_chk", "trace_params":[0]},
+            {"function_name":"___memmove_chk", "trace_params":[0]},
+            {"function_name":"lstrcpyA", "trace_params":[1,0]},
+            {"function_name":"lstrcpynA", "trace_params":[1, 2,0]},
+            {"function_name":"lstrcpyW", "trace_params":[1,0]},
+            {"function_name":"lstrcpynW", "trace_params":[1, 2,0]},
+            {"function_name":"lstrcatA", "trace_params":[1, 0]},
+            {"function_name":"lstrcatW", "trace_params":[1, 0]}
+        ],
+    "test_cases":[
+        {
+            "name": "Format String",
+            "details": "It is possible to inject format string modifiers to the call of the function as a first parameter.",
+            "functions":[
+                "_printf",
+                "printf",
+                "vprintf",
+                "_vprintf",
+                "scanf",
+                "_scanf",
+                "vscanf",
+                "_vscanf",
+                "NSLog",
+                "_NSLog",
+                "wprintf",
+                "_wprintf",
+                "vwprintf",
+                "_vwprintf",
+                "vwscanf",
+                "_vwscanf",
+                "vscanf_s",
+                "_vscanf_s",
+                "vwscanf_s",
+                "_vwscanf_s",
+                "_vscprintf",
+                "vscprintf",
+                "_vscprintf_l",
+                "vscprintf_l",
+                "_vscwprintf",
+                "vscwprintf",
+                "_vscwprintf_l",
+                "vscwprintf_l",
+                "_vscprintf_p",
+                "vscprintf_p",
+                "_vscprintf_p_l",
+                "vscprintf_p_l",
+                "_vscwprintf_p",
+                "vscwprintf_p",
+                "_vscwprintf_p_l",
+                "vscwprintf_p_l",
+                "_vcprintf",
+                "vcprintf",
+                "_vcprintf_l",
+                "vcprintf_l",
+                "_vcwprintf",
+                "vcwprintf",
+                "_vcwprintf_l",
+                "vcwprintf_l",
+                "_vcprintf_p",
+                "vcprintf_p",
+                "_vcprintf_p_l",
+                "vcprintf_p_l",
+                "_vcwprintf_p",
+                "vcwprintf_p",
+                "_vcwprintf_p_l",
+                "vcwprintf_p_l",
+                "_vcwprintf_s",
+                "vcwprintf_s",
+                "_vcwprintf_s_l",
+                "vcwprintf_s_l",
+                "_vprintf_l",
+                "vprintf_l",
+                "_vwprintf_l",
+                "vwprintf_l",
+                "_vprintf_p",
+                "vprintf_p",
+                "_vprintf_p_l",
+                "vprintf_p_l",
+                "_vwprintf_p",
+                "vwprintf_p",
+                "_vwprintf_p_l",
+                "vwprintf_p_l",
+                "vprintf_s",
+                "_vprintf_s",
+                "_vprintf_s_l",
+                "vprintf_s_l",
+                "vwprintf_s",
+                "_vwprintf_s",
+                "_vwprintf_s_l",
+                "vwprintf_s_l"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "0":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+
+            }
+        },
+        {
+            "name": "Format String (Objective-C)",
+            "details": "It is possible to inject format string modifiers to Objective-C constructs.",
+            "functions":[
+                "_objc_msgSend",
+                "objc_msgSend",
+                "_objc_msgSend@PLT",
+                "objc_msgSend@PLT"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText:"]
+                        },
+                        "6":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format:"]
+                        },
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format:"]
+                        },
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format:"]
+                        },
+                        "3":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format:"]
+                        },
+                        "3":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["alertWithMessageText"]
+                        },
+                        "6":{
+                            "is_constant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
+                        },
+                        "2":{
+                            "is_constant": false
+                        }
+                    },
+                    {
+                        "1":{
+                            "is_constant": true,
+                            "constant_value": ["raise:format:"]
+                        },
+                        "3":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Format String",
+            "details": "It is possible to inject format string modifiers to the call of the function as a second parameter.",
+            "functions":[
+                "wsprintf",
+                "_wsprintf",
+                "wsprintfW",
+                "_wsprintfW",
+                "wsprintfW@IAT",
+                "_wsprintfW@IAT",
+                "wsprintfA",
+                "_wsprintfA",
+                "wsprintfA@IAT",
+                "_wsprintfA@IAT",
+                "fprintf",
+                "_fprintf",
+                "sprintf",
+                "_sprintf",
+                "vsprintf",
+                "_vsprintf",
+                "vfprintf",
+                "_vfprintf",
+                "sscanf",
+                "_sscanf",
+                "fscanf",
+                "_fscanf",
+                "vsscanf",
+                "_vsscanf",
+                "vfscanf",
+                "_vfscanf",
+                "fwprintf",
+                "_fwprintf",
+                "vfwprintf",
+                "_vfwprintf",
+                "_vfprintf_l",
+                "vfprintf_l",
+                "_vfwprintf_l",
+                "vfwprintf_l",
+                "_vfprintf_p",
+                "asprintf",
+                "_asprintf",
+                "vfprintf_p",
+                "_vfprintf_p_l",
+                "vfprintf_p_l",
+                "_vfwprintf_p",
+                "vfwprintf_p",
+                "_vfwprintf_p_l",
+                "vfwprintf_p_l",
+                "vfprintf_s",
+                "_vfprintf_s",
+                "_vfprintf_s_l",
+                "vfprintf_s_l",
+                "vfwprintf_s",
+                "_vfwprintf_s",
+                "_vfwprintf_s_l",
+                "vfwprintf_s_l",
+                "vasprintf",
+                "vasprintf",
+                "vfwscanf",
+                "_vfwscanf",
+                "vfscanf_s",
+                "_vfscanf_s",
+                "vfwscanf_s",
+                "_vfwscanf_s",
+                "_vsprintf_l",
+                "vsprintf_l",
+                "__vswprintf_l",
+                "vswprintf",
+                "_vswprintf",
+                "vsprintf_s",
+                "_vsprintf_s",
+                "vswprintf_s",
+                "_vswprintf_s",
+                "vswscanf",
+                "_vswscanf",
+                "vsscanf_s",
+                "_vsscanf_s",
+                "vswscanf_s",
+                "_vswscanf_s",
+                "__wprintf_chk",
+                "___vprintf_chk",
+                "__vwprintf_chk",
+                "___printf_chk",
+                "__printf_chk",
+                "__vprintf_chk"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Format String",
+            "details": "It is possible to inject format string modifiers to the call of the function as a third parameter.",
+            "functions":[
+                "vsnprintf",
+                "_vsnprintf",
+                "snprintf",
+                "_snprintf",
+                "vswprintf",
+                "_vswprintf",
+                "swprintf",
+                "_swprintf",
+                "_vsnprintf_l",
+                "vsnprintf_l",
+                "_vsnwprintf",
+                "vsnwprintf",
+                "_vsnwprintf_l",
+                "vsnwprintf_l",
+                "_vsnprintf_s",
+                "vsnprintf_s",
+                "_vsnwprintf_s",
+                "vsnwprintf_s",
+                "_vswprintf_l",
+                "vswprintf_l",
+                "_vsprintf_p",
+                "vsprintf_p",
+                "_vsprintf_p_l",
+                "_sprintf_p_l",
+                "_vswprintf_p",
+                "vswprintf_p",
+                "_vswprintf_p_l",
+                "vswprintf_p_l",
+                "vsprintf_s",
+                "_vsprintf_s",
+                "_vsprintf_s_l",
+                "vsprintf_s_l",
+                "vswprintf_s",
+                "_vswprintf_s",
+                "_vswprintf_s_l",
+                "vswprintf_s_l",
+                "__asprintf_chk", 
+                "__dprintf_chk", 
+                "___fprintf_chk", 
+                "__fprintf_chk",
+                "__fwprintf_chk", 
+                "__obstack_vprintf_chk", 
+                "__obstack_printf_chk", 
+                "__vasprintf_chk",
+                "__vdprintf_chk", 
+                "___vfprintf_chk", 
+                "__vfwprintf_chk",
+                "__vfprintf_chk" 
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Format String",
+            "details": "It is possible to inject format string modifiers to the call of the function as a fourth parameter.",
+            "functions":[
+                "vsnprintf_s",
+                "_vsnprintf_s",
+                "_vsnprintf_s_l",
+                "vsnprintf_s_l",
+                "_vsnwprintf_s",
+                "vsnwprintf_s",
+                "_vsnwprintf_s_l",
+                "vsnwprintf_s_l",
+                "___vsprintf_chk", 
+                "___sprintf_chk",
+                "__sprintf_chk", 
+                "__vsprintf_chk" 
+                
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "3":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Format String",
+            "details": "It is possible to inject format string modifiers to the call of the function as a fifth parameter.",
+            "functions":[
+                "___snprintf_chk", 
+                "__snprintf_chk", 
+                "__swprintf_chk", 
+                "___vsnprintf_chk", 
+                "__vswprintf_chk", 
+                "__vsnprintf_chk"
+                
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "4":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "4":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "4":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "4":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "4":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strcpy and variants)",
+            "details": "Source of 'strcpy' operation can be controlled by user.",
+            "functions":[
+                "strcpy",
+                "_strcpy",
+                "wcscpy",
+                "_wcscpy",
+                "_mbscpy",
+                "mbscpy",
+                "lstrcpyA",
+                "lstrcpyW"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strcat)",
+            "details": "Source of 'strcat' operation can be controlled by user.",
+            "functions":[
+                "strcat",
+                "_strcat",
+                "wcscat",
+                "_wcscat",
+                "_mbscat",
+                "mbscat",
+                "lstrcatA",
+                "lstrcatW"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strncpy)",
+            "details": "Potentially dangerous call to 'strncpy' function. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "strncpy",
+                "_strncpy",
+                "lstrcpynA",
+                "lstrcpynW"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strncat)",
+            "details": "Potentially dangerous call to 'strncat' function. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "strncat",
+                "_strncat"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (memcpy and variants)",
+            "details": "Potentially dangerous call to 'memcpy' function. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "memcpy",
+                "_memcpy",
+                "wmemcpy",
+                "_wmemcpy"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (memmove and variants)",
+            "details": "Potentially dangerous call to 'memmove' function. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "memmove",
+                "_memmove",
+                "wmemmove",
+                "_wmemmove"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strcpy_s variants)",
+            "details": "Potentially dangerous call to one of 'strcpy_s' functions. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "strcpy_s",
+                "_strcpy_s",
+                "wcscpy_s",
+                "_wcscpy_s",
+                "_mbscpy_s",
+                "mbscpy_s",
+                "_mbscpy_s_l",
+                "mbscpy_s_l"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (strcat_s variants)",
+            "details": "Potentially dangerous call to one of 'strcat_s' functions. Source and/or count controlled by untrusted input.",
+            "functions":[
+                "strcat_s",
+                "_strcat_s",
+                "wcscat_s",
+                "_wcscat_s",
+                "_mbscat_s",
+                "mbscat_s",
+                "_mbscat_s_l",
+                "mbscat_s_l"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "1":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (gets)",
+            "details": "The application is using function \"gets\" which could cause buffer overflow vulnerability.",
+            "functions":[
+                "gets",
+                "_gets"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (scanf/fscanf)",
+            "details": "The application is using function \"scanf\" which could cause buffer overflow vulnerability.",
+            "functions":[
+                "scanf",
+                "_scanf",
+                "fscanf",
+                "_fscanf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (sscanf)",
+            "details": "The application is using function \"sscanf\" which could cause buffer overflow vulnerability.",
+            "functions":[
+                "sscanf",
+                "_sscanf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported":true,
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low":[
+                    {
+                        "0":{
+                            "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (sprintf)",
+            "details": "Source of 'sprintf' operation can be controlled by user.",
+            "functions":[
+                "sprintf",
+                "_sprintf"
+            ],
+            "checks":{
+                "Medium":[
+                    {
+                        "-2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "exported":true,
+                            "if_dependant": false
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low":[
+                    {
+                        "-2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (memcpy_s and variants)",
+            "details": "Source of 'memcpy_s' operation or its variants can be controlled by user.",
+            "functions":[
+                "memcpy_s",
+                "_memcpy_s",
+                "wmemcpy_s",
+                "_wmemcpy_s"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (memmove_s and variants)",
+            "details": "Source of 'memmove_s' operation or its variants can be controlled by user.",
+            "functions":[
+                "memmove_s",
+                "_memmove_s",
+                "wmemmove_s",
+                "_wmemmove_s"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (snprintf)",
+            "details": "Source of 'snprintf' operation can be controlled by user.",
+            "functions":[
+                "snprintf",
+                "_snprintf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "-3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "-3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-3":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "-3":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "-3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (vsprintf)",
+            "details": "Source of 'vsprintf' operation can be controlled by user.",
+            "functions":[
+                "vsprintf",
+                "_vsprintf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "2":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "2":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (vsnprintf)",
+            "details": "Source of and amount of data copied by 'vsnprintf' operation can be controlled by user.",
+            "functions":[
+                "vsnprintf",
+                "_vsnprintf"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "3":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "3":{
+                            "exported": true,
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "OS Command Injection",
+            "details": "Source of 'system' or 'popen' function can be controlled by user.",
+            "functions":[
+                "system",
+                "_system",
+                "_popen",
+                "popen",
+                "wpopen",
+                "_wpopen"
+            ],
+            "checks":{
+                "High":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": false
+                        }
+                    }
+                ],
+                "Low": [
+                    {
+                        "0":{
+                            "exported": true,
+                            "if_dependant": true
+                        }
+                    }
+                ],
+                "Info": [
+                    {
+                        "0":{
+                            "is_constant": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Potential Null Pointer Dereference",
+            "details": "Possible dereference of a NULL pointer.",
+            "functions":[
+                "memcpy",
+                "_memcpy",
+                "strcpy",
+                "_strcpy",
+                "strncpy",
+                "_strncpy",
+                "memmove",
+                "_memmove",
+                "memmove_s",
+                "_memmove_s",
+                "wmemmove_s",
+                "_wmemmove_s",
+                "memcpy_s",
+                "_memcpy_s",
+                "wmemcpy_s",
+                "_wmemcpy_s",
+                "strcpy_s",
+                "_strcpy_s",
+                "wcscpy_s",
+                "_wcscpy_s",
+                "_mbscpy_s",
+                "mbscpy_s",
+                "_mbscpy_s_l",
+                "mbscpy_s_l",
+                "snprintf",
+                "_snprintf",
+                "___memcpy_chk",
+                "___strcpy_chk",
+                "___memmove_chk"
+            ],
+            "checks":{
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by_in_same_block":["alloc"]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,7 +1,6 @@
 from binaryninja import *
 import re
 from ..utils.utils import extract_hlil_operations
-import time
 
 class FreeScanner2(BackgroundTaskThread):
     def __init__(self,bv):
@@ -17,15 +16,18 @@ class FreeScanner2(BackgroundTaskThread):
         total = len(free_xrefs)
         # With all wrappers detected lets do the scan
         for free_xref in free_xrefs:
-            self.progress = f"{self.progress_banner} ({counter}/{total})"
+            self.progress = f"{self.progress_banner} ({round((counter/total)*100)}%)"
             counter += 1
+            if self.cancelled:
+                return
             if free_xref["param_index"] < len(free_xref["instruction"].params):
                 param_vars = self.prepare_relevant_variables(free_xref["instruction"].params[free_xref["param_index"]])
-                uaf,uaf_if,double = self.scan(free_xref["instruction"],param_vars)
+                uaf,uaf_if,double,glob = self.scan(free_xref["instruction"],param_vars)
                 current_free_xref_obj = {
                     "used_after": uaf,
                     "without_if": uaf_if,
                     "double_free": double,
+                    "global_uaf": glob,
                     "struct_free_wrapper": free_xref["struct_free_wrapper"]
                 }
                 if current_free_xref_obj["double_free"] and current_free_xref_obj["without_if"]:
@@ -40,7 +42,8 @@ class FreeScanner2(BackgroundTaskThread):
                 confidence = ""
                 if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"]:
                     confidence = "Medium"
-                elif current_free_xref_obj["used_after"]:
+                elif current_free_xref_obj["used_after"] or (current_free_xref_obj["global_uaf"] and not current_free_xref_obj["struct_free_wrapper"]):
+                #elif current_free_xref_obj["used_after"]:
                     confidence = "Low"
                 elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
@@ -52,18 +55,14 @@ class FreeScanner2(BackgroundTaskThread):
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
 
-                #log_info(str(current_free_xref_obj))
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)
         # Check if instruction is in loop so that we know how to proceed with checks further
         in_loop = self.is_in_loop(instruction)
         # Check if param is used after the free call, if not in loop get rid of first instruction
-        if not in_loop["in_loop"]:
-            used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
-        else:
-            used_after, used_after_with_if,double = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
-        return used_after, used_after_with_if, double
+        used_after, used_after_with_if,double, init = self.used_after2(param_vars,instruction,current_hlil_instructions,in_loop)
+        return used_after, used_after_with_if, double, init
 
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
@@ -74,8 +73,11 @@ class FreeScanner2(BackgroundTaskThread):
         double = False
         blocks = [{"block":instruction.il_basic_block,"start":instruction.instr_index + 1,"end":instruction.il_basic_block.end}]
         loop_pass = False
+        initialized = False
         #nested_loops = []
         visited_blocks = []
+        global_uaf = False
+        init = False
         while blocks:
             initialized = False
             current_block = blocks.pop()
@@ -93,10 +95,11 @@ class FreeScanner2(BackgroundTaskThread):
                 i = hlil_instructions[index]
                 for param in param_vars["possible_values"]:
                     if i and i.instr_index != instruction.instr_index:
-                        if (i.operation == HighLevelILOperation.HLIL_ASSIGN and re.search(param,str(i.dest)) or 
-                        i.operation == HighLevelILOperation.HLIL_VAR_INIT and re.search(param,str(i.dest))):
+                        if ((i.operation == HighLevelILOperation.HLIL_ASSIGN or i.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(i.dest)) or 
+                        re.search(param,str(i)) and re.search("alloc",str(i))):
                             # Found initialization of the variable
                             initialized = True
+                            init = True
                             break
                         if (re.search(param,str(i)) and not i.operation in skip_operations):
                             if i.operation == HighLevelILOperation.HLIL_CALL and str(i.dest) in self.free_list:
@@ -104,16 +107,49 @@ class FreeScanner2(BackgroundTaskThread):
                             if self.not_if_dependent(instruction,param_vars):
                                 uaf_if = True
                             uaf = True
-                            if i.function.source_function.name == "plugins_free":
-                                log_info(f"[*] Use detected at {i.function.source_function.name} in instruction {str(i)}")
-                                log_info(str(param_vars["possible_values"]))
-                            return uaf, uaf_if, double
+                            return uaf, uaf_if, double, global_uaf
             # Add following blocks only if current block have not initialized the variable
             if not initialized:
                 for edge in current_block["block"].outgoing_edges:
                     if edge.target.start not in visited_blocks:
                         blocks.append({"block":edge.target,"start":edge.target.start,"end":edge.target.end})
-        return uaf, uaf_if, double
+        # Was not initialized but also not used
+        # See if source is dereference of constant, this signals use of global variable
+        if not init:
+            glob = False
+            for v in param_vars["param_vars"]:
+                if self.is_global_var(v,instruction.function):
+                    glob = True
+                    break
+            refs = self.get_xrefs_to_call([instruction.function.source_function.name])
+            for ref in refs:
+                in_loop = self.is_in_loop(ref)
+                if in_loop["in_loop"] and glob:
+                    global_uaf = True
+        return uaf, uaf_if, double, global_uaf
+
+    def is_global_var(self,var,function):
+        vars = [var]
+        current_hlil_instructions = list(function.instructions)
+        checked_vars = []
+        while vars:
+            v = vars.pop()
+            checked_vars.append(v.name)
+            defs = function.get_var_definitions(v)
+            for d in defs:
+                try:
+                    consts = extract_hlil_operations(function,[HighLevelILOperation.HLIL_CONST_PTR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    for c in consts:
+                        if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
+                            # Likely a global variable deref
+                            return True
+                    vs = extract_hlil_operations(function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    for a in vs:
+                        if a.var.name not in checked_vars:
+                            vars.append(a.var)
+                except:
+                    pass
+        return False
 
     def get_xrefs_with_wrappers(self):
         free_xrefs = []
@@ -121,7 +157,7 @@ class FreeScanner2(BackgroundTaskThread):
             append = True
             if len(xref.params) > 0:
                 param_vars = self.prepare_relevant_variables(xref.params[0])
-                for var in param_vars["orig_vars"]:
+                for var in param_vars["param_vars"]:
                     if var in xref.function.source_function.parameter_vars:
                         wrapper_xrefs = self.get_xrefs_to_call([xref.function.source_function.name])
                         if wrapper_xrefs:
@@ -148,40 +184,50 @@ class FreeScanner2(BackgroundTaskThread):
         return free_xrefs
     
     def prepare_relevant_variables(self,param):
-        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
-        param_vars = []
-        for p in param_vars_hlil:
-            param_vars.append(p.var)
         vars = {
             "possible_values": [],
             "vars": [],
-            "orig_vars": []
+            "orig_vars": {},
+            "param_vars": []
         }
-        tmp_possible = [str(param)]
-        for var in param_vars:
-            if var not in vars["vars"]:
-                vars["vars"].append(var)
-                vars["orig_vars"].append(var)
-            definitions = param.function.get_var_definitions(var)
-            # Also uses are relevant
-            definitions.extend(param.function.get_var_uses(var))
-            for d in definitions:
-                if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN)and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
-                    val = str(param).replace(str(var),str(d.src.postfix_operands[0]))
-                    #tmp_possible.append(val)
-                    tmp_possible.append(str(d.src))
-                    vars["vars"].append(d.src.postfix_operands[0])
-                    param_vars.append(d.src.postfix_operands[0])
-        for val in tmp_possible:
-            tmp_val = val
-            positions = [(m.start(0), m.end(0)) for m in re.finditer(r':\d+\.\w+', val)]
-            for pos in positions:
-                tmp_val = val[0: pos[0]:] + val[pos[1]::]
-            tmp_val = re.escape(tmp_val)
-            for v in vars["vars"]:
-                # Lol but worth a try :D
-                tmp_val = tmp_val.replace(str(v),str(v)+"(:\\d+\\.\\w+)?\\b")
-            vars["possible_values"].append(tmp_val)        
+        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+        param_vars = []
+        original_value = str(param)
+        for p in param_vars_hlil:
+            vars["orig_vars"][str(p)] = []
+            param_vars.append(p.var)
+            vars["param_vars"].append(p.var)
+        for param_var in vars["orig_vars"]:
+            # For each of the original variables find its possible alternatives
+            for var in param_vars:
+                if var not in vars["orig_vars"][param_var]:
+                    vars["orig_vars"][param_var].append(var)
+                    vars["vars"].append(var)
+                definitions = param.function.get_var_definitions(var)
+                # Also uses are relevant
+                definitions.extend(param.function.get_var_uses(var))
+                for d in definitions:
+                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                        param_vars.append(d.src.postfix_operands[0])
+                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                        # Handle assignments from calls
+                        for param in d.src.params:
+                            if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                param_vars.append(param.postfix_operands[0])
+                    elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.var)
+            for v in vars["orig_vars"][param_var]:
+                tmp = re.escape(re.sub(f'{param_var}\.\w+|:\d+\.\w+', str(v), original_value))
+                tmp2 = tmp.replace(str(v), str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
+                if tmp2 not in vars["possible_values"]:
+                    try:
+                        # validate resulting regex
+                        re.compile(tmp2)
+                        vars["possible_values"].append(tmp2)
+                    except re.error:
+                        pass
         return vars
 
     def is_in_loop(self,instruction):
@@ -210,6 +256,11 @@ class FreeScanner2(BackgroundTaskThread):
         for f in function_names:
             if f[:4] == "sub_":
                 altered_names.append(f"0x{f[4:]}")
+            # C++ mangled names
+            elif f[:2] == "_Z":
+                value = re.sub(r'\(.*\)', '', self.current_view.symbols[f].full_name)
+                altered_names.append(value)
+                function_names.append(value)
             else:
                 altered_names.append(f)
         checked_functions = []
@@ -260,6 +311,12 @@ class FreeScanner2(BackgroundTaskThread):
                                 # Extract the call here
                                 calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
                                 for call in calls:
-                                    if str(call.dest) in altered_names and call not in xrefs:
+                                    if str(call.dest) in altered_names and not self.is_in(call,xrefs):
                                         xrefs.append(call)
         return xrefs
+
+    def is_in(self,item,array):
+        for i in array:
+            if item is i:
+                return True
+        return False
