@@ -55,7 +55,6 @@ class FreeScanner2(BackgroundTaskThread):
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
 
-                #log_info(str(current_free_xref_obj))
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)

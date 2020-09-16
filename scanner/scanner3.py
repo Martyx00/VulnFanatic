@@ -133,7 +133,6 @@ class Scanner3(BackgroundTaskThread):
                         hlil_instructions = list(current_block["block"].function.hlil.instructions)
                         previous_function = current_block['block'].function.name
                     # Previous function here always holds current function name
-                    #log_info(f"{current_block['block'].start}@{previous_function}")
                     params_to_check = []
                     try:
                         for param in current_block["param_vars"]["possible_values"]:
@@ -205,7 +204,6 @@ class Scanner3(BackgroundTaskThread):
                                             "end":x2f.instr_index-1,
                                             "param_vars":x2f_param_vars
                                             })
-        #log_info(str(trace_struct))
         return trace_struct
             
 
