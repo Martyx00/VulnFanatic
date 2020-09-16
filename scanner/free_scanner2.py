@@ -138,15 +138,18 @@ class FreeScanner2(BackgroundTaskThread):
             checked_vars.append(v.name)
             defs = function.get_var_definitions(v)
             for d in defs:
-                consts = extract_hlil_operations(function,[HighLevelILOperation.HLIL_CONST_PTR],specific_instruction=current_hlil_instructions[d.instr_index])
-                for c in consts:
-                    if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
-                        # Likely a global variable deref
-                        return True
-                vs = extract_hlil_operations(function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_hlil_instructions[d.instr_index])
-                for a in vs:
-                    if a.var.name not in checked_vars:
-                        vars.append(a.var)
+                try:
+                    consts = extract_hlil_operations(function,[HighLevelILOperation.HLIL_CONST_PTR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    for c in consts:
+                        if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
+                            # Likely a global variable deref
+                            return True
+                    vs = extract_hlil_operations(function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    for a in vs:
+                        if a.var.name not in checked_vars:
+                            vars.append(a.var)
+                except:
+                    pass
         return False
 
     def get_xrefs_with_wrappers(self):
