@@ -1,5 +1,6 @@
 from binaryninja import *
 from .scanner.scanner3 import Scanner3
+from .scanner.free_scanner3 import FreeScanner3
 from .highlighter.highlighter3 import Highlighter3
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
@@ -15,6 +16,14 @@ def scan3(bv):
 	scanner = Scanner3(bv)
 	scanner.start()
 	
+def scan4(bv):
+	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
+		bv.create_tag_type("[VulnFanatic] High","🔴")
+		bv.create_tag_type("[VulnFanatic] Medium","🟠")
+		bv.create_tag_type("[VulnFanatic] Low","🟡")
+		bv.create_tag_type("[VulnFanatic] Info","🔵")
+	scanner = FreeScanner3(bv)
+	scanner.start()
 
 def highlight3(bv,selection_addr):
 	colors = ["Red","Blue","Cyan","Green","Magenta","Orange","Black","White","Yellow"]
@@ -40,6 +49,7 @@ def clear_highlight3(bv,selection_addr):
 	high.start()
 
 # Register the plugin
+PluginCommand.register("VulnFanatic\\TEST SCAN", "TEST SCAN", scan4)
 PluginCommand.register("VulnFanatic\\Start Scan", "Start Scan", scan3)
 PluginCommand.register_for_address("VulnFanatic\\Highlight", "Highlights parameters with color highlights", highlight3)
 PluginCommand.register_for_address("VulnFanatic\\Clear highlights", "Removes highlights of parameters", clear_highlight3)
