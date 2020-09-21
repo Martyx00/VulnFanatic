@@ -1,8 +1,12 @@
 from binaryninja import *
 import re
 from ..utils.utils import extract_hlil_operations
+import time
 
-# TODO use_exampl2 does not work
+# [*] Done in 5921.0615112781525 and found 20
+# [*] Done in 6052.589532136917 and found 20
+
+
 
 class FreeScanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -12,6 +16,8 @@ class FreeScanner3(BackgroundTaskThread):
         self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete","operator delete[]"]
 
     def run(self):
+        start = time.time()
+        vuln_counter = 0
         free_xrefs = self.get_xrefs_with_wrappers()
         counter = 1
         total = len(free_xrefs)
@@ -49,12 +55,14 @@ class FreeScanner3(BackgroundTaskThread):
                 elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
                 if confidence:
+                    vuln_counter += 1
                     if confidence == "Info":
                         desc = "Free wrapper worth to investigate."
                     else:
                         desc = "Potential Use-afer-free Vulnerability"
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+        log_info(f"[*] Done in {time.time() - start} and found {vuln_counter}")
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)
@@ -152,20 +160,18 @@ class FreeScanner3(BackgroundTaskThread):
         return False
 
     def cleanup_op(self,operands):
-        
         # Removes the null structure fields from the operands
-        result = operands.copy()
+        result = []
         b = [0,None,HighLevelILOperationAndSize(HighLevelILOperation.HLIL_STRUCT_FIELD,4)]
         i = 0
-        for item in result:
-            if operands[i:i+len(b)] == b:
-                del result[i:i+3]
-            i += 1
-        i = 0
-        for item in result:
-            if type(item) is HighLevelILOperationAndSize and item.operation == HighLevelILOperation.HLIL_VAR:
-                del result[i]
-            i += 1
+        while i < len(operands):
+            if operands[i:i+3] == b:
+                i += 3
+            elif (type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR):
+                i += 1
+            else:
+                result.append(operands[i])
+                i += 1
         return result
 
     def is_in_operands(self,op,ops):
@@ -185,7 +191,7 @@ class FreeScanner3(BackgroundTaskThread):
             current_op = op.pop(0)
             if type(current_op) is list:
                 op = current_op + op
-            elif type(current_op) == HighLevelILInstruction and current_op.operation == HighLevelILOperation.HLIL_DEREF:
+            elif type(current_op) == HighLevelILInstruction and (current_op.operation == HighLevelILOperation.HLIL_DEREF or current_op.operation == HighLevelILOperation.HLIL_CALL):
                 op = current_op.postfix_operands + op
             else:
                 result.append(current_op)

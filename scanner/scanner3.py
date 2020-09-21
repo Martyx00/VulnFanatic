@@ -15,7 +15,7 @@ class Scanner3(BackgroundTaskThread):
             self.rules = json.load(rules_file)
     
     def run(self):
-        total_xrefs = 0
+        '''total_xrefs = 0
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
             xrefs_count = len(function_refs)
@@ -26,7 +26,7 @@ class Scanner3(BackgroundTaskThread):
                     return
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
-                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
+                self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"'''
         free = FreeScanner2(self.current_view)
         free.start()
 

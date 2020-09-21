@@ -1,6 +1,12 @@
 from binaryninja import *
 import re
 from ..utils.utils import extract_hlil_operations
+import time
+
+# [*] Done in 4166.141574859619 and found 20
+# [*] Done in 4122.223935127258 and found 20
+
+
 
 class FreeScanner2(BackgroundTaskThread):
     def __init__(self,bv):
@@ -11,6 +17,8 @@ class FreeScanner2(BackgroundTaskThread):
         #self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale"]
 
     def run(self):
+        start = time.time()
+        vuln_counter = 0
         free_xrefs = self.get_xrefs_with_wrappers()
         counter = 1
         total = len(free_xrefs)
@@ -48,13 +56,14 @@ class FreeScanner2(BackgroundTaskThread):
                 elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
                 if confidence:
+                    vuln_counter += 1
                     if confidence == "Info":
                         desc = "Free wrapper worth to investigate."
                     else:
                         desc = "Potential Use-afer-free Vulnerability"
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
-
+        log_info(f"[*] Done in {time.time() - start} and found {vuln_counter}")
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)
