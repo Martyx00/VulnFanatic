@@ -103,19 +103,22 @@ class FreeScanner3(BackgroundTaskThread):
                 i = hlil_instructions[index]
                 for param in param_vars["possible_values"]:
                     if i and i.instr_index != instruction.instr_index:
-                        if ((i.operation == HighLevelILOperation.HLIL_ASSIGN or i.operation == HighLevelILOperation.HLIL_VAR_INIT) and self.is_in_operands(param,self.expand_postfix_operands(i.dest)) or 
-                        self.is_in_operands(param,self.expand_postfix_operands(i)) and re.search("alloc",str(i))):
-                            # Found initialization of the variable
-                            initialized = True
-                            init = True
-                            break
-                        if (self.is_in_operands(param,self.expand_postfix_operands(i)) and not i.operation in skip_operations):
-                            if i.operation == HighLevelILOperation.HLIL_CALL and str(i.dest) in self.free_list:
-                                double = True
-                            if self.not_if_dependent(instruction,param_vars):
-                                uaf_if = True
-                            uaf = True
-                            return uaf, uaf_if, double, global_uaf
+                        is_in = self.is_in_operands(param,self.expand_postfix_operands(i))
+                        if is_in:
+                            if (((i.operation == HighLevelILOperation.HLIL_ASSIGN or i.operation == HighLevelILOperation.HLIL_VAR_INIT) 
+                            and self.is_in_operands(param,self.expand_postfix_operands(i.dest))) 
+                            or (re.search("alloc",str(i)) and is_in)):
+                                # Found initialization of the variable
+                                initialized = True
+                                init = True
+                                break
+                            if not i.operation in skip_operations and is_in:
+                                if i.operation == HighLevelILOperation.HLIL_CALL and str(i.dest) in self.free_list:
+                                    double = True
+                                if self.not_if_dependent(instruction,param_vars):
+                                    uaf_if = True
+                                uaf = True
+                                return uaf, uaf_if, double, global_uaf
             # Add following blocks only if current block have not initialized the variable
             if not initialized:
                 for edge in current_block["block"].outgoing_edges:
@@ -160,23 +163,20 @@ class FreeScanner3(BackgroundTaskThread):
         return False
 
     def cleanup_op(self,operands):
-        # Removes the null structure fields from the operands
         result = []
         b = [0,None,HighLevelILOperationAndSize(HighLevelILOperation.HLIL_STRUCT_FIELD,4)]
         i = 0
         while i < len(operands):
             if operands[i:i+3] == b:
                 i += 3
-            elif (type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR):
+            elif type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR:
                 i += 1
             else:
                 result.append(operands[i])
                 i += 1
         return result
 
-    def is_in_operands(self,op,ops):
-        # We account for the situation where op is cleaned and ops is not
-        operands = self.cleanup_op(ops)
+    def is_in_operands(self,op,operands):
         for i in range(len(operands)-len(op)+1):
             if operands[i:i+len(op)] == op:
                 return True
@@ -191,11 +191,13 @@ class FreeScanner3(BackgroundTaskThread):
             current_op = op.pop(0)
             if type(current_op) is list:
                 op = current_op + op
-            elif type(current_op) == HighLevelILInstruction and (current_op.operation == HighLevelILOperation.HLIL_DEREF or current_op.operation == HighLevelILOperation.HLIL_CALL):
+                continue
+            #if type(current_op) == HighLevelILInstruction and (current_op.operation == HighLevelILOperation.HLIL_DEREF or current_op.operation == HighLevelILOperation.HLIL_CALL):
+            try:
                 op = current_op.postfix_operands + op
-            else:
+            except:
                 result.append(current_op)
-        return result
+        return self.cleanup_op(result)
 
     def prepare_relevant_variables(self,param):
         vars = {
@@ -206,7 +208,7 @@ class FreeScanner3(BackgroundTaskThread):
         }
         param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
         param_vars = []
-        original_value = self.cleanup_op(self.expand_postfix_operands(param))
+        original_value = self.expand_postfix_operands(param)
         vars["possible_values"].append(original_value)
         param_var_dict = {}
         for p in param_vars_hlil:
