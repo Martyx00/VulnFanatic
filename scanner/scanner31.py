@@ -1,10 +1,10 @@
 from binaryninja import *
 import re
 import json
-from .free_scanner2 import FreeScanner2
+from .free_scanner3 import FreeScanner3
 from ..utils.utils import extract_hlil_operations
 
-class Scanner3(BackgroundTaskThread):
+class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
         self.progress_banner = f"[VulnFanatic] Running the scanner ..."
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
@@ -27,7 +27,7 @@ class Scanner3(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
-        free = FreeScanner2(self.current_view)
+        free = FreeScanner3(self.current_view)
         free.start()
 
     def evaluate_results(self,trace,function_name,xref):
@@ -132,47 +132,49 @@ class Scanner3(BackgroundTaskThread):
                     if previous_function != current_block["block"].function.name:
                         hlil_instructions = list(current_block["block"].function.hlil.instructions)
                         previous_function = current_block['block'].function.name
+                    
                     # Previous function here always holds current function name
-                    params_to_check = []
-                    try:
-                        for param in current_block["param_vars"]["possible_values"]:
-                            if re.search(param,str(hlil_instructions[current_block["start"]:current_block["end"]+1])):
-                                params_to_check.append(param)
-                    except:
-                        pass
-                    if params_to_check:
-                        for index in range(current_block["end"],current_block["start"],-1):
-                            if index < len(hlil_instructions):
-                                instruction = hlil_instructions[index]
-                                for param in params_to_check:
-                                    if re.search(param,str(instruction)):
-                                        # found instruction where the desired parameter is used
-                                        # Check if it is part of an if:
-                                        if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                            trace_struct[str(p)]["if_dependant"] = True
-                                        # Constant check
-                                        if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
-                                            if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                                                try:
-                                                    value = self.current_view.get_string_at(instruction.src.constant).value
-                                                except:
-                                                    value = hex(instruction.src.constant)
-                                                # handle constant here
-                                                trace_struct[str(p)]["is_constant"] = True
-                                                trace_struct[str(p)]["constant_value"].append(value)
-                                        # Check if it is part of a call:
-                                        calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
-                                        for call in calls:
-                                            if re.search(param,str(call.params)) and call != xref:
-                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
-                                                if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
-                                            elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
-                                            instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and re.search(param,str(instruction.dest)):
-                                                # Not in the parameter so check if not assigned with the return value
-                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
-                                                if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                    params_to_check = current_block["param_vars"]["possible_values"]
+                    #params_to_check = []
+                    #try:
+                    #    for param in current_block["param_vars"]["possible_values"]:
+                    #        if re.search(param,str(hlil_instructions[current_block["start"]:current_block["end"]+1])):
+                    #            params_to_check.append(param)
+                    #except:
+                    #    pass
+                    #if params_to_check:
+                    for index in range(current_block["end"],current_block["start"],-1):
+                        if index < len(hlil_instructions):
+                            instruction = hlil_instructions[index]
+                            for param in params_to_check:
+                                if self.is_in_operands(param,self.expand_postfix_operands(instruction)):
+                                    # found instruction where the desired parameter is used
+                                    # Check if it is part of an if:
+                                    if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                        trace_struct[str(p)]["if_dependant"] = True
+                                    # Constant check
+                                    if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
+                                        if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                            try:
+                                                value = self.current_view.get_string_at(instruction.src.constant).value
+                                            except:
+                                                value = hex(instruction.src.constant)
+                                            # handle constant here
+                                            trace_struct[str(p)]["is_constant"] = True
+                                            trace_struct[str(p)]["constant_value"].append(value)
+                                    # Check if it is part of a call:
+                                    calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                    for call in calls:
+                                        if self.is_in_operands(param,self.expand_postfix_operands(call.params)) and call != xref:
+                                            trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                            if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
+                                                trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                        elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
+                                        instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and self.is_in_operands(param,self.expand_postfix_operands(instruction.dest)):
+                                            # Not in the parameter so check if not assigned with the return value
+                                            trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                            if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
+                                                trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
                         for edge in current_block["block"].incoming_edges:
@@ -209,52 +211,49 @@ class Scanner3(BackgroundTaskThread):
 
     # This will take into account only variables that are preceeding the relevant XREF
     def prepare_relevant_variables(self,param):
-        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
-        param_vars = []
-        for p in param_vars_hlil:
-            param_vars.append(p.var)
         vars = {
             "possible_values": [],
             "vars": [],
-            "orig_vars": []
+            "orig_vars": {},
+            "param_vars": []
         }
-        tmp_possible = [str(param)]
-        for var in param_vars:
-            if var not in vars["vars"]:
-                vars["vars"].append(var)
-                vars["orig_vars"].append(var)
-            definitions = param.function.get_var_definitions(var)
-            # Also uses are relevant
-            definitions.extend(param.function.get_var_uses(var))
-            for d in definitions:
-                if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["vars"]:
-                    tmp_possible.append(str(d.src))
-                    vars["vars"].append(d.src.postfix_operands[0])
-                    param_vars.append(d.src.postfix_operands[0])
-                elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
-                    # Handle assignments from calls
-                    for param in d.src.params:
-                        if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["vars"]:
-                            tmp_possible.append(str(param))
-                            vars["vars"].append(param.postfix_operands[0])
-                            param_vars.append(param.postfix_operands[0])
-                elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in tmp_possible:
-                    tmp_possible.append(str(d))
-                    vars["vars"].append(d.var)
-        for val in tmp_possible:
-            tmp_val = val
-            positions = [(m.start(0), m.end(0)) for m in re.finditer(r'\.\w+|:\d+\.\w+', val)]
-            for pos in positions:
-                tmp_val = val[0: pos[0]:] + val[pos[1]::]
-            tmp_val = re.escape(tmp_val)
-            for v in vars["vars"]:
-                tmp_val = tmp_val.replace(str(v),str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
-            try:
-                # validate resulting regex
-                re.compile(tmp_val)
-                vars["possible_values"].append(tmp_val)
-            except:
-                pass      
+        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+        param_vars = []
+        original_value = self.expand_postfix_operands(param)
+        vars["possible_values"].append(original_value)
+        param_var_dict = {}
+        for p in param_vars_hlil:
+            vars["orig_vars"][str(p)] = []
+            param_var_dict[str(p)] = p.var
+            param_vars.append(p.var)
+            vars["param_vars"].append(p.var)
+        for param_var in vars["orig_vars"]:
+            # For each of the original variables find its possible alternatives
+            for var in param_vars:
+                if var not in vars["orig_vars"][param_var]:
+                    vars["orig_vars"][param_var].append(var)
+                if var not in vars["vars"]:
+                    vars["vars"].append(var)
+                definitions = param.function.get_var_definitions(var)
+                # Also uses are relevant
+                definitions.extend(param.function.get_var_uses(var))
+                for d in definitions:
+                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                        param_vars.append(d.src.postfix_operands[0])
+                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                        # Handle assignments from calls
+                        for param in d.src.params:
+                            if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                param_vars.append(param.postfix_operands[0])
+                    elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(d.var)
+            for v in vars["orig_vars"][param_var]:
+                tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
+                if tmp not in vars["possible_values"]:
+                    vars["possible_values"].append(tmp)
+        log_info(f"FOUND FOR {vars}")
         return vars
     
     # Can this be copied?
@@ -313,6 +312,46 @@ class Scanner3(BackgroundTaskThread):
             if item is i:
                 return True
         return False
+
+    def cleanup_op(self,operands):
+        result = []
+        b = [0,None,HighLevelILOperationAndSize(HighLevelILOperation.HLIL_STRUCT_FIELD,4)]
+        i = 0
+        while i < len(operands):
+            if operands[i:i+3] == b:
+                i += 3
+            elif type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR:
+                i += 1
+            else:
+                result.append(operands[i])
+                i += 1
+        return result
+
+    def is_in_operands(self,op,operands):
+        for i in range(len(operands)-len(op)+1):
+            if operands[i:i+len(op)] == op:
+                return True
+        return False
+
+    def expand_postfix_operands(self,instruction):
+        result = []
+        if type(instruction) is binaryninja.Variable:
+            return [instruction]
+        try:
+            op = instruction.postfix_operands
+        except:
+            op = instruction
+        while op:
+            current_op = op.pop(0)
+            if type(current_op) is list:
+                op = current_op + op
+                continue
+            #if type(current_op) == HighLevelILInstruction and (current_op.operation == HighLevelILOperation.HLIL_DEREF or current_op.operation == HighLevelILOperation.HLIL_CALL):
+            try:
+                op = current_op.postfix_operands + op
+            except:
+                result.append(current_op)
+        return self.cleanup_op(result)
 
 class fun_help():
     def __init__(self,address):

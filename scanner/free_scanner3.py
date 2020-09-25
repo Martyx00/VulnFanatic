@@ -6,6 +6,7 @@ import time
 # [*] Done in 5921.0615112781525 and found 20
 # [*] Done in 6052.589532136917 and found 20
 
+# [*] Done in 12968.943270206451 and found 336
 
 
 class FreeScanner3(BackgroundTaskThread):
@@ -186,7 +187,10 @@ class FreeScanner3(BackgroundTaskThread):
         result = []
         if type(instruction) is binaryninja.Variable:
             return [instruction]
-        op = instruction.postfix_operands
+        try:
+            op = instruction.postfix_operands
+        except:
+            op = instruction
         while op:
             current_op = op.pop(0)
             if type(current_op) is list:

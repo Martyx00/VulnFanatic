@@ -1,6 +1,6 @@
 from binaryninja import *
 from .scanner.scanner3 import Scanner3
-from .scanner.free_scanner3 import FreeScanner3
+from .scanner.scanner31 import Scanner31
 from .highlighter.highlighter3 import Highlighter3
 from .utils.utils import extract_hlil_operations,get_xrefs_of_symbol
 import os 
@@ -22,7 +22,7 @@ def scan4(bv):
 		bv.create_tag_type("[VulnFanatic] Medium","🟠")
 		bv.create_tag_type("[VulnFanatic] Low","🟡")
 		bv.create_tag_type("[VulnFanatic] Info","🔵")
-	scanner = FreeScanner3(bv)
+	scanner = Scanner31(bv)
 	scanner.start()
 
 def highlight3(bv,selection_addr):
