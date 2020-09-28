@@ -3,11 +3,6 @@ import re
 from ..utils.utils import extract_hlil_operations
 import time
 
-# [*] Done in 5921.0615112781525 and found 20
-# [*] Done in 6052.589532136917 and found 20
-
-# [*] Done in 12968.943270206451 and found 336
-
 
 class FreeScanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -63,7 +58,7 @@ class FreeScanner3(BackgroundTaskThread):
                         desc = "Potential Use-afer-free Vulnerability"
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
-        log_info(f"[*] Done in {time.time() - start} and found {vuln_counter}")
+        log_info(f"[*] Free scan done in {time.time() - start} and found {vuln_counter}")
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)

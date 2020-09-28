@@ -3,6 +3,36 @@ import re
 import json
 from .free_scanner3 import FreeScanner3
 from ..utils.utils import extract_hlil_operations
+import time
+
+# 31:
+#   [*] Vuln scan done in 130.47763800621033 and found 25
+#   [*] Free scan done in 4230.718330860138 and found 23
+# VS:
+# 30:
+#   [*] Vuln scan done in 309.63729763031006 and found 19
+#   [*] Done in 4265.379856109619 and found 20
+
+
+#31:
+#   [*] Vuln scan done in 1170.710162639618 and marked 1185 out of 3523 checked.
+#       High: 24
+#       Medium: 338
+#       Low: 399
+#       Info: 424
+#   [*] Free scan done in 350.6498191356659 and found 59
+# VS:
+# 30:
+#   [*] Vuln scan done in 3430.858621120453 and marked 1040 out of 3523 checked.
+#       High: 123
+#       Medium: 366
+#       Low: 165
+#       Info: 386
+#   [*] Done in 322.5665431022644 and found 53
+
+
+
+
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -11,11 +41,14 @@ class Scanner31(BackgroundTaskThread):
         self.current_view = bv
         self.xrefs_cache = dict()
         self.marked = 0
+        self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
     
     def run(self):
+        start = time.time()
         total_xrefs = 0
+        
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
             xrefs_count = len(function_refs)
@@ -27,6 +60,7 @@ class Scanner31(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
+        log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
         free = FreeScanner3(self.current_view)
         free.start()
 
@@ -72,9 +106,16 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
+                            if conf == "High":
+                                self.high += 1
+                            elif conf == "Medium":
+                                self.medium += 1
+                            elif conf == "Low":
+                                self.low += 1
+                            else:
+                                self.info += 1
                             self.marked += 1
-                            details = "dummy"
-                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n {details}', True)
+                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
                             break
                     if matches:
@@ -193,6 +234,7 @@ class Scanner31(BackgroundTaskThread):
                                 for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
                                     if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_block["block"].function.name:
                                         # Exported function
+                                        # TODO check for C++
                                         trace_struct[str(p)]["exported"] = True
                                 par_index = list(current_block["block"].function.parameter_vars).index(v)
                                 xrefs_to_follow = self.get_function_xrefs(current_block["block"].function.name)
@@ -253,12 +295,7 @@ class Scanner31(BackgroundTaskThread):
                 tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
                 if tmp not in vars["possible_values"]:
                     vars["possible_values"].append(tmp)
-        log_info(f"FOUND FOR {vars}")
         return vars
-    
-    # Can this be copied?
-    def not_if_dependent(self,instruction,param_vars):
-        pass
   
     def get_function_xrefs(self,fun_name):
         try:

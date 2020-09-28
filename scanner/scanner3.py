@@ -3,6 +3,9 @@ import re
 import json
 from .free_scanner2 import FreeScanner2
 from ..utils.utils import extract_hlil_operations
+import time
+
+
 
 class Scanner3(BackgroundTaskThread):
     def __init__(self,bv):
@@ -11,10 +14,12 @@ class Scanner3(BackgroundTaskThread):
         self.current_view = bv
         self.xrefs_cache = dict()
         self.marked = 0
+        self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
     
     def run(self):
+        start = time.time()
         total_xrefs = 0
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
@@ -27,6 +32,7 @@ class Scanner3(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
+        log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
         free = FreeScanner2(self.current_view)
         free.start()
 
@@ -72,6 +78,14 @@ class Scanner3(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
+                            if conf == "High":
+                                self.high += 1
+                            elif conf == "Medium":
+                                self.medium += 1
+                            elif conf == "Low":
+                                self.low += 1
+                            else:
+                                self.info += 1
                             self.marked += 1
                             details = "dummy"
                             tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n {details}', True)
@@ -256,10 +270,6 @@ class Scanner3(BackgroundTaskThread):
             except:
                 pass      
         return vars
-    
-    # Can this be copied?
-    def not_if_dependent(self,instruction,param_vars):
-        pass
   
     def get_function_xrefs(self,fun_name):
         try:
