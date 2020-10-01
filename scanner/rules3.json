@@ -362,8 +362,9 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
+                            
                         }
                     }
                 ],
@@ -416,7 +417,7 @@
                             "constant_value": ["alertWithMessageText:"]
                         },
                         "6":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     },
@@ -426,7 +427,7 @@
                             "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     },
@@ -436,7 +437,7 @@
                             "constant_value": ["raise:format:"]
                         },
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }
@@ -656,7 +657,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }
@@ -749,7 +750,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }
@@ -807,7 +808,7 @@
                 "High":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }
@@ -859,7 +860,7 @@
                 "High":[
                     {
                         "4":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }
@@ -912,7 +913,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -960,6 +961,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -982,7 +986,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1030,6 +1034,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1048,7 +1055,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1116,6 +1123,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1132,7 +1142,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1200,6 +1210,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1218,7 +1231,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1286,6 +1299,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1304,7 +1320,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1372,6 +1388,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1394,12 +1413,12 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1496,12 +1515,12 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1627,7 +1646,7 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         },
                         "1":{
@@ -1680,7 +1699,8 @@
                     {
                         "-2":{
                             "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
-                            "if_dependant": false
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1689,7 +1709,8 @@
                     {
                         "-2":{
                             "exported":true,
-                            "if_dependant": false
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1700,7 +1721,8 @@
                     {
                         "-2":{
                             "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
-                            "if_dependant": true
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1709,7 +1731,8 @@
                     {
                         "-2":{
                             "exported":true,
-                            "if_dependant": true
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1731,7 +1754,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1819,6 +1842,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1837,7 +1863,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1925,6 +1951,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1941,7 +1970,7 @@
                 "High":[
                     {
                         "-3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
@@ -2028,7 +2057,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         }
@@ -2080,7 +2109,7 @@
                 "High":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -2156,7 +2185,7 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","getenv"],
                             "if_dependant": false
                         }
                     }

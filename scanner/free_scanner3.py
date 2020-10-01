@@ -165,7 +165,8 @@ class FreeScanner3(BackgroundTaskThread):
         while i < len(operands):
             if operands[i:i+3] == b:
                 i += 3
-            elif type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR:
+            elif ((type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_VAR) or
+            (type(operands[i]) is HighLevelILOperationAndSize and operands[i].operation == HighLevelILOperation.HLIL_SX)):
                 i += 1
             else:
                 result.append(operands[i])
@@ -183,15 +184,14 @@ class FreeScanner3(BackgroundTaskThread):
         if type(instruction) is binaryninja.Variable:
             return [instruction]
         try:
-            op = instruction.postfix_operands
+            op = instruction.postfix_operands.copy()
         except:
-            op = instruction
+            op = instruction.copy()
         while op:
             current_op = op.pop(0)
             if type(current_op) is list:
                 op = current_op + op
                 continue
-            #if type(current_op) == HighLevelILInstruction and (current_op.operation == HighLevelILOperation.HLIL_DEREF or current_op.operation == HighLevelILOperation.HLIL_CALL):
             try:
                 op = current_op.postfix_operands + op
             except:
@@ -205,41 +205,50 @@ class FreeScanner3(BackgroundTaskThread):
             "orig_vars": {},
             "param_vars": []
         }
-        param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
-        param_vars = []
-        original_value = self.expand_postfix_operands(param)
-        vars["possible_values"].append(original_value)
+        params = []
         param_var_dict = {}
-        for p in param_vars_hlil:
-            vars["orig_vars"][str(p)] = []
-            param_var_dict[str(p)] = p.var
-            param_vars.append(p.var)
-            vars["param_vars"].append(p.var)
-        for param_var in vars["orig_vars"]:
-            # For each of the original variables find its possible alternatives
-            for var in param_vars:
-                if var not in vars["orig_vars"][param_var]:
-                    vars["orig_vars"][param_var].append(var)
-                    vars["vars"].append(var)
-                definitions = param.function.get_var_definitions(var)
-                # Also uses are relevant
-                definitions.extend(param.function.get_var_uses(var))
-                for d in definitions:
-                    if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                        vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
-                        param_vars.append(d.src.postfix_operands[0])
-                    elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
-                        # Handle assignments from calls
-                        for param in d.src.params:
-                            if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                                vars["orig_vars"][param_var].append(param.postfix_operands[0])
-                                param_vars.append(param.postfix_operands[0])
-                    elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
-                        vars["orig_vars"][param_var].append(d.var)
-            for v in vars["orig_vars"][param_var]:
-                tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
-                if tmp not in vars["possible_values"]:
-                    vars["possible_values"].append(tmp)
+        calls = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
+        if calls:
+            for call in calls:
+                params.extend(call.params)
+        else:
+            params.append(param)
+        for param in params:
+            param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+            param_vars = []
+            original_value = self.expand_postfix_operands(param)
+            vars["possible_values"].append(original_value)
+            param_var_dict = {}
+            for p in param_vars_hlil:
+                vars["orig_vars"][str(p)] = []
+                param_var_dict[str(p)] = p.var
+                param_vars.append(p.var)
+                vars["param_vars"].append(p.var)
+            for param_var in vars["orig_vars"]:
+                # For each of the original variables find its possible alternatives
+                for var in param_vars:
+                    if var not in vars["orig_vars"][param_var]:
+                        vars["orig_vars"][param_var].append(var)
+                        vars["vars"].append(var)
+                    definitions = param.function.get_var_definitions(var)
+                    # Also uses are relevant
+                    definitions.extend(param.function.get_var_uses(var))
+                    for d in definitions:
+                        if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                            vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                            param_vars.append(d.src.postfix_operands[0])
+                        elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                            # Handle assignments from calls
+                            for param in d.src.params:
+                                if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                    vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                    param_vars.append(param.postfix_operands[0])
+                        elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                            vars["orig_vars"][param_var].append(d.var)
+                for v in vars["orig_vars"][param_var]:
+                    tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
+                    if tmp not in vars["possible_values"]:
+                        vars["possible_values"].append(tmp)
         return vars
 
 
