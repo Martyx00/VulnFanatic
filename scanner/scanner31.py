@@ -7,6 +7,8 @@ import time
 
 # TODO detect network
 # sock_addr_from_str_hints
+# BcmWan_createDataDirectory
+# ntoa: BcmIp_getIpAddress - still issues when return value of function is used as parameter
 
 # 31:
 #   [*] Vuln scan done in 130.47763800621033 and found 25
@@ -32,6 +34,14 @@ import time
 #       Low: 165
 #       Info: 386
 #   [*] Done in 322.5665431022644 and found 53
+'''
+[*] Vuln scan done in 1992.7874100208282 and marked 1045 out of 3523 checked.
+High: 18
+Medium: 298
+Low: 405
+Info: 324
+[*] Free scan done in 613.7311964035034 and found 59
+'''
 
 
 
@@ -47,11 +57,11 @@ class Scanner31(BackgroundTaskThread):
         self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
-    
+
     def run(self):
         start = time.time()
         total_xrefs = 0
-        
+
         for function in self.rules["functions"]:
             function_refs = self.get_function_xrefs(function["function_name"])
             xrefs_count = len(function_refs)
@@ -104,6 +114,15 @@ class Scanner31(BackgroundTaskThread):
                                         elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
                                             matches = False
                                             break
+                                    elif type(current_rule[param_key][check_key]) is dict:
+                                        if check_key == "affected_by":
+                                            if not self.params_match(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                                matches = False
+                                                break
+                                        elif check_key == "not_affected_by":
+                                            if self.params_match(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                                matches = False
+                                                break
                                     else:
                                         if not trace[param_key][check_key] == current_rule[param_key][check_key]:
                                             matches = False
@@ -132,15 +151,18 @@ class Scanner31(BackgroundTaskThread):
                 match = True
                 for instance in trace[fun]:
                     for par in instance:
-                        if not rule[fun][par] in instance[par]:
-                            match = False
+                        try:
+                            if not rule[fun][par] in instance[par]:
+                                match = False
+                        except KeyError:
+                            if rule[fun] == {}:
+                                # In case we dont care about parameters
+                                return True
                     if match:
                         return True
-                    if rule[fun] == {}:
-                        # In case we dont care about parameters
-                        return True
+
             except KeyError:
-                pass
+                    pass
         return False
 
 
@@ -167,7 +189,7 @@ class Scanner31(BackgroundTaskThread):
                 "constant_value": [],
                 "exported": False,
                 "if_dependant": False,
-                "affected_by": [],
+                "affected_by": {},
                 "affected_by_in_same_block": []
             }
             # Negative number in params means that all parameters from that index should be traced (including the index)
@@ -189,13 +211,14 @@ class Scanner31(BackgroundTaskThread):
                 # The main tracing loop
                 blocks = [{"block":xref.il_basic_block,"start":xref.il_basic_block.start-1,"end":xref.instr_index,"param_vars":param_vars.copy()}]
                 previous_function = xref.il_basic_block.function.name
+                hlil_instructions = list(xref.il_basic_block.function.hlil.instructions)
                 visited_blocks = [f"{xref.il_basic_block.start}@{previous_function}"]
                 while blocks:
                     current_block = blocks.pop()
                     if previous_function != current_block["block"].function.name:
                         hlil_instructions = list(current_block["block"].function.hlil.instructions)
                         previous_function = current_block['block'].function.name
-                    
+
                     # Previous function here always holds current function name
                     params_to_check = current_block["param_vars"]["possible_values"]
                     #params_to_check = []
@@ -231,13 +254,36 @@ class Scanner31(BackgroundTaskThread):
                                     for call in calls:
                                         if call != xref:
                                             if self.is_in_operands(param,self.expand_postfix_operands(call.params)):
-                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                params_dict = {}
+                                                call_param_index = 0
+                                                for call_param in call.params:
+                                                    # TODO consts for format functions
+                                                    param_value = ""
+                                                    if call_param.operation == HighLevelILOperation.HLIL_CONST or call_param.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                                        try:
+                                                            param_value = self.current_view.get_string_at(call_param.constant).value
+                                                        except:
+                                                            param_value = hex(call_param.constant)
+                                                    if self.is_in_operands(param,self.expand_postfix_operands(call_param)):
+                                                        param_value = "TRACKED"
+                                                    if not param_value:
+                                                        param_value = str(param)
+                                                    params_dict[str(call_param_index)] = param_value
+                                                    call_param_index += 1
+                                                try:
+                                                    trace_struct[str(p)]["affected_by"][str(call.dest)].append(params_dict)
+                                                except KeyError:
+                                                    trace_struct[str(p)]["affected_by"][str(call.dest)] = [params_dict]
                                                 if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
                                                     trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
-                                            elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or 
+                                            elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or
                                             instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and self.is_in_operands(param,self.expand_postfix_operands(instruction.dest)):
                                                 # Not in the parameter so check if not assigned with the return value
-                                                trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                try:
+                                                    a = trace_struct[str(p)]["affected_by"][str(call.dest)]
+                                                except KeyError:
+                                                    trace_struct[str(p)]["affected_by"][str(call.dest)] = []
+                                                #trace_struct[str(p)]["affected_by"].append(str(call.dest))
                                                 if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
                                                     trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
                     # Add preceeding blocks
@@ -249,7 +295,7 @@ class Scanner31(BackgroundTaskThread):
                                     "block":edge.source,
                                     "start":edge.source.start-1,
                                     "end":edge.source.end-1,
-                                    "param_vars":current_block["param_vars"]
+                                    "param_vars":current_block["param_vars"].copy()
                                     })
                     else:
                         # Check of param_vars["vars"] contains arg and look further and mark exported function params where applicable
@@ -269,10 +315,10 @@ class Scanner31(BackgroundTaskThread):
                                             "block":x2f.il_basic_block,
                                             "start":x2f.il_basic_block.start-1,
                                             "end":x2f.instr_index-1,
-                                            "param_vars":x2f_param_vars
+                                            "param_vars":x2f_param_vars.copy()
                                             })
         return trace_struct
-            
+
 
     # This will take into account only variables that are preceeding the relevant XREF
     def prepare_relevant_variables(self,param):
@@ -295,7 +341,7 @@ class Scanner31(BackgroundTaskThread):
             param_vars = []
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
-            
+
             for p in param_vars_hlil:
                 vars["orig_vars"][str(p)] = []
                 param_var_dict[str(p)] = p.var
@@ -328,7 +374,7 @@ class Scanner31(BackgroundTaskThread):
                     if tmp not in vars["possible_values"]:
                         vars["possible_values"].append(tmp)
         return vars
-  
+
     def get_function_xrefs(self,fun_name):
         try:
             return self.xrefs_cache[fun_name]
@@ -371,11 +417,11 @@ class Scanner31(BackgroundTaskThread):
                             for call in calls:
                                 if function_name == str(call.dest) and not self.is_in(call,xrefs) and call.params:
                                     xrefs.append(call)
-            
+
             #if not fun_name in self.xrefs_cache:
             self.xrefs_cache[fun_name] = xrefs.copy()
             return xrefs
-    
+
     def is_in(self,item,array):
         for i in array:
             if item is i:
@@ -422,7 +468,7 @@ class Scanner31(BackgroundTaskThread):
                 op = current_op.postfix_operands + op
             except:
                 result.append(current_op)
-        
+
         return self.cleanup_op(result)
 
 class fun_help():
