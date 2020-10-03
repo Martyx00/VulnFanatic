@@ -6,41 +6,15 @@ from ..utils.utils import extract_hlil_operations
 import time
 
 # TODO detect network
-# sock_addr_from_str_hints
-# BcmWan_createDataDirectory
-# ntoa: BcmIp_getIpAddress - still issues when return value of function is used as parameter
 
-# 31:
-#   [*] Vuln scan done in 130.47763800621033 and found 25
-#   [*] Free scan done in 4230.718330860138 and found 23
-# VS:
-# 30:
-#   [*] Vuln scan done in 309.63729763031006 and found 19
-#   [*] Done in 4265.379856109619 and found 20
-
-
-#31:
-#   [*] Vuln scan done in 1170.710162639618 and marked 1185 out of 3523 checked.
-#       High: 24
-#       Medium: 338
-#       Low: 399
-#       Info: 424
-#   [*] Free scan done in 350.6498191356659 and found 59
-# VS:
-# 30:
-#   [*] Vuln scan done in 3430.858621120453 and marked 1040 out of 3523 checked.
-#       High: 123
-#       Medium: 366
-#       Low: 165
-#       Info: 386
-#   [*] Done in 322.5665431022644 and found 53
 '''
-[*] Vuln scan done in 1992.7874100208282 and marked 1045 out of 3523 checked.
-High: 18
-Medium: 298
-Low: 405
-Info: 324
-[*] Free scan done in 613.7311964035034 and found 59
+[*] Vuln scan done in 623.4434518814087 and marked 32 out of 320 checked.
+High: 0
+Medium: 0
+Low: 14
+Info: 18
+[*] Free scan done in 15.603667974472046 and found 0
+
 '''
 
 
