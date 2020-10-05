@@ -1,7 +1,7 @@
 from binaryninja import *
 import re
 from ..utils.utils import extract_hlil_operations
-import time
+#import time
 
 
 class FreeScanner3(BackgroundTaskThread):
@@ -12,7 +12,7 @@ class FreeScanner3(BackgroundTaskThread):
         self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete","operator delete[]"]
 
     def run(self):
-        start = time.time()
+        #start = time.time()
         #vuln_counter = 0
         free_xrefs = self.get_xrefs_with_wrappers()
         counter = 1
@@ -234,17 +234,18 @@ class FreeScanner3(BackgroundTaskThread):
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                            vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
-                            param_vars.append(d.src.postfix_operands[0])
-                        elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
-                            # Handle assignments from calls
-                            for param in d.src.params:
-                                if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                                    vars["orig_vars"][param_var].append(param.postfix_operands[0])
-                                    param_vars.append(param.postfix_operands[0])
-                        elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
-                            vars["orig_vars"][param_var].append(d.var)
+                        if d.instr_index != param.instr_index and str(var) in str(d):
+                            if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                                param_vars.append(d.src.postfix_operands[0])
+                            elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                                # Handle assignments from calls
+                                for param in d.src.params:
+                                    if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                        vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                        param_vars.append(param.postfix_operands[0])
+                            elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(d.var)
                 for v in vars["orig_vars"][param_var]:
                     tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
                     if tmp not in vars["possible_values"]:

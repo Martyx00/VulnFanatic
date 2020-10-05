@@ -3,7 +3,7 @@ import re
 import json
 from .free_scanner3 import FreeScanner3
 from ..utils.utils import extract_hlil_operations
-import time
+#import time
 
 
 # cgiGetQosQueueInfo
@@ -20,7 +20,7 @@ class Scanner31(BackgroundTaskThread):
             self.rules = json.load(rules_file)
 
     def run(self):
-        start = time.time()
+        #start = time.time()
         total_xrefs = 0
 
         for function in self.rules["functions"]:
@@ -127,8 +127,8 @@ class Scanner31(BackgroundTaskThread):
                                         for param_index in range(int(par),len(instance)):
                                             if rule[fun][trace_item] in instance[str(param_index)]:
                                                 matches_any = True
-                                if not matches_any:
-                                    match = False
+                                        if not matches_any:
+                                            match = False
                     if match:
                         return True
 
@@ -326,17 +326,18 @@ class Scanner31(BackgroundTaskThread):
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                            vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
-                            param_vars.append(d.src.postfix_operands[0])
-                        elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
-                            # Handle assignments from calls
-                            for param in d.src.params:
-                                if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
-                                    vars["orig_vars"][param_var].append(param.postfix_operands[0])
-                                    param_vars.append(param.postfix_operands[0])
-                        elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
-                            vars["orig_vars"][param_var].append(d.var)
+                        if d.instr_index != param.instr_index and str(var) in str(d):
+                            if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
+                                param_vars.append(d.src.postfix_operands[0])
+                            elif (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and d.src.operation == HighLevelILOperation.HLIL_CALL:
+                                # Handle assignments from calls
+                                for param in d.src.params:
+                                    if type(param.postfix_operands[0]) == Variable and param.postfix_operands[0] not in vars["orig_vars"][param_var]:
+                                        vars["orig_vars"][param_var].append(param.postfix_operands[0])
+                                        param_vars.append(param.postfix_operands[0])
+                            elif d.operation == HighLevelILOperation.HLIL_VAR and str(d) not in vars["orig_vars"][param_var]:
+                                vars["orig_vars"][param_var].append(d.var)
                 for v in vars["orig_vars"][param_var]:
                     tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
                     if tmp not in vars["possible_values"]:
