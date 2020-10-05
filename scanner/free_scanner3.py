@@ -13,7 +13,7 @@ class FreeScanner3(BackgroundTaskThread):
 
     def run(self):
         start = time.time()
-        vuln_counter = 0
+        #vuln_counter = 0
         free_xrefs = self.get_xrefs_with_wrappers()
         counter = 1
         total = len(free_xrefs)
@@ -51,14 +51,14 @@ class FreeScanner3(BackgroundTaskThread):
                 elif current_free_xref_obj["struct_free_wrapper"]:
                     confidence = "Info"
                 if confidence:
-                    vuln_counter += 1
+                    #vuln_counter += 1
                     if confidence == "Info":
                         desc = "Free wrapper worth to investigate."
                     else:
                         desc = "Potential Use-afer-free Vulnerability"
                     tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
                     free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
-        log_info(f"[*] Free scan done in {time.time() - start} and found {vuln_counter}")
+        #log_info(f"[*] Free scan done in {time.time() - start} and found {vuln_counter}")
 
     def scan(self,instruction,param_vars):
         current_hlil_instructions = list(instruction.function.instructions)
@@ -218,7 +218,7 @@ class FreeScanner3(BackgroundTaskThread):
             param_vars = []
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
-            param_var_dict = {}
+            #param_var_dict = {}
             for p in param_vars_hlil:
                 vars["orig_vars"][str(p)] = []
                 param_var_dict[str(p)] = p.var
@@ -264,12 +264,15 @@ class FreeScanner3(BackgroundTaskThread):
                         if wrapper_xrefs:
                             for wrapper_xref in wrapper_xrefs:
                                 par_index = list(xref.function.source_function.parameter_vars).index(var)
-                                free_xrefs.append({
-                                    "instruction": wrapper_xref,
-                                    "param_index": par_index,
-                                    "struct_free_wrapper": False,
-                                    "param_vars": self.prepare_relevant_variables(wrapper_xref.params[par_index])
-                                })
+                                try:
+                                    free_xrefs.append({
+                                        "instruction": wrapper_xref,
+                                        "param_index": par_index,
+                                        "struct_free_wrapper": False,
+                                        "param_vars": self.prepare_relevant_variables(wrapper_xref.params[par_index])
+                                    })
+                                except:
+                                    pass
                         else:
                             # No xrefs -> struct free wrapper???
                             free_xrefs.append({

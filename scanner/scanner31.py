@@ -5,21 +5,8 @@ from .free_scanner3 import FreeScanner3
 from ..utils.utils import extract_hlil_operations
 import time
 
-# TODO detect network
 
-'''
-[*] Vuln scan done in 623.4434518814087 and marked 32 out of 320 checked.
-High: 0
-Medium: 0
-Low: 14
-Info: 18
-[*] Free scan done in 15.603667974472046 and found 0
-
-'''
-
-
-
-
+# cgiGetQosQueueInfo
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -27,8 +14,8 @@ class Scanner31(BackgroundTaskThread):
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.current_view = bv
         self.xrefs_cache = dict()
-        self.marked = 0
-        self.high, self.medium, self.low, self.info = 0,0,0,0
+        #self.marked = 0
+        #self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
 
@@ -47,7 +34,7 @@ class Scanner31(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
-        log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
+        #log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
         free = FreeScanner3(self.current_view)
         free.start()
 
@@ -102,7 +89,7 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
-                            if conf == "High":
+                            '''if conf == "High":
                                 self.high += 1
                             elif conf == "Medium":
                                 self.medium += 1
@@ -110,7 +97,7 @@ class Scanner31(BackgroundTaskThread):
                                 self.low += 1
                             else:
                                 self.info += 1
-                            self.marked += 1
+                            self.marked += 1'''
                             tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
                             break
@@ -132,6 +119,16 @@ class Scanner31(BackgroundTaskThread):
                             if rule[fun] == {}:
                                 # In case we dont care about parameters
                                 return True
+                            else:
+                                # Cases with negative params
+                                matches_any = False
+                                for trace_item in rule[fun]:
+                                    if int(trace_item) < 0:
+                                        for param_index in range(int(par),len(instance)):
+                                            if rule[fun][trace_item] in instance[str(param_index)]:
+                                                matches_any = True
+                                if not matches_any:
+                                    match = False
                     if match:
                         return True
 
@@ -222,7 +219,6 @@ class Scanner31(BackgroundTaskThread):
                                             # handle constant here
                                             trace_struct[str(p)]["is_constant"] = True
                                             trace_struct[str(p)]["constant_value"].append(value)
-                                    # TODO add to structure params so that formated functions can be accounted for only if %s is used for buffer overflows
                                     # Check if it is part of a call:
                                     calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
                                     for call in calls:
@@ -231,7 +227,6 @@ class Scanner31(BackgroundTaskThread):
                                                 params_dict = {}
                                                 call_param_index = 0
                                                 for call_param in call.params:
-                                                    # TODO consts for format functions
                                                     param_value = ""
                                                     if call_param.operation == HighLevelILOperation.HLIL_CONST or call_param.operation == HighLevelILOperation.HLIL_CONST_PTR:
                                                         try:
@@ -241,7 +236,7 @@ class Scanner31(BackgroundTaskThread):
                                                     if self.is_in_operands(param,self.expand_postfix_operands(call_param)):
                                                         param_value = "TRACKED"
                                                     if not param_value:
-                                                        param_value = str(param)
+                                                        param_value = "DYNAMIC_VALUE"
                                                     params_dict[str(call_param_index)] = param_value
                                                     call_param_index += 1
                                                 try:
@@ -315,7 +310,6 @@ class Scanner31(BackgroundTaskThread):
             param_vars = []
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
-
             for p in param_vars_hlil:
                 vars["orig_vars"][str(p)] = []
                 param_var_dict[str(p)] = p.var
