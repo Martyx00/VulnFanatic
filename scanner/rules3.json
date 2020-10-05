@@ -362,15 +362,16 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
+                            
                         }
                     }
                 ],
                 "Medium":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -416,7 +417,7 @@
                             "constant_value": ["alertWithMessageText:"]
                         },
                         "6":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     },
@@ -426,7 +427,7 @@
                             "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     },
@@ -436,7 +437,7 @@
                             "constant_value": ["raise:format:"]
                         },
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -448,7 +449,7 @@
                             "constant_value": ["alertWithMessageText"]
                         },
                         "6":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -468,7 +469,7 @@
                             "constant_value": ["appendFormat:","stringByAppendingFormat:","stringWithFormat:"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -488,7 +489,7 @@
                             "constant_value": ["raise:format:"]
                         },
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -656,7 +657,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -664,7 +665,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -680,6 +681,9 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true
+                        },
+                        "-2":{
+                            "not_affected_by": ["toa","toi"]
                         }
                     }
                 ],
@@ -687,6 +691,9 @@
                     {
                         "1":{
                             "is_constant": false
+                        },
+                        "-2":{
+                            "not_affected_by": ["toa","toi"]
                         }
                     }
                 ]
@@ -749,7 +756,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -757,7 +764,7 @@
                 "Medium":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -807,7 +814,7 @@
                 "High":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -815,7 +822,7 @@
                 "Medium":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -859,7 +866,7 @@
                 "High":[
                     {
                         "4":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -867,7 +874,7 @@
                 "Medium":[
                     {
                         "4":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
@@ -912,7 +919,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -924,7 +931,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -960,6 +967,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -982,7 +992,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -994,7 +1004,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1030,6 +1040,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1048,7 +1061,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1064,7 +1077,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1116,6 +1129,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1132,7 +1148,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1148,7 +1164,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1200,6 +1216,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1218,7 +1237,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1234,7 +1253,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1286,6 +1305,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1304,7 +1326,7 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1320,7 +1342,7 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1372,6 +1394,9 @@
                         "2":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1394,12 +1419,12 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1408,12 +1433,12 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1436,13 +1461,13 @@
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "not_affected_by": ["strlen","alloc"]
                         }
                     },
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
@@ -1496,12 +1521,12 @@
                 "High":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1510,12 +1535,12 @@
                 "Medium":[
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
@@ -1538,13 +1563,13 @@
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "not_affected_by": ["strlen","alloc"]
                         }
                     },
                     {
                         "1":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
                         "2":{
@@ -1627,7 +1652,7 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         },
                         "1":{
@@ -1638,7 +1663,7 @@
                 "Medium":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         },
                         "1":{
@@ -1679,8 +1704,9 @@
                 "Medium":[
                     {
                         "-2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
-                            "if_dependant": false
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1689,7 +1715,8 @@
                     {
                         "-2":{
                             "exported":true,
-                            "if_dependant": false
+                            "if_dependant": false,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1699,8 +1726,9 @@
                 "Low":[
                     {
                         "-2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
-                            "if_dependant": true
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1709,7 +1737,8 @@
                     {
                         "-2":{
                             "exported":true,
-                            "if_dependant": true
+                            "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
                             "constant_value": ["%s"]
@@ -1731,7 +1760,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1751,7 +1780,7 @@
                 "Medium":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1819,6 +1848,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1837,7 +1869,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1857,7 +1889,7 @@
                 "Medium":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -1925,6 +1957,9 @@
                         "1":{
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
                         }
                     }
                 ]
@@ -1941,7 +1976,7 @@
                 "High":[
                     {
                         "-3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
@@ -1957,7 +1992,7 @@
                 "Medium":[
                     {
                         "-3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi","alloc"]
                         },
@@ -2028,7 +2063,7 @@
                 "High":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         }
@@ -2037,7 +2072,7 @@
                 "Medium":[
                     {
                         "2":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         }
@@ -2080,7 +2115,7 @@
                 "High":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -2093,7 +2128,7 @@
                 "Medium":[
                     {
                         "3":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
@@ -2142,7 +2177,7 @@
             }
         },
         {
-            "name": "OS Command Injection",
+            "name": "Command Injection",
             "details": "Source of 'system' or 'popen' function can be controlled by user.",
             "functions":[
                 "system",
@@ -2156,7 +2191,7 @@
                 "High":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}},
                             "if_dependant": false
                         }
                     }
@@ -2164,7 +2199,7 @@
                 "Medium":[
                     {
                         "0":{
-                            "affected_by":["gets","scanf","fgets","recv","recvfrom", "recvmsg","getc","fread","read","sprintf","memcpy","strcpy","strncpy","getenv"],
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"memcpy":{"0":"TRACKED"},"strcpy":{"0":"TRACKED"},"strncpy":{"0":"TRACKED"},"getenv":{}},
                             "if_dependant": true
                         }
                     },
