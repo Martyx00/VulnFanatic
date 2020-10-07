@@ -234,7 +234,7 @@ class FreeScanner3(BackgroundTaskThread):
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        if d.instr_index != param.instr_index and str(var) in str(d):
+                        if d.instr_index != param.instr_index and var in self.expand_postfix_operands(d):
                             if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
                                 vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
                                 param_vars.append(d.src.postfix_operands[0])
