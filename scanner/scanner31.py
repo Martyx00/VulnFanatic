@@ -19,6 +19,7 @@ Low: 313
 Info: 373
 '''
 # cgiGetQosQueueInfo
+# TODO sscanf return value issues
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -66,16 +67,20 @@ class Scanner31(BackgroundTaskThread):
                         matches = True
                         keys = []
                         for par_key in cur_rule:
-                            if int(par_key) < 0:
-                                keys = []
+                            if par_key == "return":
+                                keys = ["return"]
                                 current_rule = cur_rule.copy()
-                                for key in trace:
-                                    if int(key) >= abs(int(par_key)):
-                                        keys.append(key)
-                                        current_rule[key] = cur_rule[par_key].copy()
                             else:
-                                keys = [par_key]
-                                current_rule = cur_rule.copy()
+                                if int(par_key) < 0:
+                                    keys = []
+                                    current_rule = cur_rule.copy()
+                                    for key in trace:
+                                        if int(key) >= abs(int(par_key)):
+                                            keys.append(key)
+                                            current_rule[key] = cur_rule[par_key].copy()
+                                else:
+                                    keys = [par_key]
+                                    current_rule = cur_rule.copy()
                             for param_key in keys:
                                 for check_key in current_rule[param_key]:
                                     # This takes the approach that if anything is false, break
@@ -173,8 +178,13 @@ class Scanner31(BackgroundTaskThread):
                 "exported": False,
                 "if_dependant": False,
                 "affected_by": {},
-                "affected_by_in_same_block": []
+                "affected_by_in_same_block": [],
+                "if_checked": True
             }
+            if p == "return":
+                # At this point only test case for return we have is whether it is if checked
+                trace_struct[str(p)]["if_checked"] = self.check_return_for_ifs(xref,hlil_instructions)
+                continue
             # Negative number in params means that all parameters from that index should be traced (including the index)
             if p < 0:
                 for t_p in range(abs(p),len(xref.params)):
@@ -300,6 +310,27 @@ class Scanner31(BackgroundTaskThread):
                                             })
         return trace_struct
 
+
+    def check_return_for_ifs(self,xref,hlil_instructions):
+        call_instruction = hlil_instructions[xref.instr_index]
+        if call_instruction.operation == HighLevelILOperation.HLIL_IF:
+            return True
+        elif call_instruction.operation == HighLevelILOperation.HLIL_ASSIGN:
+            try:
+                ret_var = call_instruction.dest.postfix_operands
+            except:
+                ret_var = [call_instruction.dest]
+        elif call_instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
+            ret_var = [call_instruction.dest]
+        else:
+            return False
+        # get index of last instruction in current block
+        last_inst = hlil_instructions[xref.il_basic_block.end - 1]
+        log_info(str(last_inst))
+        if self.is_in_operands(ret_var,self.expand_postfix_operands(last_inst)):
+            log_info("Truething")
+            return True
+        return False
 
     # This will take into account only variables that are preceeding the relevant XREF
     def prepare_relevant_variables(self,param):

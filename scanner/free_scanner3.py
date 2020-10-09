@@ -3,7 +3,6 @@ import re
 from ..utils.utils import extract_hlil_operations
 #import time
 
-
 class FreeScanner3(BackgroundTaskThread):
     def __init__(self,bv):
         self.current_view = bv
