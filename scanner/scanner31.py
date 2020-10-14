@@ -75,7 +75,7 @@ class Scanner31(BackgroundTaskThread):
                                     keys = []
                                     current_rule = cur_rule.copy()
                                     for key in trace:
-                                        if int(key) >= abs(int(par_key)):
+                                        if key != "return" and int(key) >= abs(int(par_key)):
                                             keys.append(key)
                                             current_rule[key] = cur_rule[par_key].copy()
                                 else:
@@ -93,12 +93,12 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                                     elif type(current_rule[param_key][check_key]) is dict:
-                                        if check_key == "affected_by":
-                                            if not self.params_match(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                        if check_key == "not_affected_by":
+                                            if self.params_match(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
                                                 matches = False
                                                 break
-                                        elif check_key == "not_affected_by":
-                                            if self.params_match(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
+                                        else:
+                                            if not self.params_match(trace[param_key][check_key],current_rule[param_key][check_key]):
                                                 matches = False
                                                 break
                                     else:
@@ -124,33 +124,31 @@ class Scanner31(BackgroundTaskThread):
     def params_match(self,trace,rule):
         # TRACE: {"sprintf":[{"0":"TRACKED","1":"%s"},{"0":"DYNAMIC","1":"%d"}],"strcpy":[...]}
         # RULE:  {"sprintf":{"0":"TRACKED","1":"%s"},"strcpy":{ ... }}
-        for fun in rule:
-            try:
-                match = True
-                for instance in trace[fun]:
-                    for par in instance:
-                        try:
-                            if not rule[fun][par] in instance[par]:
-                                match = False
-                        except KeyError:
-                            if rule[fun] == {}:
-                                # In case we dont care about parameters
-                                return True
-                            else:
-                                # Cases with negative params
-                                matches_any = False
-                                for trace_item in rule[fun]:
-                                    if int(trace_item) < 0:
-                                        for param_index in range(int(par),len(instance)):
-                                            if rule[fun][trace_item] in instance[str(param_index)]:
-                                                matches_any = True
-                                        if not matches_any:
-                                            match = False
-                    if match:
-                        return True
-
-            except KeyError:
-                    pass
+        for rule_function in rule:
+            for trace_function in trace:
+                if rule_function in trace_function:
+                    match = True
+                    for instance in trace[trace_function]:
+                        for par in instance:
+                            try:
+                                if not rule[rule_function][par] in instance[par]:
+                                    match = False
+                            except KeyError:
+                                if rule[rule_function] == {}:
+                                    # In case we dont care about parameters
+                                    return True
+                                else:
+                                    # Cases with negative params
+                                    matches_any = False
+                                    for trace_item in rule[rule_function]:
+                                        if int(trace_item) < 0:
+                                            for param_index in range(int(par),len(instance)):
+                                                if rule[rule_function][trace_item] in instance[str(param_index)]:
+                                                    matches_any = True
+                                            if not matches_any:
+                                                match = False
+                        if match:
+                            return True
         return False
 
 
@@ -178,7 +176,7 @@ class Scanner31(BackgroundTaskThread):
                 "exported": False,
                 "if_dependant": False,
                 "affected_by": {},
-                "affected_by_in_same_block": [],
+                "affected_by_in_same_block": {},
                 "if_checked": True
             }
             if p == "return":
@@ -266,7 +264,10 @@ class Scanner31(BackgroundTaskThread):
                                                 except KeyError:
                                                     trace_struct[str(p)]["affected_by"][str(call.dest)] = [params_dict]
                                                 if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                                    try:
+                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)].append(params_dict)
+                                                    except KeyError:
+                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)] = [params_dict]
                                             elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or
                                             instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and self.is_in_operands(param,self.expand_postfix_operands(instruction.dest)):
                                                 # Not in the parameter so check if not assigned with the return value
@@ -276,7 +277,10 @@ class Scanner31(BackgroundTaskThread):
                                                     trace_struct[str(p)]["affected_by"][str(call.dest)] = []
                                                 #trace_struct[str(p)]["affected_by"].append(str(call.dest))
                                                 if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
-                                                    trace_struct[str(p)]["affected_by_in_same_block"].append(str(call.dest))
+                                                    try:
+                                                        a = trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)]
+                                                    except KeyError:
+                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)] = []
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
                         for edge in current_block["block"].incoming_edges:
@@ -313,23 +317,26 @@ class Scanner31(BackgroundTaskThread):
 
     def check_return_for_ifs(self,xref,hlil_instructions):
         call_instruction = hlil_instructions[xref.instr_index]
+        ret_var = []
         if call_instruction.operation == HighLevelILOperation.HLIL_IF:
             return True
         elif call_instruction.operation == HighLevelILOperation.HLIL_ASSIGN:
             try:
-                ret_var = call_instruction.dest.postfix_operands
+                ret_var = [call_instruction.dest.postfix_operands]
             except:
-                ret_var = [call_instruction.dest]
+                ret_var = [[call_instruction.dest]]
         elif call_instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
-            ret_var = [call_instruction.dest]
+            ret_var = [[call_instruction.dest]]
+        elif call_instruction.operation == HighLevelILOperation.HLIL_ASSIGN_UNPACK:
+            for d in call_instruction.dest:
+                ret_var.append([d.var])
         else:
             return False
         # get index of last instruction in current block
         last_inst = hlil_instructions[xref.il_basic_block.end - 1]
-        log_info(str(last_inst))
-        if self.is_in_operands(ret_var,self.expand_postfix_operands(last_inst)):
-            log_info("Truething")
-            return True
+        for ret in ret_var:
+            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(ret,self.expand_postfix_operands(last_inst)):
+                return True
         return False
 
     # This will take into account only variables that are preceeding the relevant XREF
