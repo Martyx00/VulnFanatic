@@ -5,22 +5,6 @@ from .free_scanner3 import FreeScanner3
 from ..utils.utils import extract_hlil_operations
 import time
 
-'''
-[*] Vuln scan done in 1819.9093589782715 and marked 827 out of 3523 checked.
-High: 5
-Medium: 136
-Low: 313
-Info: 373
-
-[*] Vuln scan done in 1777.9908814430237 and marked 827 out of 3523 checked.
-High: 5
-Medium: 136
-Low: 313
-Info: 373
-'''
-# cgiGetQosQueueInfo
-# TODO sscanf return value issues
-
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
         self.progress_banner = f"[VulnFanatic] Running the scanner ..."
@@ -137,11 +121,13 @@ class Scanner31(BackgroundTaskThread):
                                 if rule[rule_function] == {}:
                                     # In case we dont care about parameters
                                     return True
+                                elif par == "return":
+                                    pass
                                 else:
                                     # Cases with negative params
                                     matches_any = False
                                     for trace_item in rule[rule_function]:
-                                        if int(trace_item) < 0:
+                                        if type(trace_item) is int and int(trace_item) < 0:
                                             for param_index in range(int(par),len(instance)):
                                                 if rule[rule_function][trace_item] in instance[str(param_index)]:
                                                     matches_any = True
@@ -259,6 +245,8 @@ class Scanner31(BackgroundTaskThread):
                                                         param_value = "DYNAMIC_VALUE"
                                                     params_dict[str(call_param_index)] = param_value
                                                     call_param_index += 1
+                                                if instruction.operation == HighLevelILOperation.HLIL_ASSIGN_UNPACK or instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
+                                                    params_dict["return"] = "DYNAMIC_VALUE"
                                                 try:
                                                     trace_struct[str(p)]["affected_by"][str(call.dest)].append(params_dict)
                                                 except KeyError:
@@ -270,17 +258,30 @@ class Scanner31(BackgroundTaskThread):
                                                         trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)] = [params_dict]
                                             elif (instruction.operation == HighLevelILOperation.HLIL_ASSIGN or
                                             instruction.operation == HighLevelILOperation.HLIL_VAR_INIT) and self.is_in_operands(param,self.expand_postfix_operands(instruction.dest)):
+                                                params_dict = {}
+                                                call_param_index = 0
+                                                for call_param in call.params:
+                                                    param_value = ""
+                                                    if call_param.operation == HighLevelILOperation.HLIL_CONST or call_param.operation == HighLevelILOperation.HLIL_CONST_PTR:
+                                                        try:
+                                                            param_value = self.current_view.get_string_at(call_param.constant).value
+                                                        except:
+                                                            param_value = hex(call_param.constant)
+                                                    else:
+                                                        param_value = "DYNAMIC_VALUE"
+                                                    params_dict[str(call_param_index)] = param_value
+                                                    call_param_index += 1
+                                                params_dict["return"] = "TRACKED"
                                                 # Not in the parameter so check if not assigned with the return value
                                                 try:
-                                                    a = trace_struct[str(p)]["affected_by"][str(call.dest)]
+                                                    trace_struct[str(p)]["affected_by"][str(call.dest)].append(params_dict)
                                                 except KeyError:
-                                                    trace_struct[str(p)]["affected_by"][str(call.dest)] = []
-                                                #trace_struct[str(p)]["affected_by"].append(str(call.dest))
+                                                    trace_struct[str(p)]["affected_by"][str(call.dest)] = [params_dict]
                                                 if f"{instruction.il_basic_block.start}@{previous_function}" == home_block:
                                                     try:
-                                                        a = trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)]
+                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)].append(params_dict)
                                                     except KeyError:
-                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)] = []
+                                                        trace_struct[str(p)]["affected_by_in_same_block"][str(call.dest)] = [params_dict]
                     # Add preceeding blocks
                     if current_block["block"].incoming_edges:
                         for edge in current_block["block"].incoming_edges:
@@ -377,6 +378,8 @@ class Scanner31(BackgroundTaskThread):
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
                         if d.instr_index != param.instr_index and var in self.expand_postfix_operands(d):
+                            # TODO improve this as "d" does not represetn the whole instruction
+                            # Also revise the below if statements before release 3.2
                             if (d.operation == HighLevelILOperation.HLIL_VAR_INIT or d.operation == HighLevelILOperation.HLIL_ASSIGN) and type(d.src.postfix_operands[0]) == Variable and d.src.postfix_operands[0] not in vars["orig_vars"][param_var]:
                                 vars["orig_vars"][param_var].append(d.src.postfix_operands[0])
                                 param_vars.append(d.src.postfix_operands[0])

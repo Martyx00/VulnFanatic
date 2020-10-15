@@ -2266,7 +2266,7 @@
                 "Medium":[
                     {
                         "0":{
-                            "affected_by_in_same_block":{"alloc":{"0":"DYNAMIC_VALUE"}}
+                            "affected_by_in_same_block":{"alloc":{"0":"DYNAMIC_VALUE","return":"TRACKED"}}
                         }
                     }
                 ]
@@ -2309,7 +2309,7 @@
                 "vwscanf_s"
             ],
             "checks":{
-                "Medium":[
+                "Low":[
                     {
                         "return":{
                             "if_checked": false
