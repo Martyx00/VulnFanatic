@@ -1624,18 +1624,47 @@
             }
         },
         {
-            "name": "Buffer Overflow (scanf/fscanf)",
+            "name": "Buffer Overflow (scanf)",
             "details": "The application is using function \"scanf\" which could cause buffer overflow vulnerability.",
             "functions":[
                 "scanf",
-                "_scanf",
-                "fscanf",
-                "_fscanf"
+                "_scanf"
             ],
             "checks":{
                 "High":[
                     {
                         "0":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Buffer Overflow (fscanf)",
+            "details": "The application is using function \"fscanf\" which could cause buffer overflow vulnerability.",
+            "functions":[
+                "fscanf",
+                "_fscanf"
+            ],
+            "checks":{
+                "Medium":[
+                    {
+                        "0":{
+                            "affected_by":{"gets":{},"scanf":{"0":"%s","-1":"DYNAMIC_VALUE"},"fscanf":{"1":"%s","-2":"DYNAMIC_VALUE"},"fgets":{"0":"TRACKED"},"recv":{"1":"TRACKED"},"recvfrom":{"1":"TRACKED"}, "recvmsg":{"1":"TRACKED"},"getc":{},"fread":{"0":"TRACKED"},"read":{"1":"TRACKED"},"sprintf":{"0":"TRACKED","1":"%s","-2":"DYNAMIC_VALUE"},"getenv":{}}
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    }
+                ],
+                "Low":[
+                    {
+                        "0":{
+                            "exported": true
+
+                        },
+                        "1":{
                             "constant_value": ["%s"]
                         }
                     }

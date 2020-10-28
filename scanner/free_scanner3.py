@@ -200,12 +200,10 @@ class FreeScanner3(BackgroundTaskThread):
     def prepare_relevant_variables(self,param):
         vars = {
             "possible_values": [],
-            "vars": [],
             "orig_vars": {},
             "param_vars": []
         }
         params = []
-        hlil_instructions = list(param.function.instructions)
         param_var_dict = {}
         calls = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
         if calls:
@@ -215,63 +213,25 @@ class FreeScanner3(BackgroundTaskThread):
             params.append(param)
         for param in params:
             param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
-            param_vars = []
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
             #param_var_dict = {}
             for p in param_vars_hlil:
-                vars["orig_vars"][str(p)] = []
+                vars["orig_vars"][str(p)] = [p.var]
                 param_var_dict[str(p)] = p.var
-                param_vars.append(p.var)
                 vars["param_vars"].append(p.var)
             for param_var in vars["orig_vars"]:
                 # For each of the original variables find its possible alternatives
-                for var in param_vars:
-                    if var not in vars["orig_vars"][param_var]:
-                        vars["orig_vars"][param_var].append(var)
-                        vars["vars"].append(var)
+                for var in vars["orig_vars"][param_var]:
                     definitions = param.function.get_var_definitions(var)
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        if d.instr_index != param.instr_index and var in self.expand_postfix_operands(d):
-                            current_instruction = hlil_instructions[d.instr_index]
-                            try:
-                                is_in = var in current_instruction.dest.postfix_operands
-                            except:
-                                try:
-                                    is_in = var == current_instruction.dest
-                                except:
-                                    # No dest
-                                    continue
-                            try:
-                                if not is_in and current_instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
-                                    vars["orig_vars"][param_var].append(current_instruction.dest)
-                                    if current_instruction.dest not in param_vars:
-                                        param_vars.append(current_instruction.dest)
-                                elif is_in and current_instruction.operation == HighLevelILOperation.HLIL_ASSIGN:
-                                    for v in extract_hlil_operations(d.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_instruction.dest):
-                                        if v.var not in vars["orig_vars"][param_var]:
-                                            vars["orig_vars"][param_var].append(v.var)
-                                            param_vars.append(v.var)
-                                elif is_in and current_instruction.operation == HighLevelILOperation.HLIL_ASSIGN_UNPACK:
-                                    for dest_var in current_instruction.dest:
-                                        vars["orig_vars"][param_var].append(dest_var.var)
-                                        if dest_var.var not in param_vars:
-                                            param_vars.append(dest_var.var)
-                                elif is_in and current_instruction.src.operation == HighLevelILOperation.HLIL_CALL:
-                                    for param in extract_hlil_operations(d.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_instruction.src):
-                                        if param.var not in vars["orig_vars"][param_var]:
-                                            vars["orig_vars"][param_var].append(param.var)
-                                            param_vars.append(param.var)
-                                elif is_in:
-                                    for dest_var in self.expand_postfix_operands(current_instruction.src):
-                                        if type(dest_var) is Variable:
-                                            vars["orig_vars"][param_var].append(dest_var)
-                                            if dest_var not in param_vars:
-                                                param_vars.append(dest_var)
-                            except:
-                                pass
+                        operands = self.expand_postfix_operands(d.instr)
+                        if d.instr_index != param.instr_index and var in operands:
+                            for dest_var in operands:
+                                if type(dest_var) is Variable and dest_var not in vars["orig_vars"][param_var]:
+                                        vars["orig_vars"][param_var].append(dest_var)
 
                 for v in vars["orig_vars"][param_var]:
                     tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
