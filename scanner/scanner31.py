@@ -6,59 +6,8 @@ from ..utils.utils import extract_hlil_operations
 import time
 
 '''
-[*] Vuln scan done in 3946.563503265381 and marked 888 out of 3523 checked.
-High: 12
-Medium: 142
-Low: 385
-Info: 349
-
-[*] Vuln scan done in 3919.958467245102 and marked 888 out of 3523 checked.
-High: 12
-Medium: 142
-Low: 385
-Info: 349
-
-[*] Vuln scan done in 4586.496377706528 and marked 893 out of 3523 checked.
-High: 12
-Medium: 151
-Low: 398
-Info: 332
-
-[*] Vuln scan done in 5033.022251605988 and marked 893 out of 3523 checked.
-High: 12
-Medium: 151
-Low: 398
-Info: 332
-
-[*] Vuln scan done in 5046.14621758461 and marked 894 out of 3523 checked.
-High: 12
-Medium: 158
-Low: 392
-Info: 332
-
-[*] Vuln scan done in 5078.4473695755005 and marked 893 out of 3523 checked.
-High: 12
-Medium: 151
-Low: 398
-Info: 332
-
-[*] Vuln scan done in 4683.216926336288 and marked 893 out of 3523 checked.
-High: 12
-Medium: 151
-Low: 398
-Info: 332
-
-[*] Vuln scan done in 1793.6834173202515 and marked 885 out of 3523 checked.
-High: 12
-Medium: 123
-Low: 293
-Info: 457
-
-
-
 Unchekced return CliShellCmd::processWirelessCtlCmd
-WlMngr::getChannelList  
-
+WlMngr::getChannelList 
 '''
 
 class Scanner31(BackgroundTaskThread):
@@ -351,7 +300,7 @@ class Scanner31(BackgroundTaskThread):
                                     })
                     else:
                         # Check of param_vars["orig_vars"] contains arg and look further and mark exported function params where applicable
-                        for v in param_vars["orig_vars"]:
+                        for v in param_vars["vars"]:
                             if v in current_block["block"].function.parameter_vars:
                                 for sym in self.current_view.get_symbols_of_type(SymbolType.FunctionSymbol):
                                     if sym.binding == SymbolBinding.GlobalBinding and sym.name == current_block["block"].function.name:
@@ -400,7 +349,8 @@ class Scanner31(BackgroundTaskThread):
     def prepare_relevant_variables(self,param):
         vars = {
             "possible_values": [],
-            "orig_vars": {}
+            "orig_vars": {},
+            "vars":[]
         }
         params = []
         param_var_dict = {}
@@ -416,6 +366,7 @@ class Scanner31(BackgroundTaskThread):
             vars["possible_values"].append(original_value)
             for p in param_vars_hlil:
                 vars["orig_vars"][str(p)] = [p.var]
+                vars["vars"].append(p.var)
                 param_var_dict[str(p)] = p.var
             for param_var in vars["orig_vars"]:
                 # For each of the original variables find its possible alternatives
@@ -424,23 +375,18 @@ class Scanner31(BackgroundTaskThread):
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        operands = self.expand_postfix_operands(d.instr)
+                        operands = d.instr.postfix_operands
                         if d.instr_index != param.instr_index and var in operands:
-                            for dest_var in operands:
-                                if type(dest_var) is Variable and dest_var not in vars["orig_vars"][param_var]:
-                                        vars["orig_vars"][param_var].append(dest_var)
-                    '''for d in definitions:
-                        operands = self.expand_postfix_operands(d.instr)
-                        if d.instr_index != param.instr_index and var in operands:
-                            #operands = d.instr.postfix_operands
+                            operands = d.instr.postfix_operands
                             for op in operands:
                                 try:
                                     op.type
-                                    if var not in vars["orig_vars"][param_var]:
+                                    if not op in vars["orig_vars"][param_var]:
                                         vars["orig_vars"][param_var].append(op)
+                                        vars["vars"].append(p.var)
                                 except:
                                     if type(op) is list:
-                                        operands.extend(op)'''
+                                        operands.extend(op)
                 for v in vars["orig_vars"][param_var]:
                     tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
                     if tmp not in vars["possible_values"]:

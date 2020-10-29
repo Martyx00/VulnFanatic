@@ -227,11 +227,17 @@ class FreeScanner3(BackgroundTaskThread):
                     # Also uses are relevant
                     definitions.extend(param.function.get_var_uses(var))
                     for d in definitions:
-                        operands = self.expand_postfix_operands(d.instr)
+                        operands = d.instr.postfix_operands
                         if d.instr_index != param.instr_index and var in operands:
-                            for dest_var in operands:
-                                if type(dest_var) is Variable and dest_var not in vars["orig_vars"][param_var]:
-                                        vars["orig_vars"][param_var].append(dest_var)
+                            operands = d.instr.postfix_operands
+                            for op in operands:
+                                try:
+                                    op.type
+                                    if not op in vars["orig_vars"][param_var]:
+                                        vars["orig_vars"][param_var].append(op)
+                                except:
+                                    if type(op) is list:
+                                        operands.extend(op)
 
                 for v in vars["orig_vars"][param_var]:
                     tmp = [x if x != param_var_dict[param_var] else v for x in original_value]
