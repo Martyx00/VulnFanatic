@@ -1,6 +1,5 @@
 from binaryninja import *
 import re
-from ..utils.utils import extract_hlil_operations
 #import time
 
 class FreeScanner3(BackgroundTaskThread):
@@ -97,7 +96,7 @@ class FreeScanner3(BackgroundTaskThread):
             for index in range(current_block["start"],current_block["end"]):
                 i = hlil_instructions[index]
                 for param in param_vars["possible_values"]:
-                    if i and i.instr_index != instruction.instr_index:
+                    if i:# and i.instr_index != instruction.instr_index:
                         is_in = self.is_in_operands(param,self.expand_postfix_operands(i))
                         if is_in:
                             if (((i.operation == HighLevelILOperation.HLIL_ASSIGN or i.operation == HighLevelILOperation.HLIL_VAR_INIT) 
@@ -134,9 +133,26 @@ class FreeScanner3(BackgroundTaskThread):
                     global_uaf = True
         return uaf, uaf_if, double, global_uaf
 
+    def extract_hlil_operation(self,instruction,operations):
+        extracted_operations = []
+        if instruction.operation in operations:
+            extracted_operations.append(instruction)
+        operands_mag = instruction.operands.copy()
+        while operands_mag:
+            op = operands_mag.pop()
+            if type(op) == HighLevelILInstruction and op.instr_index == instruction.instr_index:
+                if op.operation in operations:
+                    extracted_operations.append(op)
+                    operands_mag.extend(op.operands)
+                else:
+                    operands_mag.extend(op.operands)
+            elif type(op) is list:
+                for o in op:
+                    operands_mag.append(o)
+        return extracted_operations
+
     def is_global_var(self,var,function):
         vars = [var]
-        current_hlil_instructions = list(function.instructions)
         checked_vars = []
         while vars:
             v = vars.pop()
@@ -144,12 +160,12 @@ class FreeScanner3(BackgroundTaskThread):
             defs = function.get_var_definitions(v)
             for d in defs:
                 try:
-                    consts = extract_hlil_operations(function,[HighLevelILOperation.HLIL_CONST_PTR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    consts = self.extract_hlil_operation(d.instr,[HighLevelILOperation.HLIL_CONST_PTR])
                     for c in consts:
                         if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
                             # Likely a global variable deref
                             return True
-                    vs = extract_hlil_operations(function,[HighLevelILOperation.HLIL_VAR],specific_instruction=current_hlil_instructions[d.instr_index])
+                    vs = self.extract_hlil_operation(d.instr,[HighLevelILOperation.HLIL_VAR])
                     for a in vs:
                         if a.var.name not in checked_vars:
                             vars.append(a.var)
@@ -205,14 +221,14 @@ class FreeScanner3(BackgroundTaskThread):
         }
         params = []
         param_var_dict = {}
-        calls = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
+        calls = self.extract_hlil_operation(param,[HighLevelILOperation.HLIL_CALL])
         if calls:
             for call in calls:
                 params.extend(call.params)
         else:
             params.append(param)
         for param in params:
-            param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+            param_vars_hlil = self.extract_hlil_operation(param,[HighLevelILOperation.HLIL_VAR])
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
             #param_var_dict = {}
@@ -343,7 +359,7 @@ class FreeScanner3(BackgroundTaskThread):
                         for f in function_names:
                             if f in str(instruction):
                                 # Extract the call here
-                                calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL])
                                 for call in calls:
                                     if str(call.dest) in altered_names and not self.is_in(call,xrefs):
                                         xrefs.append(call)

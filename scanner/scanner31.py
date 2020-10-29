@@ -2,7 +2,6 @@ from binaryninja import *
 import re
 import json
 from .free_scanner3 import FreeScanner3
-from ..utils.utils import extract_hlil_operations
 import time
 
 '''
@@ -191,6 +190,7 @@ class Scanner31(BackgroundTaskThread):
                     continue
                 param_vars = self.prepare_relevant_variables(xref.params[p])
                 # The main tracing loop
+
                 blocks = [{"block":xref.il_basic_block,"start":xref.il_basic_block.start-1,"end":xref.instr_index,"param_vars":param_vars.copy()}]
                 previous_function = xref.il_basic_block.function.name
                 hlil_instructions = list(xref.il_basic_block.function.hlil.instructions)
@@ -231,9 +231,9 @@ class Scanner31(BackgroundTaskThread):
                                             trace_struct[str(p)]["is_constant"] = True
                                             trace_struct[str(p)]["constant_value"].append(value)
                                     # Check if it is part of a call:
-                                    calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=instruction)
+                                    calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL])
                                     for call in calls:
-                                        if call != xref:
+                                        if call != xref and call.il_basic_block == current_block["block"]:
                                             if self.is_in_operands(param,self.expand_postfix_operands(call.params)):
                                                 params_dict = {}
                                                 call_param_index = 0
@@ -320,6 +320,23 @@ class Scanner31(BackgroundTaskThread):
                                             })
         return trace_struct
 
+    def extract_hlil_operation(self,instruction,operations):
+        extracted_operations = []
+        if instruction.operation in operations:
+            extracted_operations.append(instruction)
+        operands_mag = instruction.operands.copy()
+        while operands_mag:
+            op = operands_mag.pop()
+            if type(op) == HighLevelILInstruction and op.instr_index == instruction.instr_index:
+                if op.operation in operations:
+                    extracted_operations.append(op)
+                    operands_mag.extend(op.operands)
+                else:
+                    operands_mag.extend(op.operands)
+            elif type(op) is list:
+                for o in op:
+                    operands_mag.append(o)
+        return extracted_operations
 
     def check_return_for_ifs(self,xref,hlil_instructions):
         call_instruction = hlil_instructions[xref.instr_index]
@@ -354,14 +371,14 @@ class Scanner31(BackgroundTaskThread):
         }
         params = []
         param_var_dict = {}
-        calls = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_CALL],specific_instruction=param)
+        calls = self.extract_hlil_operation(param,[HighLevelILOperation.HLIL_CALL])
         if calls:
             for call in calls:
                 params.extend(call.params)
         else:
             params.append(param)
         for param in params:
-            param_vars_hlil = extract_hlil_operations(param.function,[HighLevelILOperation.HLIL_VAR],specific_instruction=param)
+            param_vars_hlil = self.extract_hlil_operation(param,[HighLevelILOperation.HLIL_VAR])
             original_value = self.expand_postfix_operands(param)
             vars["possible_values"].append(original_value)
             for p in param_vars_hlil:
@@ -431,7 +448,7 @@ class Scanner31(BackgroundTaskThread):
                         # For each instruction check if any of the functions we are looking for is called
                         if function_name in str(instruction):
                             # Extract the call here
-                            calls = extract_hlil_operations(instruction.function,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL],specific_instruction=instruction)
+                            calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL])
                             for call in calls:
                                 if function_name == str(call.dest) and not self.is_in(call,xrefs) and call.params:
                                     xrefs.append(call)
