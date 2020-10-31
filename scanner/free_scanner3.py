@@ -68,7 +68,7 @@ class FreeScanner3(BackgroundTaskThread):
 
     def used_after2(self,param_vars,instruction,hlil_instructions,in_loop):
         loops = [HighLevelILOperation.HLIL_DO_WHILE,HighLevelILOperation.HLIL_WHILE,HighLevelILOperation.HLIL_FOR]
-        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN,HighLevelILOperation.HLIL_VAR_INIT]
+        skip_operations = [HighLevelILOperation.HLIL_IF,HighLevelILOperation.HLIL_ASSIGN,HighLevelILOperation.HLIL_VAR_INIT,HighLevelILOperation.HLIL_RET]
         skip_operations.extend(loops)
         uaf = False
         uaf_if = False
@@ -106,7 +106,7 @@ class FreeScanner3(BackgroundTaskThread):
                                 initialized = True
                                 init = True
                                 break
-                            if not i.operation in skip_operations and is_in:
+                            if (not i.operation in skip_operations and is_in) or (is_in and i.operation == HighLevelILOperation.HLIL_RET and self.extract_hlil_operation(i.instr,[HighLevelILOperation.HLIL_CALL])):
                                 if i.operation == HighLevelILOperation.HLIL_CALL and str(i.dest) in self.free_list:
                                     double = True
                                 if self.not_if_dependent(instruction,param_vars):

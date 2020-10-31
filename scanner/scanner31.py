@@ -5,8 +5,12 @@ from .free_scanner3 import FreeScanner3
 import time
 
 '''
+
+[*] Free scan done in 361.53645300865173 and found 75
+
 Unchekced return CliShellCmd::processWirelessCtlCmd
 WlMngr::getChannelList 
+BcmCfm_tr69cSetup fscanf
 '''
 
 class Scanner31(BackgroundTaskThread):
@@ -339,7 +343,7 @@ class Scanner31(BackgroundTaskThread):
         return extracted_operations
 
     def check_return_for_ifs(self,xref,hlil_instructions):
-        call_instruction = hlil_instructions[xref.instr_index]
+        call_instruction = xref.instr
         ret_var = []
         if call_instruction.operation == HighLevelILOperation.HLIL_IF:
             return True
@@ -358,7 +362,7 @@ class Scanner31(BackgroundTaskThread):
         # get index of last instruction in current block
         last_inst = hlil_instructions[xref.il_basic_block.end - 1]
         for ret in ret_var:
-            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(ret,self.expand_postfix_operands(last_inst)):
+            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(self.cleanup_op(ret),self.expand_postfix_operands(last_inst)):
                 return True
         return False
 
