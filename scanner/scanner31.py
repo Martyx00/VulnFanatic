@@ -2,16 +2,7 @@ from binaryninja import *
 import re
 import json
 from .free_scanner3 import FreeScanner3
-import time
-
-'''
-
-[*] Free scan done in 361.53645300865173 and found 75
-
-Unchekced return CliShellCmd::processWirelessCtlCmd
-WlMngr::getChannelList 
-BcmCfm_tr69cSetup fscanf
-'''
+#import time
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -19,13 +10,13 @@ class Scanner31(BackgroundTaskThread):
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.current_view = bv
         self.xrefs_cache = dict()
-        self.marked = 0
-        self.high, self.medium, self.low, self.info = 0,0,0,0
+        #self.marked = 0
+        #self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
 
     def run(self):
-        start = time.time()
+        #start = time.time()
         total_xrefs = 0
 
         for function in self.rules["functions"]:
@@ -39,7 +30,7 @@ class Scanner31(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
-        log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
+        #log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
         free = FreeScanner3(self.current_view)
         free.start()
 
@@ -98,7 +89,7 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
-                            if conf == "High":
+                            '''if conf == "High":
                                 self.high += 1
                             elif conf == "Medium":
                                 self.medium += 1
@@ -106,7 +97,7 @@ class Scanner31(BackgroundTaskThread):
                                 self.low += 1
                             else:
                                 self.info += 1
-                            self.marked += 1
+                            self.marked += 1'''
                             tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
                             break
