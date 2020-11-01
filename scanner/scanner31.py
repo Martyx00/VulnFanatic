@@ -2,7 +2,7 @@ from binaryninja import *
 import re
 import json
 from .free_scanner3 import FreeScanner3
-#import time
+import time
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -10,8 +10,8 @@ class Scanner31(BackgroundTaskThread):
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
         self.current_view = bv
         self.xrefs_cache = dict()
-        #self.marked = 0
-        #self.high, self.medium, self.low, self.info = 0,0,0,0
+        self.marked = 0
+        self.high, self.medium, self.low, self.info = 0,0,0,0
         with open(os.path.dirname(os.path.realpath(__file__)) + "/rules3.json",'r') as rules_file:
             self.rules = json.load(rules_file)
 
@@ -30,7 +30,7 @@ class Scanner31(BackgroundTaskThread):
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
                 xref_counter += 1
                 self.progress = f"{self.progress_banner} checking XREFs of function {function['function_name']} ({round((xref_counter/xrefs_count)*100)}%)"
-        #log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
+        log_info(f"[*] Vuln scan done in {time.time() - start} and marked {self.marked} out of {total_xrefs} checked.\nHigh: {self.high}\nMedium: {self.medium}\nLow: {self.low}\nInfo: {self.info}")
         free = FreeScanner3(self.current_view)
         free.start()
 
@@ -89,7 +89,7 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
-                            '''if conf == "High":
+                            if conf == "High":
                                 self.high += 1
                             elif conf == "Medium":
                                 self.medium += 1
@@ -97,7 +97,7 @@ class Scanner31(BackgroundTaskThread):
                                 self.low += 1
                             else:
                                 self.info += 1
-                            self.marked += 1'''
+                            self.marked += 1
                             tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
                             xref.function.source_function.add_user_address_tag(xref.address, tag)
                             break
@@ -210,11 +210,12 @@ class Scanner31(BackgroundTaskThread):
                         if index < len(hlil_instructions):
                             instruction = hlil_instructions[index]
                             for param in params_to_check:
+                                if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                    if self.is_in_operands(param,self.expand_postfix_operands(instruction.condition)):
+                                        trace_struct[str(p)]["if_dependant"] = True
+                                    continue
                                 if self.is_in_operands(param,self.expand_postfix_operands(instruction)):
                                     # found instruction where the desired parameter is used
-                                    # Check if it is part of an if:
-                                    if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                        trace_struct[str(p)]["if_dependant"] = True
                                     # Constant check
                                     if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
                                         if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
@@ -353,7 +354,7 @@ class Scanner31(BackgroundTaskThread):
         # get index of last instruction in current block
         last_inst = hlil_instructions[xref.il_basic_block.end - 1]
         for ret in ret_var:
-            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(self.cleanup_op(ret),self.expand_postfix_operands(last_inst)):
+            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(self.cleanup_op(ret),self.expand_postfix_operands(last_inst.condition)):
                 return True
         return False
 
@@ -427,6 +428,10 @@ class Scanner31(BackgroundTaskThread):
                     pass
                 try:
                     symbol_item.extend(self.current_view.symbols[function_name+"@PLT"]) if type(self.current_view.symbols[function_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@PLT"])
+                except KeyError:
+                    pass
+                try:
+                    symbol_item.extend(self.current_view.symbols[function_name+"@GOT"]) if type(self.current_view.symbols[function_name+"@GOT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@GOT"])
                 except KeyError:
                     pass
             if fun_name[:2] == "_Z":

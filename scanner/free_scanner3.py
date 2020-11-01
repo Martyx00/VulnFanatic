@@ -387,7 +387,7 @@ class FreeScanner3(BackgroundTaskThread):
         while parent != None:
             if parent.operation == HighLevelILOperation.HLIL_IF:
                 for param in param_vars["possible_values"]:
-                    if self.is_in_operands(param,self.expand_postfix_operands(parent)):
+                    if self.is_in_operands(param,self.expand_postfix_operands(parent.condition)):
                         if_dep = False 
             parent = parent.parent
         return if_dep
