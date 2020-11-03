@@ -15,10 +15,10 @@ The highlighter part of the plugin can be used after selecting an instruction. T
 
 Scanner is using set of rules to perform basic analysis to detect any potentially vulnerable function calls. Issues that are found by this component are marked with tags that reflect the priority for a follow-up manual analysis. Following are the priority categories:
 
-* 🔴 High - Detected conditions are likely to lead to vulnerability.
-* 🟠 Medium - Detected conditions could theoretically lead to vulnerability.
-* 🟡 Low - Detected conditions are unlikely to lead to vulnerability.
-* 🔵 Info - Detected conditions were not clear enough to determine if the call is secure or not.
+* 🟥 High - Detected conditions are likely to lead to vulnerability.
+* 🟧 Medium - Detected conditions could theoretically lead to vulnerability.
+* 🟨 Low - Detected conditions are unlikely to lead to vulnerability.
+* 🟦 Info - Detected conditions were not clear enough to determine if the call is secure or not.
 
 Example of discovered issue:
 

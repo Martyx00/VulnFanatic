@@ -8,10 +8,10 @@ import sys
 	
 def scan3(bv):
 	if not "[VulnFanatic] High" in bv.tag_types and not "[VulnFanatic] Medium" in bv.tag_types and not "[VulnFanatic] Low" in bv.tag_types and not "[VulnFanatic] Info" in bv.tag_types:
-		bv.create_tag_type("[VulnFanatic] High","‼️")
-		bv.create_tag_type("[VulnFanatic] Medium","⁉️")
-		bv.create_tag_type("[VulnFanatic] Low","⚠️ VF")
-		bv.create_tag_type("[VulnFanatic] Info","ℹ️")
+		bv.create_tag_type("[VulnFanatic] High","🟥")
+		bv.create_tag_type("[VulnFanatic] Medium","🟧")
+		bv.create_tag_type("[VulnFanatic] Low","🟨")
+		bv.create_tag_type("[VulnFanatic] Info","🟦")
 	scanner = Scanner31(bv)
 	scanner.start()
 
