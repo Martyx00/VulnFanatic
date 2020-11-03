@@ -16,7 +16,7 @@ class Scanner31(BackgroundTaskThread):
             self.rules = json.load(rules_file)
 
     def run(self):
-        #start = time.time()
+        start = time.time()
         total_xrefs = 0
 
         for function in self.rules["functions"]:
