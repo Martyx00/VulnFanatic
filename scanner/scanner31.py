@@ -450,7 +450,7 @@ class Scanner31(BackgroundTaskThread):
                             # Extract the call here
                             calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL])
                             for call in calls:
-                                if function_name == str(call.dest) and not self.is_in(call,xrefs) and call.params:
+                                if function_name == str(call.dest) and function_name != call.function.source_function.name and not self.is_in(call,xrefs) and call.params:
                                     xrefs.append(call)
 
             #if not fun_name in self.xrefs_cache:
