@@ -22,7 +22,7 @@ Scanner is using set of rules to perform basic analysis to detect any potentiall
 
 Example of discovered issue:
 
-![Sample](https://github.com/Martyx00/VulnFanatic/blob/master/static/sample.png?raw=true "Sample")
+![Sample](https://github.com/Martyx00/VulnFanatic/blob/master/static/sample2.png?raw=true "Sample")
 
 Please note that by no means this plugin provides a zero effort way to find vulnerabilities. However, it should assist you in prioritizing specific places in binaries which are worth investigating.
 
