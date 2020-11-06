@@ -210,11 +210,12 @@ class Scanner31(BackgroundTaskThread):
                         if index < len(hlil_instructions):
                             instruction = hlil_instructions[index]
                             for param in params_to_check:
+                                if instruction.operation == HighLevelILOperation.HLIL_IF:
+                                    if self.is_in_operands(param,self.expand_postfix_operands(instruction.condition)):
+                                        trace_struct[str(p)]["if_dependant"] = True
+                                    continue
                                 if self.is_in_operands(param,self.expand_postfix_operands(instruction)):
                                     # found instruction where the desired parameter is used
-                                    # Check if it is part of an if:
-                                    if instruction.operation == HighLevelILOperation.HLIL_IF:
-                                        trace_struct[str(p)]["if_dependant"] = True
                                     # Constant check
                                     if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
                                         if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
@@ -353,7 +354,7 @@ class Scanner31(BackgroundTaskThread):
         # get index of last instruction in current block
         last_inst = hlil_instructions[xref.il_basic_block.end - 1]
         for ret in ret_var:
-            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(self.cleanup_op(ret),self.expand_postfix_operands(last_inst)):
+            if last_inst.operation == HighLevelILOperation.HLIL_IF and self.is_in_operands(self.cleanup_op(ret),self.expand_postfix_operands(last_inst.condition)):
                 return True
         return False
 
@@ -429,6 +430,10 @@ class Scanner31(BackgroundTaskThread):
                     symbol_item.extend(self.current_view.symbols[function_name+"@PLT"]) if type(self.current_view.symbols[function_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@PLT"])
                 except KeyError:
                     pass
+                try:
+                    symbol_item.extend(self.current_view.symbols[function_name+"@GOT"]) if type(self.current_view.symbols[function_name+"@GOT"]) is list else symbol_item.append(self.current_view.symbols[function_name+"@GOT"])
+                except KeyError:
+                    pass
             if fun_name[:2] == "_Z":
                 # Handle C++ mangled names
                 function_name = re.sub(r'\(.*\)', '', self.current_view.symbols[fun_name].full_name)
@@ -445,7 +450,7 @@ class Scanner31(BackgroundTaskThread):
                             # Extract the call here
                             calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL,HighLevelILOperation.HLIL_TAILCALL])
                             for call in calls:
-                                if function_name == str(call.dest) and not self.is_in(call,xrefs) and call.params:
+                                if function_name == str(call.dest) and function_name != call.function.source_function.name and not self.is_in(call,xrefs) and call.params:
                                     xrefs.append(call)
 
             #if not fun_name in self.xrefs_cache:

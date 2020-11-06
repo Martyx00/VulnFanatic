@@ -329,6 +329,10 @@ class FreeScanner3(BackgroundTaskThread):
                 symbol_item.extend(self.current_view.symbols[symbol_name+"@PLT"]) if type(self.current_view.symbols[symbol_name+"@PLT"]) is list else symbol_item.append(self.current_view.symbols[symbol_name+"@PLT"])
             except KeyError:
                 pass
+            try:
+                symbol_item.extend(self.current_view.symbols[symbol_name+"@GOT"]) if type(self.current_view.symbols[symbol_name+"@GOT"]) is list else symbol_item.append(self.current_view.symbols[symbol_name+"@GOT"])
+            except KeyError:
+                pass
             if symbol_name == "operator delete":
                 symbols_mag = [list(self.current_view.symbols.items())] 
                 while symbols_mag:
@@ -387,7 +391,7 @@ class FreeScanner3(BackgroundTaskThread):
         while parent != None:
             if parent.operation == HighLevelILOperation.HLIL_IF:
                 for param in param_vars["possible_values"]:
-                    if self.is_in_operands(param,self.expand_postfix_operands(parent)):
+                    if self.is_in_operands(param,self.expand_postfix_operands(parent.condition)):
                         if_dep = False 
             parent = parent.parent
         return if_dep
