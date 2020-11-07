@@ -4,6 +4,9 @@ import json
 from .free_scanner3 import FreeScanner3
 #import time
 
+# TODO handle constants in bss section properly
+# TODO excv and similiar
+
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
         self.progress_banner = f"[VulnFanatic] Running the scanner ..."
@@ -162,7 +165,8 @@ class Scanner31(BackgroundTaskThread):
                 "if_dependant": False,
                 "affected_by": {},
                 "affected_by_in_same_block": {},
-                "if_checked": True
+                "if_checked": True,
+                "global_var": False
             }
             if p == "return":
                 # At this point only test case for return we have is whether it is if checked
@@ -175,14 +179,17 @@ class Scanner31(BackgroundTaskThread):
                 continue
             if p < len(xref.params):
                 if (xref.params[p].operation == HighLevelILOperation.HLIL_CONST or xref.params[p].operation == HighLevelILOperation.HLIL_CONST_PTR):
-                    try:
-                        value = self.current_view.get_string_at(xref.params[p].constant).value
-                    except:
-                        value = hex(xref.params[p].constant)
-                    # handle constant here
-                    trace_struct[str(p)]["is_constant"] = True
-                    trace_struct[str(p)]["constant_value"].append(value)
-                    continue
+                    if "bss" in str(self.current_view.get_sections_at(xref.params[p].constant)):
+                        trace_struct[str(p)]["global_var"] = True
+                    else:
+                        try:
+                            value = self.current_view.get_string_at(xref.params[p].constant).value
+                        except:
+                            value = hex(xref.params[p].constant)
+                        # handle constant here
+                        trace_struct[str(p)]["is_constant"] = True
+                        trace_struct[str(p)]["constant_value"].append(value)
+                        continue
                 param_vars = self.prepare_relevant_variables(xref.params[p])
                 # The main tracing loop
 
@@ -198,14 +205,6 @@ class Scanner31(BackgroundTaskThread):
 
                     # Previous function here always holds current function name
                     params_to_check = current_block["param_vars"]["possible_values"]
-                    #params_to_check = []
-                    #try:
-                    #    for param in current_block["param_vars"]["possible_values"]:
-                    #        if re.search(param,str(hlil_instructions[current_block["start"]:current_block["end"]+1])):
-                    #            params_to_check.append(param)
-                    #except:
-                    #    pass
-                    #if params_to_check:
                     for index in range(current_block["end"],current_block["start"],-1):
                         if index < len(hlil_instructions):
                             instruction = hlil_instructions[index]
@@ -219,13 +218,16 @@ class Scanner31(BackgroundTaskThread):
                                     # Constant check
                                     if instruction.operation == HighLevelILOperation.HLIL_ASSIGN or instruction.operation == HighLevelILOperation.HLIL_VAR_INIT:
                                         if instruction.src.operation == HighLevelILOperation.HLIL_CONST or instruction.src.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                                            try:
-                                                value = self.current_view.get_string_at(instruction.src.constant).value
-                                            except:
-                                                value = hex(instruction.src.constant)
-                                            # handle constant here
-                                            trace_struct[str(p)]["is_constant"] = True
-                                            trace_struct[str(p)]["constant_value"].append(value)
+                                            if "bss" in str(self.current_view.get_sections_at(instruction.src.constant)):
+                                                trace_struct[str(p)]["global_var"] = True
+                                            else:
+                                                try:
+                                                    value = self.current_view.get_string_at(instruction.src.constant).value
+                                                except:
+                                                    value = hex(instruction.src.constant)
+                                                # handle constant here
+                                                trace_struct[str(p)]["is_constant"] = True
+                                                trace_struct[str(p)]["constant_value"].append(value)
                                     # Check if it is part of a call:
                                     calls = self.extract_hlil_operation(instruction,[HighLevelILOperation.HLIL_CALL])
                                     for call in calls:
@@ -236,10 +238,13 @@ class Scanner31(BackgroundTaskThread):
                                                 for call_param in call.params:
                                                     param_value = ""
                                                     if call_param.operation == HighLevelILOperation.HLIL_CONST or call_param.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                                                        try:
-                                                            param_value = self.current_view.get_string_at(call_param.constant).value
-                                                        except:
-                                                            param_value = hex(call_param.constant)
+                                                        if "bss" in str(self.current_view.get_sections_at(call_param.constant)):
+                                                            param_value = "DYNAMIC_VALUE"
+                                                        else:
+                                                            try:
+                                                                param_value = self.current_view.get_string_at(call_param.constant).value
+                                                            except:
+                                                                param_value = hex(call_param.constant)
                                                     if self.is_in_operands(param,self.expand_postfix_operands(call_param)):
                                                         param_value = "TRACKED"
                                                     if not param_value:
@@ -264,10 +269,13 @@ class Scanner31(BackgroundTaskThread):
                                                 for call_param in call.params:
                                                     param_value = ""
                                                     if call_param.operation == HighLevelILOperation.HLIL_CONST or call_param.operation == HighLevelILOperation.HLIL_CONST_PTR:
-                                                        try:
-                                                            param_value = self.current_view.get_string_at(call_param.constant).value
-                                                        except:
-                                                            param_value = hex(call_param.constant)
+                                                        if "bss" in str(self.current_view.get_sections_at(call_param.constant)):
+                                                            param_value = "DYNAMIC_VALUE"
+                                                        else:
+                                                            try:
+                                                                param_value = self.current_view.get_string_at(call_param.constant).value
+                                                            except:
+                                                                param_value = hex(call_param.constant)
                                                     else:
                                                         param_value = "DYNAMIC_VALUE"
                                                     params_dict[str(call_param_index)] = param_value

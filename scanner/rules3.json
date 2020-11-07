@@ -389,6 +389,11 @@
                             "exported": true,
                             "if_dependant": true
                         }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
+                        }
                     }
                 ],
                 "Info": [
@@ -686,6 +691,14 @@
                         "-2":{
                             "not_affected_by": ["toa","toi"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true
+                        },
+                        "-2":{
+                            "not_affected_by": ["toa","toi"]
+                        }
                     }
                 ],
                 "Info": [
@@ -782,6 +795,11 @@
                             "exported": true,
                             "if_dependant": true
                         }
+                    },
+                    {
+                        "2":{
+                            "global_var": true
+                        }
                     }
                 ],
                 "Info": [
@@ -840,6 +858,11 @@
                             "exported": true,
                             "if_dependant": true
                         }
+                    },
+                    {
+                        "3":{
+                            "global_var": true
+                        }
                     }
                 ],
                 "Info": [
@@ -891,6 +914,11 @@
                         "4":{
                             "exported": true,
                             "if_dependant": true
+                        }
+                    },
+                    {
+                        "4":{
+                            "global_var": true
                         }
                     }
                 ],
@@ -956,6 +984,15 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1029,6 +1066,15 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1119,6 +1165,19 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1197,6 +1256,19 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1295,6 +1367,19 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1375,6 +1460,19 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1489,6 +1587,16 @@
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1591,6 +1699,16 @@
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1667,6 +1785,15 @@
                         "1":{
                             "constant_value": ["%s"]
                         }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
+
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
                     }
                 ]
             }
@@ -1714,6 +1841,15 @@
                     {
                         "0":{
                             "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "0":{
+                            "global_var":true,
                             "if_dependant": true
                         },
                         "1":{
@@ -1768,6 +1904,15 @@
                         "-2":{
                             "exported":true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "global_var":true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
@@ -1850,6 +1995,23 @@
                         "2":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1972,6 +2134,23 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2063,6 +2242,19 @@
                         "2":{
                             "constant_value": ["%s"]
                         }
+                    },
+                    {
+                        "-3":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2120,6 +2312,12 @@
                         "2":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         }
                     }
@@ -2190,6 +2388,16 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "3":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2245,6 +2453,11 @@
                         "0":{
                             "exported": true,
                             "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
                         }
                     }
                 ],
