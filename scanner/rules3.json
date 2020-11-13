@@ -275,7 +275,19 @@
         {"function_name":"lstrcpyW", "trace_params":[1,0]},
         {"function_name":"lstrcpynW", "trace_params":[1, 2,0]},
         {"function_name":"lstrcatA", "trace_params":[1, 0]},
-        {"function_name":"lstrcatW", "trace_params":[1, 0]}
+        {"function_name":"lstrcatW", "trace_params":[1, 0]},
+        {"function_name":"execl", "trace_params":[0]},
+        {"function_name":"execlp", "trace_params":[0]},
+        {"function_name":"execle", "trace_params":[0]},
+        {"function_name":"execv", "trace_params":[0]},
+        {"function_name":"execvp", "trace_params":[0]},
+        {"function_name":"execvpe", "trace_params":[0]},
+        {"function_name":"_execl", "trace_params":[0]},
+        {"function_name":"_execlp", "trace_params":[0]},
+        {"function_name":"_execle", "trace_params":[0]},
+        {"function_name":"_execv", "trace_params":[0]},
+        {"function_name":"_execvp", "trace_params":[0]},
+        {"function_name":"_execvpe", "trace_params":[0]}
         ],
     "test_cases":[
         {
@@ -2423,7 +2435,19 @@
                 "_popen",
                 "popen",
                 "wpopen",
-                "_wpopen"
+                "_wpopen",
+                "execl",
+                "execlp", 
+                "execle", 
+                "execv",
+                "execvp", 
+                "execvpe",
+                "_execl", 
+                "_execlp",
+                "_execle",
+                "_execv", 
+                "_execvp",
+                "_execvpe"
             ],
             "checks":{
                 "High":[
