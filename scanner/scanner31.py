@@ -4,8 +4,6 @@ import json
 from .free_scanner3 import FreeScanner3
 #import time
 
-# TODO handle constants in bss section properly
-# TODO excv and similiar
 
 class Scanner31(BackgroundTaskThread):
     def __init__(self,bv):
@@ -192,7 +190,6 @@ class Scanner31(BackgroundTaskThread):
                         continue
                 param_vars = self.prepare_relevant_variables(xref.params[p])
                 # The main tracing loop
-
                 blocks = [{"block":xref.il_basic_block,"start":xref.il_basic_block.start-1,"end":xref.instr_index,"param_vars":param_vars.copy()}]
                 previous_function = xref.il_basic_block.function.name
                 hlil_instructions = list(xref.il_basic_block.function.hlil.instructions)
@@ -404,7 +401,7 @@ class Scanner31(BackgroundTaskThread):
                                     op.type
                                     if not op in vars["orig_vars"][param_var]:
                                         vars["orig_vars"][param_var].append(op)
-                                        vars["vars"].append(p.var)
+                                        vars["vars"].append(op)
                                 except:
                                     if type(op) is list:
                                         operands.extend(op)
