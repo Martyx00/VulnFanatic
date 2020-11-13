@@ -1,4 +1,4 @@
-# VulnFanatic (3.3)
+# VulnFanatic (3.4)
 
 Author: **Martin Petran**
 
