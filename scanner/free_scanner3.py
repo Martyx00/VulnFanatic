@@ -160,10 +160,10 @@ class FreeScanner3(BackgroundTaskThread):
             defs = function.get_var_definitions(v)
             for d in defs:
                 try:
-                    consts = self.extract_hlil_operation(d.instr,[HighLevelILOperation.HLIL_CONST_PTR])
+                    consts = self.extract_hlil_operation(d.instr,[HighLevelILOperation.HLIL_CONST_PTR,HighLevelILOperation.HLIL_CONST])
                     for c in consts:
-                        if c.parent.operation == HighLevelILOperation.HLIL_DEREF:
-                            # Likely a global variable deref
+                        if "bss" in str(self.current_view.get_sections_at(c.constant)):
+                            # Likely a global variable
                             return True
                     vs = self.extract_hlil_operation(d.instr,[HighLevelILOperation.HLIL_VAR])
                     for a in vs:

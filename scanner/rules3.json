@@ -275,7 +275,19 @@
         {"function_name":"lstrcpyW", "trace_params":[1,0]},
         {"function_name":"lstrcpynW", "trace_params":[1, 2,0]},
         {"function_name":"lstrcatA", "trace_params":[1, 0]},
-        {"function_name":"lstrcatW", "trace_params":[1, 0]}
+        {"function_name":"lstrcatW", "trace_params":[1, 0]},
+        {"function_name":"execl", "trace_params":[0]},
+        {"function_name":"execlp", "trace_params":[0]},
+        {"function_name":"execle", "trace_params":[0]},
+        {"function_name":"execv", "trace_params":[0]},
+        {"function_name":"execvp", "trace_params":[0]},
+        {"function_name":"execvpe", "trace_params":[0]},
+        {"function_name":"_execl", "trace_params":[0]},
+        {"function_name":"_execlp", "trace_params":[0]},
+        {"function_name":"_execle", "trace_params":[0]},
+        {"function_name":"_execv", "trace_params":[0]},
+        {"function_name":"_execvp", "trace_params":[0]},
+        {"function_name":"_execvpe", "trace_params":[0]}
         ],
     "test_cases":[
         {
@@ -388,6 +400,11 @@
                         "0":{
                             "exported": true,
                             "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
                         }
                     }
                 ],
@@ -686,6 +703,14 @@
                         "-2":{
                             "not_affected_by": ["toa","toi"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true
+                        },
+                        "-2":{
+                            "not_affected_by": ["toa","toi"]
+                        }
                     }
                 ],
                 "Info": [
@@ -782,6 +807,11 @@
                             "exported": true,
                             "if_dependant": true
                         }
+                    },
+                    {
+                        "2":{
+                            "global_var": true
+                        }
                     }
                 ],
                 "Info": [
@@ -840,6 +870,11 @@
                             "exported": true,
                             "if_dependant": true
                         }
+                    },
+                    {
+                        "3":{
+                            "global_var": true
+                        }
                     }
                 ],
                 "Info": [
@@ -891,6 +926,11 @@
                         "4":{
                             "exported": true,
                             "if_dependant": true
+                        }
+                    },
+                    {
+                        "4":{
+                            "global_var": true
                         }
                     }
                 ],
@@ -956,6 +996,15 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1029,6 +1078,15 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1119,6 +1177,19 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1197,6 +1268,19 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1295,6 +1379,19 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1375,6 +1472,19 @@
                         "1":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "2":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1489,6 +1599,16 @@
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1591,6 +1711,16 @@
                             "if_dependant": true,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "1":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -1667,6 +1797,15 @@
                         "1":{
                             "constant_value": ["%s"]
                         }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
+
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
                     }
                 ]
             }
@@ -1714,6 +1853,15 @@
                     {
                         "0":{
                             "exported":true,
+                            "if_dependant": true
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "0":{
+                            "global_var":true,
                             "if_dependant": true
                         },
                         "1":{
@@ -1768,6 +1916,15 @@
                         "-2":{
                             "exported":true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "constant_value": ["%s"]
+                        }
+                    },
+                    {
+                        "-2":{
+                            "global_var":true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "1":{
@@ -1850,6 +2007,23 @@
                         "2":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         },
                         "0":{
@@ -1972,6 +2146,23 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "0":{
+                            "not_affected_by": ["strlen"]
+                        },
+                        "3":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2063,6 +2254,19 @@
                         "2":{
                             "constant_value": ["%s"]
                         }
+                    },
+                    {
+                        "-3":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","toa","toi","alloc"]
+                        }, 
+                        "2":{
+                            "constant_value": ["%s"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2120,6 +2324,12 @@
                         "2":{
                             "exported": true,
                             "if_dependant": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        }
+                    },
+                    {
+                        "2":{
+                            "global_var": true,
                             "not_affected_by": ["strlen","toa","toi"]
                         }
                     }
@@ -2190,6 +2400,16 @@
                             "is_constant": false,
                             "not_affected_by": ["strlen","alloc"]
                         }
+                    },
+                    {
+                        "3":{
+                            "global_var": true,
+                            "not_affected_by": ["strlen","toa","toi"]
+                        },
+                        "1":{
+                            "is_constant": false,
+                            "not_affected_by": ["strlen","alloc"]
+                        }
                     }
                 ],
                 "Info": [
@@ -2215,7 +2435,19 @@
                 "_popen",
                 "popen",
                 "wpopen",
-                "_wpopen"
+                "_wpopen",
+                "execl",
+                "execlp", 
+                "execle", 
+                "execv",
+                "execvp", 
+                "execvpe",
+                "_execl", 
+                "_execlp",
+                "_execle",
+                "_execv", 
+                "_execvp",
+                "_execvpe"
             ],
             "checks":{
                 "High":[
@@ -2245,6 +2477,11 @@
                         "0":{
                             "exported": true,
                             "if_dependant": true
+                        }
+                    },
+                    {
+                        "0":{
+                            "global_var": true
                         }
                     }
                 ],
