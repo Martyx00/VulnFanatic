@@ -168,6 +168,8 @@
         {"function_name":"objc_msgSend", "trace_params":[1, 6, 2, 3]},
         {"function_name":"popen", "trace_params":[0]},
         {"function_name":"printf", "trace_params":[0]},
+        {"function_name":"printk", "trace_params":[0]},
+        {"function_name":"_printk", "trace_params":[0]},
         {"function_name":"scanf", "trace_params":[0,"return"]},
         {"function_name":"snprintf", "trace_params":[0, 2, 1,-3]},
         {"function_name":"sprintf", "trace_params":[1,-2]},
@@ -296,6 +298,8 @@
             "functions":[
                 "_printf",
                 "printf",
+                "printk",
+                "_printk",
                 "vprintf",
                 "_vprintf",
                 "scanf",

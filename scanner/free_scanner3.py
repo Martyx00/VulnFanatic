@@ -7,7 +7,7 @@ class FreeScanner3(BackgroundTaskThread):
         self.current_view = bv
         self.progress_banner = f"[VulnFanatic] Running the scanner ... looking for Use-after-free issues"
         BackgroundTaskThread.__init__(self, self.progress_banner, True)
-        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete","operator delete[]"]
+        self.free_list = ["free","_free","_freea","freea","free_dbg","_free_dbg","free_locale","_free_locale","g_free","operator delete","operator delete[]","kfree","_kfree"]
 
     def run(self):
         #start = time.time()
