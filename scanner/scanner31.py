@@ -26,6 +26,8 @@ class Scanner31(BackgroundTaskThread):
             total_xrefs += xrefs_count
             xref_counter = 0
             for xref in function_refs:
+                if function["function_name"] == "siprintf":
+                    print("XREF TO SIPRINTF")
                 if self.cancelled:
                     return
                 self.evaluate_results(self.trace(xref,function["trace_params"]),function["function_name"],xref)
@@ -68,12 +70,14 @@ class Scanner31(BackgroundTaskThread):
                             for param_key in keys:
                                 for check_key in current_rule[param_key]:
                                     # This takes the approach that if anything is false, break
+
                                     if type(current_rule[param_key][check_key]) is list:
                                         if check_key == "not_affected_by":
                                             if self.is_in_array(trace[param_key]["affected_by"],current_rule[param_key][check_key]):
                                                 matches = False
                                                 break
                                         elif not self.is_in_array(trace[param_key][check_key],current_rule[param_key][check_key]):
+                                            print("NOT")
                                             matches = False
                                             break
                                     elif type(current_rule[param_key][check_key]) is dict:
@@ -90,17 +94,16 @@ class Scanner31(BackgroundTaskThread):
                                             matches = False
                                             break
                         if matches:
-                            '''if conf == "High":
-                                self.high += 1
-                            elif conf == "Medium":
-                                self.medium += 1
-                            elif conf == "Low":
-                                self.low += 1
-                            else:
-                                self.info += 1
-                            self.marked += 1'''
-                            tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
-                            xref.function.source_function.add_user_address_tag(xref.address, tag)
+                            conf_labels = {
+                                "High": "[VulnFanatic] High",
+                                "Medium": "[VulnFanatic] Medium",
+                                "Low": "[VulnFanatic] Low",
+                                "Info": "[VulnFanatic] Info"
+                            }
+                            #tag = xref.function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+conf], f'{test["name"]}: {test["details"]}\n', True)
+                            #xref.function.source_function.add_user_address_tag(xref.address, tag)
+                            xref.function.source_function.add_tag(conf_labels[conf], f'{test["name"]}: {test["details"]}\n', xref.address)
+                            print("MARKING")
                             break
                     if matches:
                         break
@@ -140,8 +143,10 @@ class Scanner31(BackgroundTaskThread):
 
     def is_in_array(self,a,b):
         #for item_a in a:
+        
         tmp = str(a)
         for item_b in b:
+            print(f"B: {item_b} in A: {tmp}: {item_b in tmp}")
             if item_b in tmp:
                 return True
         return False

@@ -32,30 +32,33 @@ class FreeScanner3(BackgroundTaskThread):
                     "struct_free_wrapper": free_xref["struct_free_wrapper"]
                 }
                 if current_free_xref_obj["double_free"] and current_free_xref_obj["without_if"]:
-                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] Medium"], "Potential Double Free Vulnerability", True)
-                    free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    #tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] Medium"], "Potential Double Free Vulnerability", True)
+                    #free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    free_xref["instruction"].function.source_function.add_tag("🟧 [VulnFanatic] Medium","Potential Double Free Vulnerability",free_xref["instruction"].address)
                     continue
                 elif current_free_xref_obj["double_free"]:
-                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] Low"], "Potential Double Free Vulnerability", True)
-                    free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    #tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] Low"], "Potential Double Free Vulnerability", True)
+                    #free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    free_xref["instruction"].function.source_function.add_tag("🟦 [VulnFanatic] Info","Potential Double Free Vulnerability",free_xref["instruction"].address)
                     continue
                 # First process parameter variables
                 confidence = ""
                 if current_free_xref_obj["used_after"] and current_free_xref_obj["without_if"]:
-                    confidence = "Medium"
+                    confidence = "🟧 [VulnFanatic] Medium"
                 elif current_free_xref_obj["used_after"] or (current_free_xref_obj["global_uaf"] and not current_free_xref_obj["struct_free_wrapper"]):
                 #elif current_free_xref_obj["used_after"]:
-                    confidence = "Low"
+                    confidence = "🟨 [VulnFanatic] Low"
                 elif current_free_xref_obj["struct_free_wrapper"]:
-                    confidence = "Info"
+                    confidence = "🟦 [VulnFanatic] Info"
                 if confidence:
                     #vuln_counter += 1
-                    if confidence == "Info":
+                    if confidence == "🟦 [VulnFanatic] Info":
                         desc = "Free wrapper worth to investigate."
                     else:
                         desc = "Potential Use-afer-free Vulnerability"
-                    tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
-                    free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    #tag = free_xref["instruction"].function.source_function.create_tag(self.current_view.tag_types["[VulnFanatic] "+confidence], desc, True)
+                    #free_xref["instruction"].function.source_function.add_user_address_tag(free_xref["instruction"].address, tag)
+                    free_xref["instruction"].function.source_function.add_tag(confidence, desc, free_xref["instruction"].address)
         #log_info(f"[*] Free scan done in {time.time() - start} and found {vuln_counter}")
 
     def scan(self,instruction,param_vars):
