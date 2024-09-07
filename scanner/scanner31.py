@@ -143,7 +143,7 @@ class Scanner31(BackgroundTaskThread):
 
     def is_in_array(self,a,b):
         #for item_a in a:
-        
+
         tmp = str(a)
         for item_b in b:
             print(f"B: {item_b} in A: {tmp}: {item_b in tmp}")
@@ -492,8 +492,11 @@ class Scanner31(BackgroundTaskThread):
 
     def is_in_operands(self,op,operands):
         for i in range(len(operands)-len(op)+1):
-            if operands[i:i+len(op)] == op:
-                return True
+            try:
+                if operands[i:i+len(op)] == op:
+                    return True
+            except AssertionError:
+                pass
         return False
 
     def expand_postfix_operands(self,instruction):

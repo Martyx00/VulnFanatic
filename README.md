@@ -1,4 +1,4 @@
-# VulnFanatic (3.6)
+# VulnFanatic (3.7)
 
 Author: **Martin Petran**
 
@@ -11,7 +11,7 @@ This plugin aims to assist during the vulnerability research process by providin
 
 The highlighter part of the plugin can be used after selecting an instruction. This feature allows you to highlight Assembly and HLIL blocks that lead to current block. Another feature also allows you to highlight either HLIL or Assembly variables. This provides ability to trace all points of interest for given variables.
 
-### Scanner 
+### Scanner
 
 Scanner is using set of rules to perform basic analysis to detect any potentially vulnerable function calls. Issues that are found by this component are marked with tags that reflect the priority for a follow-up manual analysis. Following are the priority categories:
 
