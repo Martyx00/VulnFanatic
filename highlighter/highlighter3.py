@@ -168,7 +168,7 @@ class Highlighter3(BackgroundTaskThread):
                                 vars["orig_vars"][param_var].append(v.var)
                                 param_vars.append(v.var)
             for v in vars["orig_vars"][param_var]:
-                tmp = re.escape(re.sub(f'{param_var}\.\w+|:\d+\.\w+', str(v), original_value))
+                tmp = re.escape(re.sub(f'{re.escape(param_var)}\\.\\w+|:\\d+\\.\\w+', str(v), original_value))
                 tmp2 = tmp.replace(str(v), str(v)+"((:\\d+\\.\\w+)?\\b|\\.\\w+\\b)?")
                 if tmp2 not in vars["possible_values"]:
                     vars["possible_values"].append(tmp2)
