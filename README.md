@@ -1,3 +1,5 @@
+# ⚠⚠⚠ THIS REPOSITORY IS NO LONGER MAINTAINED, THERE IS A NEW VERSION OF THE PLUGIN FOR THE NEW ERA HERE: https://github.com/Martyx00/VulnFanatic-NG ⚠⚠⚠
+
 # VulnFanatic (3.7)
 
 Author: **Martin Petran**
